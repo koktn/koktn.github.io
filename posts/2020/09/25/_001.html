@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>GitHub pagesでBlog作成 | Blog</title>
+    <meta name="generator" content="VuePress 1.5.4">
+    <link href="/css/style.css" rel="stylesheet">
+    <meta name="description" content="This is blog">
+    <link rel="preload" href="/assets/css/0.styles.0d8d8a79.css" as="style"><link rel="preload" href="/assets/js/app.c1b03fc0.js" as="script"><link rel="preload" href="/assets/js/7.fa2109e8.js" as="script"><link rel="preload" href="/assets/js/15.34af9c22.js" as="script"><link rel="prefetch" href="/assets/js/1.e806063a.js"><link rel="prefetch" href="/assets/js/10.f6d7feab.js"><link rel="prefetch" href="/assets/js/11.ef473569.js"><link rel="prefetch" href="/assets/js/12.0a01499e.js"><link rel="prefetch" href="/assets/js/13.70237e5a.js"><link rel="prefetch" href="/assets/js/14.c0d9a45f.js"><link rel="prefetch" href="/assets/js/3.8e017086.js"><link rel="prefetch" href="/assets/js/4.fd7e4da6.js"><link rel="prefetch" href="/assets/js/5.f0123346.js"><link rel="prefetch" href="/assets/js/6.605019fd.js"><link rel="prefetch" href="/assets/js/8.ee680232.js"><link rel="prefetch" href="/assets/js/9.95bb4b23.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.0d8d8a79.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div id="vuepress-theme-meteorlxy"><header class="header" data-v-7a046aea><div data-v-e4145d0a data-v-7a046aea><nav class="navbar" data-v-e4145d0a><div class="container" data-v-e4145d0a><a href="/" class="router-link-active" data-v-e4145d0a><span class="navbar-site-name" data-v-e4145d0a>
+          Blog
+        </span></a> <div class="navbar-toggler" data-v-e4145d0a><svg class="icon" style="font-size:1.2em;" data-v-e4145d0a data-v-e4145d0a><title data-v-e4145d0a data-v-e4145d0a>menu</title><use xlink:href="#icon-menu" data-v-e4145d0a data-v-e4145d0a></use></svg></div> <div class="navbar-links" data-v-e4145d0a><a href="/" class="navbar-link" data-v-e4145d0a>
+            Home
+          </a><a href="/posts/" class="navbar-link router-link-active" data-v-e4145d0a>
+            Posts
+          </a></div></div></nav> <div class="navbar-holder" style="display:none;" data-v-e4145d0a></div></div> <div class="banner" data-v-98d6aa8c data-v-7a046aea data-v-7a046aea><div class="container" data-v-98d6aa8c><div class="center" data-v-98d6aa8c><h1 data-v-98d6aa8c data-v-7a046aea>
+          GitHub pagesでBlog作成
+        </h1></div></div></div></header> <div class="container clearfix show-aside" data-v-4dd605a1 data-v-4dd605a1><main class="main" data-v-4dd605a1><div class="post" data-v-4dd605a1 data-v-4dd605a1><section class="post-meta main-div" data-v-4e23451f><section class="post-date clearfix" data-v-4e23451f><span class="create-date" data-v-4e23451f>
+      作成日 : 2020-09-25
+    </span> <!----></section> <section class="post-links" data-v-4e23451f><a href="/posts/2020/09/24/hello-world.html" class="post-link" data-v-4e23451f>
+      前の投稿 : Hello, world!
+    </a> <!----></section></section> <article class="main-div"><div class="post-content content content__default"><p>ふと、GitHub PagesでBlogを作ろうと思い（結果できあがったのがココ）、参考にしたページをまとめます。</p> <h2 id="github-pagesでのブログのデプロイ"><a href="#github-pagesでのブログのデプロイ" class="header-anchor">#</a> GitHub Pagesでのブログのデプロイ</h2> <p>blogのデプロイ手順については、こちらを参考にしました。</p> <p><a href="https://qiita.com/kumapo0313/items/a59df3d74a7eaaaf3137" target="_blank" rel="noopener noreferrer">VuePress を使って GitHub Pages でブログを公開する<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></p> <p>サイト用リポジトリ名は <code>[アカウント名].github.io</code> にする必要があります。
+(作られるページはhttps://アカウント名.github.io)</p> <h2 id="vuepressのテーマ"><a href="#vuepressのテーマ" class="header-anchor">#</a> VuePressのテーマ</h2> <p>今回テンプレートには、vuepress-theme-meteorlxy を使いました。</p> <p>インストール方法は</p> <p><a href="https://vuepress-theme-meteorlxy.meteorlxy.cn/posts/2019/02/27/theme-guide-en.html#config-the-theme" target="_blank" rel="noopener noreferrer">vuepress-theme-meteorlxy<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></p> <p>を参考にしました。</p> <p>また、日本語の対応に関しては以下のサイトが詳しいです。</p> <p><a href="https://qiita.com/tomopict/items/%5D%5D9da7cf28c9bcd5f933cb" target="_blank" rel="noopener noreferrer">VuePressで作ったblogに配布されているテーマを設定する<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></p> <p>１点、メニューの日本語化については、'en-JP'ではなく、'ja-JP'に修正されているようです。</p> <div class="language-Javascript:config.js extra-class"><pre class="language-text"><code>// 変更前
+themeConfig: {
+ lang: 'en-US',
+}
+// 変更後
+themeConfig: {
+  lang: 'ja-JP',
+  // OR
+  lang: require('vuepress-theme-meteorlxy/lib/langs/en-JP'),
+}
+</code></pre></div><h2 id="おわりに"><a href="#おわりに" class="header-anchor">#</a> おわりに</h2> <p>とりあえずこの情報で今のこのページの状態までは作れます。あとは中身を見ながらボチボチいじっていこうかなと思います。</p></div></article> <section class="post-meta main-div" data-v-4e23451f><section class="post-date clearfix" data-v-4e23451f><span class="create-date" data-v-4e23451f>
+      作成日 : 2020-09-25
+    </span> <!----></section> <section class="post-links" data-v-4e23451f><a href="/posts/2020/09/24/hello-world.html" class="post-link" data-v-4e23451f>
+      前の投稿 : Hello, world!
+    </a> <!----></section></section> <div id="post-comments" class="main-div"><!----></div></div></main> <aside class="aside" data-v-4dd605a1><div class="info-card main-div" data-v-9d847660 data-v-4dd605a1><div class="info-card-header" style="background-size:cover;background-repeat:no-repeat;background-position:center;background-attachment:scroll;background-image:url(/img/profile_header.jpg);" data-v-9d847660><img src="/img/avatar.jpg" alt="koki" class="info-avatar" data-v-9d847660></div> <div class="info-card-body" data-v-9d847660><section class="info-nickname" data-v-9d847660>
+      koki
+    </section> <section class="info-desc" data-v-9d847660>データ分析と機械学習</section> <section class="info-contact" data-v-9d847660><section data-v-9d847660><span title="Fukuoka, Japan" data-v-9d847660 data-v-9d847660><svg class="icon" style="font-size:1em;" data-v-9d847660 data-v-9d847660><title data-v-9d847660 data-v-9d847660>Fukuoka, Japan</title><use xlink:href="#icon-location" data-v-9d847660 data-v-9d847660></use></svg><span class="info-text" data-v-9d847660 data-v-9d847660>
+          Fukuoka, Japan
+        </span></span></section> <!----> <!----></section></div> <div class="info-card-footer" data-v-9d847660><section class="info-sns clearfix" data-v-9d847660><a href="https://github.com/koktn" target="_blank" class="sns-link" data-v-9d847660><span title="GitHub: koktn" class="sns-icon" data-v-9d847660 data-v-9d847660><svg class="icon" style="font-size:1.5em;" data-v-9d847660 data-v-9d847660><title data-v-9d847660 data-v-9d847660>GitHub: koktn</title><use xlink:href="#icon-github" data-v-9d847660 data-v-9d847660></use></svg></span></a><a href="https://twitter.com/koktanaka" target="_blank" class="sns-link" data-v-9d847660><span title="Twitter: koktanaka" class="sns-icon" data-v-9d847660 data-v-9d847660><svg class="icon" style="font-size:1.5em;" data-v-9d847660 data-v-9d847660><title data-v-9d847660 data-v-9d847660>Twitter: koktanaka</title><use xlink:href="#icon-twitter" data-v-9d847660 data-v-9d847660></use></svg></span></a></section></div></div> <div class="post-nav-card main-div" style="position:relative;top:0;width:0px;" data-v-4dd605a1><div class="post-nav-contents"><svg class="icon"><title>book</title><use xlink:href="#icon-book"></use></svg> <span>目次</span> <div class="post-nav-toc"><ul><li><a href="/posts/2020/09/25/_001.html#github-pagesでのブログのデプロイ">GitHub Pagesでのブログのデプロイ</a></li><li><a href="/posts/2020/09/25/_001.html#vuepressのテーマ">VuePressのテーマ</a></li><li><a href="/posts/2020/09/25/_001.html#おわりに">おわりに</a></li></ul></div></div> <div class="post-nav-comments"><svg class="icon"><title>comment</title><use xlink:href="#icon-comment"></use></svg> <a href="/posts/2020/09/25/_001.html#post-comments">
+      コメント
+    </a></div></div></aside></div> <footer class="footer" data-v-1375e54c><p class="footer-sns-links" data-v-1375e54c><a href="https://github.com/koktn" target="_blank" class="sns-link" data-v-1375e54c><span title="GitHub: koktn" class="sns-icon" data-v-1375e54c data-v-1375e54c><svg class="icon" style="font-size:25px;" data-v-1375e54c data-v-1375e54c><title data-v-1375e54c data-v-1375e54c>GitHub: koktn</title><use xlink:href="#icon-github" data-v-1375e54c data-v-1375e54c></use></svg></span></a><a href="https://twitter.com/koktanaka" target="_blank" class="sns-link" data-v-1375e54c><span title="Twitter: koktanaka" class="sns-icon" data-v-1375e54c data-v-1375e54c><svg class="icon" style="font-size:25px;" data-v-1375e54c data-v-1375e54c><title data-v-1375e54c data-v-1375e54c>Twitter: koktanaka</title><use xlink:href="#icon-twitter" data-v-1375e54c data-v-1375e54c></use></svg></span></a></p> <p class="footer-text" data-v-1375e54c><span data-v-1375e54c>Powered by </span> <a href="https://github.com/vuejs/vuepress" target="_blank" data-v-1375e54c>
+      VuePress
+    </a> <span data-v-1375e54c> | </span> <a href="https://github.com/meteorlxy/vuepress-theme-meteorlxy" target="_blank" data-v-1375e54c>
+        meteorlxy
+      </a></p> <p class="footer-text" data-v-1375e54c>Copyright 2020-present <a href="https://github.com/koktn" target="_blank">koki</a> | MIT License</p></footer></div><div class="global-ui"><!----><!----></div></div>
+    <script src="/assets/js/app.c1b03fc0.js" defer></script><script src="/assets/js/7.fa2109e8.js" defer></script><script src="/assets/js/15.34af9c22.js" defer></script>
+  </body>
+</html>
