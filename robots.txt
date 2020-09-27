@@ -1,0 +1,6 @@
+# src/.vuepress/public/robots.txt
+
+User-agent: *
+Disallow: /log/
+Sitemap: https://koktn.github.io/sitemap.xml
+
