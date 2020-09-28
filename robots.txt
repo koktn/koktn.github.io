@@ -1,4 +1,5 @@
-# src/.vuepress/public/robots.txt
+User-agetnt: Twitterbot
+Disallow:
 
 User-agent: *
 Disallow: /log/
