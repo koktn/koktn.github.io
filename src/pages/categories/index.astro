@@ -1,0 +1,17 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { isPublished, taxonomySlug } from '../../utils/posts';
+
+const posts = (await getCollection('blog')).filter(isPublished);
+const categories = [...new Set(posts.map((post) => post.data.category))]
+  .map((name) => ({ name, count: posts.filter((post) => post.data.category === name).length }))
+  .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+---
+
+<BaseLayout title="カテゴリー" description="記事カテゴリーの一覧">
+  <header class="page-header page-width"><p class="eyebrow">Topics</p><h1>カテゴリー</h1></header>
+  <ul class="taxonomy-cloud page-width">
+    {categories.map(({ name, count }) => <li><a href={`/categories/${taxonomySlug(name)}/`}><span>{name}</span><small>{count}件</small></a></li>)}
+  </ul>
+</BaseLayout>

@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { isPublished, sortPosts, taxonomySlug, type BlogPost } from '../../utils/posts';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog')).filter(isPublished);
+  const names = [...new Set(posts.map((post) => post.data.category))];
+  return names.map((name) => ({
+    params: { slug: taxonomySlug(name) },
+    props: { name, posts: sortPosts(posts.filter((post) => post.data.category === name)) },
+  }));
+}
+
+interface Props { name: string; posts: BlogPost[] }
+const { name, posts } = Astro.props;
+---
+
+<BaseLayout title={name} description={`${name}カテゴリーの記事一覧`}>
+  <header class="page-header page-width"><p class="eyebrow">Category</p><h1>{name}</h1><p>{posts.length}件の記事</p></header>
+  <section class="post-grid page-width" aria-label={`${name}の記事一覧`}>
+    {posts.map((post) => <PostCard post={post} />)}
+  </section>
+</BaseLayout>

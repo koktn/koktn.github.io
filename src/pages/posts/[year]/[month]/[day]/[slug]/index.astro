@@ -1,0 +1,34 @@
+---
+import { getCollection, render } from 'astro:content';
+import PostLayout from '../../../../../../layouts/PostLayout.astro';
+import { isPublished, postPath, sortPosts, type BlogPost } from '../../../../../../utils/posts';
+
+export async function getStaticPaths() {
+  const posts = sortPosts((await getCollection('blog')).filter(isPublished));
+
+  return posts.map((post, index) => {
+    const [, , year, month, day, slug] = postPath(post).split('/');
+    return {
+      params: { year, month, day, slug },
+      props: {
+        post,
+        previous: posts[index + 1],
+        next: posts[index - 1],
+      },
+    };
+  });
+}
+
+interface Props {
+  post: BlogPost;
+  previous?: BlogPost;
+  next?: BlogPost;
+}
+
+const { post, previous, next } = Astro.props;
+const { Content, headings } = await render(post);
+---
+
+<PostLayout post={post} headings={headings} previous={previous} next={next}>
+  <Content />
+</PostLayout>

@@ -1,0 +1,22 @@
+---
+const { pathname } = Astro.url;
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label="koki's blog ホーム">
+      <span class="brand-mark" aria-hidden="true">k</span>
+      <span>koki's blog</span>
+    </a>
+    <nav aria-label="メインナビゲーション">
+      <a href="/" aria-current={pathname === '/' ? 'page' : undefined}>ホーム</a>
+      <a href="/posts/" aria-current={pathname.startsWith('/posts/') ? 'page' : undefined}>記事</a>
+      <a href="/tags/" aria-current={pathname.startsWith('/tags/') ? 'page' : undefined}>タグ</a>
+      <button class="theme-toggle" type="button" aria-label="配色を切り替える" title="配色を切り替える">
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.64 5.64l1.42 1.42m9.88 9.88 1.42 1.42m0-12.72-1.42 1.42M7.06 16.94l-1.42 1.42M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" />
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>

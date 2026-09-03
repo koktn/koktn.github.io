@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { isPublished, sortPosts } from '../../utils/posts';
+
+const posts = sortPosts((await getCollection('blog')).filter(isPublished));
+---
+
+<BaseLayout title="記事一覧" description="koki's blog の記事一覧">
+  <header class="page-header page-width">
+    <p class="eyebrow">Archive</p>
+    <h1>記事一覧</h1>
+    <p>{posts.length}件の記事</p>
+  </header>
+  <section class="post-grid page-width" aria-label="記事一覧">
+    {posts.map((post) => <PostCard post={post} />)}
+  </section>
+</BaseLayout>

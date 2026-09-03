@@ -1,0 +1,18 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { isPublished, taxonomySlug } from '../../utils/posts';
+
+const posts = (await getCollection('blog')).filter(isPublished);
+const names = [...new Set(posts.flatMap((post) => post.data.tags))];
+const tags = names
+  .map((name) => ({ name, count: posts.filter((post) => post.data.tags.includes(name)).length }))
+  .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+---
+
+<BaseLayout title="タグ" description="記事タグの一覧">
+  <header class="page-header page-width"><p class="eyebrow">Index</p><h1>タグ</h1></header>
+  <ul class="taxonomy-cloud page-width">
+    {tags.map(({ name, count }) => <li><a href={`/tags/${taxonomySlug(name)}/`}><span>#{name}</span><small>{count}件</small></a></li>)}
+  </ul>
+</BaseLayout>

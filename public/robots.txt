@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://koktn.github.io/sitemap-index.xml

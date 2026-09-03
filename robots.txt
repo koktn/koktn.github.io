@@ -1,7 +1,0 @@
-User-agetnt: Twitterbot
-Disallow:
-
-User-agent: *
-Disallow: /log/
-Sitemap: https://koktn.github.io/sitemap.xml
-

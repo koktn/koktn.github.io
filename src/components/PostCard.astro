@@ -1,0 +1,25 @@
+---
+import type { BlogPost } from '../utils/posts';
+import { formatDate, postPath, taxonomySlug } from '../utils/posts';
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+---
+
+<article class="post-card">
+  <div class="post-card-meta">
+    <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
+    {post.data.draft && <span class="draft-badge">下書き</span>}
+  </div>
+  <h2><a href={postPath(post)}>{post.data.title}</a></h2>
+  <p>{post.data.description}</p>
+  <div class="post-card-footer">
+    <a class="category-link" href={`/categories/${taxonomySlug(post.data.category)}/`}>{post.data.category}</a>
+    <ul class="tag-list" aria-label="タグ">
+      {post.data.tags.map((tag) => <li><a href={`/tags/${taxonomySlug(tag)}/`}>#{tag}</a></li>)}
+    </ul>
+  </div>
+</article>

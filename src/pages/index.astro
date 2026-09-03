@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { isPublished, sortPosts } from '../utils/posts';
+
+const posts = sortPosts((await getCollection('blog')).filter(isPublished));
+---
+
+<BaseLayout>
+  <section class="hero page-width">
+    <div>
+      <p class="eyebrow">Personal notes since 2020</p>
+      <h1>考えたこと、<br /><span>つくったもの。</span></h1>
+      <p>技術や日々の試行錯誤を、あとから読み返せる形で残しています。</p>
+    </div>
+    <aside class="profile" aria-label="著者プロフィール">
+      <img src="/img/avatar.jpg" width="112" height="112" alt="koki" />
+      <div>
+        <strong>koki</strong>
+        <a href="https://github.com/koktn" target="_blank" rel="me noopener">@koktn on GitHub <span aria-hidden="true">↗</span></a>
+      </div>
+    </aside>
+  </section>
+
+  <section class="post-section page-width">
+    <div class="section-heading">
+      <div><p class="eyebrow">Latest</p><h2>新着記事</h2></div>
+      <a href="/posts/">すべての記事を見る <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="post-grid">
+      {posts.slice(0, 3).map((post) => <PostCard post={post} />)}
+    </div>
+  </section>
+</BaseLayout>

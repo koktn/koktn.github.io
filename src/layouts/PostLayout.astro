@@ -1,0 +1,52 @@
+---
+import type { MarkdownHeading } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import type { BlogPost } from '../utils/posts';
+import { formatDate, postPath, taxonomySlug } from '../utils/posts';
+
+interface Props {
+  post: BlogPost;
+  headings: MarkdownHeading[];
+  previous?: BlogPost;
+  next?: BlogPost;
+}
+
+const { post, headings, previous, next } = Astro.props;
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+<BaseLayout title={post.data.title} description={post.data.description} image={post.data.image} type="article">
+  <article class="article-shell">
+    <header class="article-header">
+      {post.data.draft && <span class="draft-badge">下書きプレビュー</span>}
+      <p class="eyebrow"><a href={`/categories/${taxonomySlug(post.data.category)}/`}>{post.data.category}</a></p>
+      <h1>{post.data.title}</h1>
+      <p class="article-description">{post.data.description}</p>
+      <div class="article-meta">
+        <time datetime={post.data.publishedAt.toISOString()}>公開日 {formatDate(post.data.publishedAt)}</time>
+        {post.data.updatedAt && <time datetime={post.data.updatedAt.toISOString()}>更新日 {formatDate(post.data.updatedAt)}</time>}
+      </div>
+      <ul class="tag-list" aria-label="タグ">
+        {post.data.tags.map((tag) => <li><a href={`/tags/${taxonomySlug(tag)}/`}>#{tag}</a></li>)}
+      </ul>
+    </header>
+
+    {toc.length > 0 && (
+      <details class="toc" open>
+        <summary>目次</summary>
+        <ol>
+          {toc.map((heading) => (
+            <li class:list={{ nested: heading.depth === 3 }}><a href={`#${heading.slug}`}>{heading.text}</a></li>
+          ))}
+        </ol>
+      </details>
+    )}
+
+    <div class="prose"><slot /></div>
+
+    <nav class="post-navigation" aria-label="前後の記事">
+      {previous ? <a href={postPath(previous)}><span>前の記事</span>{previous.data.title}</a> : <span />}
+      {next && <a class="next" href={postPath(next)}><span>次の記事</span>{next.data.title}</a>}
+    </nav>
+  </article>
+</BaseLayout>
