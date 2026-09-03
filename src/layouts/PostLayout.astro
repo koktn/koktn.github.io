@@ -13,6 +13,10 @@ interface Props {
 
 const { post, headings, previous, next } = Astro.props;
 const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const canonicalUrl = new URL(postPath(post), Astro.site);
+const shareUrl = new URL('https://x.com/intent/tweet');
+shareUrl.searchParams.set('text', post.data.title);
+shareUrl.searchParams.set('url', canonicalUrl.href);
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description} image={post.data.image} type="article">
@@ -29,6 +33,18 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
       <ul class="tag-list" aria-label="タグ">
         {post.data.tags.map((tag) => <li><a href={`/tags/${taxonomySlug(tag)}/`}>#{tag}</a></li>)}
       </ul>
+      <a
+        class="x-share-link"
+        href={shareUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`「${post.data.title}」をXでシェア（新しいタブで開きます）`}
+      >
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.657l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"></path>
+        </svg>
+        Xでシェア
+      </a>
     </header>
 
     {toc.length > 0 && (
