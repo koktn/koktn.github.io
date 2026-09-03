@@ -157,7 +157,7 @@
   .article-header .tag-list { margin-top: 14px; }
   .toc { margin-block: 36px 48px; padding: 20px 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
   .toc summary { cursor: pointer; font-weight: 700; }
-  .toc ol { margin: 12px 0 0; padding-left: 22px; }
+  .toc ul { margin: 12px 0 0; padding-left: 22px; }
   .toc li { padding-block: 3px; color: var(--muted); }
   .toc li.nested { margin-left: 20px; font-size: .92em; }
 

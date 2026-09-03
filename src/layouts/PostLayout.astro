@@ -34,11 +34,11 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
     {toc.length > 0 && (
       <details class="toc" open>
         <summary>目次</summary>
-        <ol>
+        <ul>
           {toc.map((heading) => (
             <li class:list={{ nested: heading.depth === 3 }}><a href={`#${heading.slug}`}>{heading.text}</a></li>
           ))}
-        </ol>
+        </ul>
       </details>
     )}
 
