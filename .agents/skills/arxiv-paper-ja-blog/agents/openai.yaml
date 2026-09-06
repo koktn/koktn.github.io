@@ -1,4 +1,0 @@
-interface:
-  display_name: "arXiv論文の日本語解説記事"
-  short_description: "arXiv論文を精読し、実装視点を含む日本語記事を作成"
-  default_prompt: "Use $arxiv-paper-ja-blog to create a Japanese explanation article for this arXiv paper."
