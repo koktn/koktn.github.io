@@ -9,7 +9,7 @@ tags:
   - Representation Learning
   - Vector Quantization
   - Meta
-draft: true
+draft: false
 ---
 
 > **AI利用の明示**
