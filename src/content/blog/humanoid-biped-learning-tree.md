@@ -9,7 +9,7 @@ tags:
   - Reinforcement Learning
   - State Estimation
   - Sim-to-Real
-draft: true
+draft: false
 ---
 
 > **AI利用の明示**
