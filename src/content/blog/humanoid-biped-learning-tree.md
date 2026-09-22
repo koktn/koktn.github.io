@@ -1,6 +1,6 @@
 ---
 title: 中国製二足歩行ロボットの学習ツリー――構造・制御・センシングをつなげて理解する
-description: AgiBot X1、OpenLoong、Humanoid-Gym、状態推定と最新の視覚歩行研究を軸に、二足歩行ロボットの構造・制御・センシングを学ぶ順序を整理します。
+description: AgiBot X1、OpenLoong、Humanoid-Gym、状態推定と最新の視覚歩行研究を軸に、急速な進歩を支えた基盤技術と、構造・制御・センシングを学ぶ順序を整理します。
 publishedAt: 2026-09-22
 category: AI
 tags:
@@ -45,6 +45,8 @@ draft: true
    ├─ メーカー／共同体の公開ツールチェーン
    └─ 研究者が特定機体へ実装したアルゴリズム
         ↓
+基盤技術：接触に強いactuator → actuatorを含むSim-to-Real → GPU並列RL
+        ↓
 1. 構造
    ├─ X1のCAD・BOM・組立SOP
    ├─ 関節配置、質量、可動範囲、足裏
@@ -58,8 +60,8 @@ draft: true
         └──────────┬──────────┘
                    ↓
 4. Sim-to-Realと全身運動
-   ├─ DWL：内部状態と環境の推定
-   ├─ OmniH2O：retargetingとteacher–student
+   ├─ RMA／DWL：履歴から環境・内部状態へ適応
+   ├─ DeepMimic／OmniH2O：motion imitationとretargeting
    ├─ ASAP：実機dataでsimとの差を補正
    └─ BeyondMimic：motion trackingからskill合成へ
                    ↓
@@ -74,6 +76,64 @@ draft: true
 ```
 
 左右に分かれたモデルベース制御と学習ベース制御は、競合するというより比較対象です。どちらも機体状態、接触、目標運動を扱い、最終的には高速な関節制御へ指令を渡します。異なるのは、その途中を明示的な力学モデルと最適化で解くか、シミュレーションで方策として学ぶかです。
+
+## なぜ近年、急速に進歩したのか
+
+中国系二足歩行ロボットの進歩を技術面から見ると、単一のbreakthroughよりも、**接触に耐えるactuator、実機差を扱う学習、試行錯誤を高速化するGPU simulation**が順に実用域へ入り、同時に使えるようになった影響が大きいと考えられます。
+
+ここで挙げる基盤研究の多くは、中国企業によるものでも二足robotだけを対象にしたものでもありません。これらは現在の中国製robotが個別に採用した設計を証明する資料ではなく、近年の性能向上を可能にした世界的な技術stackを理解するための資料です。また、供給網、量産、投資、政策など産業面の因果は本稿の技術資料だけでは検証できないため、ここでは論じません。
+
+### 3つのbottleneckが続けて小さくなった
+
+| 技術上のbottleneck | 基盤資料 | 何が変わったか | 読む際の注意 |
+| --- | --- | --- | --- |
+| 接触・衝撃を扱える駆動系 | [Proprioceptive Actuator Design in the MIT Cheetah](https://dspace.mit.edu/entities/publication/8b15bcc8-c288-43aa-b923-69ce3c13b818)（2017） | torque densityだけでなく、force control bandwidth、backdrivability、impact mitigationを一体で設計する視点を示した | MIT Cheetahの設計であり、Unitreeなどの採用を示す資料ではない |
+| simulationと実機のactuator応答の差 | [Learning Agile and Dynamic Motor Skills for Legged Robots](https://arxiv.org/abs/1901.08652)（2019） | 実機dataからactuator networkを学び、delayや低level制御を含む応答をsimulationへ入れてANYmalへ転送した | 四足robotでの結果。形状と質量だけ合わせれば十分ではないことを学ぶ資料 |
+| 学習の試行回数と待ち時間 | [Learning to Walk in Minutes](https://arxiv.org/abs/2109.11978)（2021） | 1枚のGPU上で数千体を並列simulationし、curriculumとPPOで方策開発の反復を大幅に短縮した | 並列数を増やせば常に良いわけではなく、on-policy更新に必要な時間方向のsampleとのtrade-offがある |
+
+MIT Cheetahの論文が強調するのは、最大torqueの大きさだけではありません。着地時の外力で関節が動きやすいbackdrivability、高bandwidthなforce control、衝撃を機械・制御の両方で扱えることが、dynamic locomotionの前提になります。構造を見るときは、motor specに加えて減速比、rotor inertia、伝達効率、制御帯域まで追う必要があります。
+
+Hwangboらの2019年の研究は、そのhardwareをsimulation上でどう再現するかという次の問題を扱います。ANYmalの12 actuatorを並列に動かして4分未満で100万件超のsampleを集め、joint position errorやvelocityの履歴からtorqueを予測するnetworkを学習しました。論文では、理想的または解析的なactuator modelで学んだ方策は実機で1歩も進めず、delayやbandwidthのずれが原因と考察されています。これは後述するASAPと同じく実機差をdataで扱いますが、補正場所が異なります。
+
+```text
+Hwangbo et al. (2019)
+  └─ actuatorの入出力modelを実機dataから学び、training simulatorへ入れる
+
+ASAP (2025)
+  └─ policyを実機で動かしたtrajectoryからdelta action modelを学び、policyをfine-tuneする
+```
+
+Rudinらの研究は、学習algorithmそのものより、**試行錯誤を回すsystem**が開発速度を変えたことを示します。実験では4096体のANYmalを並列に動かし、不整地用policyを単一のRTX A6000で20分未満に学習したと報告しています。terrainごとに成功すれば難しく、失敗すれば易しくするcurriculumも、広い条件を一度に学ばせる際の重要な要素です。個々の数値は同論文のhardwareと実装条件に依存しますが、「rewardやrandomizationを変えて翌日を待つ」状態から、「短いiterationで比較する」状態への変化が本質です。
+
+以上から本稿が導く技術的な解釈は、次のとおりです。
+
+```text
+高性能なactuatorと低level control
+  × actuator・delayを含むSim-to-Real
+  × GPU上の大量並列simulation
+  × curriculum・domain randomization
+  → 実機を壊す前に多数の案を絞り、短いcycleでrobotへ移せる
+```
+
+Humanoid-Gym、UnitreeのRL toolchain、ASAPなどは、この世界的な基盤が中国製humanoidのmodel、実機interface、公開codeと結びついた例として読めます。ただし、公開論文から確認できるのは技術的な接続であり、「中国勢だけが伸びた理由」を国別に因果推定した結果ではありません。
+
+### 模倣、適応、学習しやすい機体へ発展した
+
+追加で読む3本は、現在のhumanoidへつながる別の枝を補います。
+
+- [DeepMimic](https://arxiv.org/abs/1804.02717)（2018）は、reference motionを追う模倣目的とtask目的を組み合わせました。ASAPやBeyondMimicへ進む前に、人間らしい運動とtask達成をreward上でどう分担するかを学べます。ただし、結果は物理simulation内のcharacterとAtlas modelであり、実機転送を示した研究ではありません。
+- [RMA](https://arxiv.org/abs/2107.04034)（2021）は、training時に得られるfrictionやpayloadなどのprivileged informationをlatent表現へ圧縮し、実行時には直近0.5秒のstate・action履歴からその表現を推定します。Unitree A1へfine-tuningなしで展開しました。ここでいうonline adaptationは、実機上でnetwork weightを再学習することではなく、学習済みadaptation moduleが環境に応じたlatentを更新することです。
+- [Berkeley Humanoid](https://arxiv.org/abs/2407.21781)（2024）は、複雑な閉linkやelastic elementを避け、通信delayを抑え、転倒に耐える小型機を作ることで、simulationを単純にし、軽いdomain randomizationと基本的なMLP policyでも実機転送しやすくする考え方を示します。中国製機体ではありませんが、「高度な学習器」だけでなく「学習しやすいhardware」を設計する比較対象になります。
+
+「なぜ進歩が速くなったか」を先に知りたい場合は、次の順で読むと論点がつながります。
+
+1. Learning to Walk in Minutes：開発cycleを変えた大量並列学習
+2. MIT Cheetahのactuator論文：接触を扱うhardware条件
+3. Hwangboらの2019年論文：actuatorを含むSim-to-Real
+4. Humanoid-Gym：これらを二足歩行のtraining pipelineへ落とす方法
+5. ASAP：特定実機で観測した差を使ってさらに合わせる方法
+
+各論文では、結果だけでなく「機体を変えたか、modelを変えたか、sample数を増やしたか」「ablationで何を外すと崩れるか」を確認します。これにより、hardware、algorithm、計算資源の寄与を分けて読めます。
 
 ## 1. 構造：X1の設計資料から「制御される身体」を読む
 
@@ -178,6 +238,18 @@ OpenLoongとHumanoid-Gymの対応を並べると、違いが見えやすくな�
 ## 3. RL歩行から全身運動へ枝を伸ばす
 
 Humanoid-Gymの後は、解こうとしている問題の違いを意識して読むと整理しやすくなります。
+
+### DeepMimic：motion imitationの出発点を押さえる
+
+[DeepMimic](https://arxiv.org/abs/1804.02717)は、motion captureなどのreferenceを追うimitation objectiveと、目標方向へ歩くといったtask objectiveを組み合わせました。単にposeを再生するのではなく、物理simulation内で外乱から回復し、目的に応じてreferenceから外れる余地を方策に与えます。
+
+本稿では実機humanoidの成果としてではなく、OmniH2O、ASAP、BeyondMimicへ続く「reference motionを物理的に成立するcontrolへ変える」という発想の基盤として位置づけます。
+
+### RMA：観測履歴から環境変化へ適応する
+
+[Rapid Motor Adaptation](https://arxiv.org/abs/2107.04034)（RMA）は、base policyとadaptation moduleを分け、直近のstate・action履歴からfriction、payload、motor strengthなどに応じたlatentを推定します。trainingは全てsimulationで行い、Unitree A1へpolicyのfine-tuningなしで展開しています。
+
+RMAを読むときは、実行時の適応とnetworkのonline学習を区別します。実機上では、学習済みadaptation moduleが10 Hzでlatentを更新し、base policyが100 Hzでjoint targetを出します。weightをその場で更新する方式ではありません。また四足robotの研究なので、二足のbalanceや全身運動へ同じ性能が自動的に移るわけではありません。
 
 ### DWL：観測できない状態を内部で推定する
 
@@ -375,6 +447,8 @@ FootQuery、UniPoint、PRIMOは、demo動画の見た目ではなく、次の比
 
 ## 限界と注意点
 
+- MIT Cheetah、ANYmal、Unitree A1の研究は、actuator、Sim-to-Real、並列学習、適応の基盤を理解する資料です。四足での成功が二足humanoidの性能を直接保証するわけではありません。
+- 本稿は技術資料から進歩の条件を整理したもので、中国に固有の供給網、製造cost、投資、政策の寄与を比較・実証した産業分析ではありません。
 - X1のCADが公開されていても、材料特性、公差、製造条件、firmware、低level制御の全情報が揃うわけではありません。
 - G1の製品仕様と、G1を使うASAPやFootQueryの研究実装を混同してはいけません。
 - OpenLoongは学習しやすい一体的なcodebaseですが、公開されているsimulationと実機controllerの全条件が同一とは限りません。
@@ -386,6 +460,8 @@ FootQuery、UniPoint、PRIMOは、demo動画の見た目ではなく、次の比
 ## まとめ
 
 二足歩行ロボットは、mechanism、controller、estimator、perceptionを別々に読むだけではつながりません。X1のCADでmotorからcontactまでの物理経路を見て、OpenLoongで明示的な力学計算を追い、Humanoid-Gymで同じ問題を観測・action・rewardへ写像すると、両者の共通部分と違いが見えます。
+
+近年の急速な進歩は、RLだけの成果でも、motorだけの成果でもありません。接触に適したactuator、実機の応答を含むsimulation、大量並列学習、環境適応、そして学習しやすい機体設計が積み重なり、実機へ移すまでのiterationが短くなりました。中国系projectの公開model、toolchain、実機研究は、その技術stackが具体的なplatform上で結びついたものとして理解できます。
 
 その上でInEKFからDWL／PRIMOへ進み、elevation mapからFootQuery／UniPointへ進むと、最近の研究が「もっと大きなnetwork」ではなく、**接触に必要なstateと外界情報を、いつ、どのsensorから、どの表現でcontrolへ渡すか**を改善していることが分かります。
 
@@ -401,6 +477,12 @@ FootQuery、UniPoint、PRIMOは、demo動画の見た目ではなく、次の比
 
 ### 制御・Sim-to-Real
 
+- Patrick M. Wensing et al., [Proprioceptive Actuator Design in the MIT Cheetah: Impact Mitigation and High-Bandwidth Physical Interaction for Dynamic Legged Robots](https://dspace.mit.edu/entities/publication/8b15bcc8-c288-43aa-b923-69ce3c13b818), IEEE T-RO, 2017.
+- Xue Bin Peng et al., [DeepMimic: Example-Guided Deep Reinforcement Learning of Physics-Based Character Skills](https://arxiv.org/abs/1804.02717), ACM TOG, 2018.
+- Jemin Hwangbo et al., [Learning Agile and Dynamic Motor Skills for Legged Robots](https://arxiv.org/abs/1901.08652), Science Robotics, 2019.
+- Ashish Kumar et al., [RMA: Rapid Motor Adaptation for Legged Robots](https://arxiv.org/abs/2107.04034), RSS, 2021.
+- Nikita Rudin et al., [Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning](https://arxiv.org/abs/2109.11978), CoRL, 2021.
+- Qiayuan Liao et al., [Berkeley Humanoid: A Research Platform for Learning-based Control](https://arxiv.org/abs/2407.21781), arXiv:2407.21781, 2024.
 - Humanoid Robot (Shanghai) Co., Ltd., [OpenLoong Dynamics Control](https://github.com/loongOpen/OpenLoong-Dyn-Control), 2024–.
 - Xinyang Gu et al., [Humanoid-Gym: Reinforcement Learning for Humanoid Robot with Zero-Shot Sim2Real Transfer](https://arxiv.org/abs/2404.05695), arXiv:2404.05695v2, 2024; [code](https://github.com/roboterax/humanoid-gym).
 - Xinyang Gu et al., [Advancing Humanoid Locomotion: Mastering Challenging Terrains with Denoising World Model Learning](https://arxiv.org/abs/2408.14472), RSS 2024.
