@@ -13,7 +13,7 @@ draft: false
 ---
 
 > **AI利用の明示**
-> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。人間による内容確認はまだ実施していません。導入判断に使う際は原典と自社の要件も確認してください。
+> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。導入判断に使う際は原典と自社の要件も確認してください。
 
 AnthropicのAli ShazalとMatthew Koenが2026年9月2日に公開した「[A guide to the anatomy of effective commerce agents](https://claude.com/blog/the-anatomy-of-effective-commerce-agents)」は、オンラインでの購入・販売を助けるagentを、構成、速度と費用、本番運用の3面から整理した実務ガイドです。**価値は、agentの品質をmodel選択だけで説明せず、既存業務systemへの接続、権限の境界、UI、評価までを一つの設計として示した点**にあります。
 

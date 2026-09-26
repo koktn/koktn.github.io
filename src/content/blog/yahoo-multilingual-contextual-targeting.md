@@ -14,7 +14,7 @@ draft: false
 
 > **AI利用の明示**
 >
-> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。人間による内容確認はまだ実施していません。数値や主張は原論文を確認して記載していますが、利用時は原文も確認してください。
+> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。数値や主張は原論文を確認して記載していますが、利用時は原文も確認してください。
 
 今回取り上げるのは、Yahooの研究チームがKDD 2022で発表した論文「[Multilingual Taxonomic Web Page Classification for Contextual Targeting at Yahoo](https://dl.acm.org/doi/10.1145/3534678.3539189)」です（[PDF](https://dl.acm.org/doi/pdf/10.1145/3534678.3539189?download=true)）。
 

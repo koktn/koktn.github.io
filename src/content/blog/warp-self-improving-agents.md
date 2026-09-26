@@ -12,7 +12,7 @@ draft: false
 ---
 
 > **AI利用の明示**  
-> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。主張と数値は参照元を確認していますが、公開前に原文も確認してください。
+> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。主張と数値は参照元を確認していますが、利用時は原文も確認してください。
 
 今回取り上げるのは、Claude公式blogで2026年8月26日に公開された「[How Warp builds self-improving agents on Claude](https://claude.com/blog/how-warp-builds-self-improving-agents-on-claude)」です。AnthropicのMichael Segner氏が、Warpによるself-improving agentの設計と運用例を紹介しています。
 
