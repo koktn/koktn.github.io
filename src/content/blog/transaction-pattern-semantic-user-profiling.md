@@ -12,7 +12,7 @@ draft: false
 ---
 
 > **AI利用の明示**
-> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。人間による内容確認はまだ実施していません。
+> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。
 
 CyberAgentのRyota Mitsuhashi、Tetsuro Morimura、Hirotake Itoによる[論文](https://arxiv.org/abs/2609.19928)（2026年9月17日公開、arXiv v1、ICDM 2026 Applied Research track採択）は、購買履歴から自然文のユーザー属性を作るLLM処理を、**ユーザーごとではなく複数ユーザーに共通する取引パターンごとに実行する**方法を示します。銀行のように利用者が数千万人規模でも、LLMが読む対象を共有パターンへ圧縮できる点が、この研究の価値です。
 

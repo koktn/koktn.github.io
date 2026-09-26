@@ -14,7 +14,7 @@ draft: false
 
 > **AI利用の明示**
 >
-> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。人間による内容確認はまだ実施していません。数値や主張は原論文を確認して記載していますが、利用時は原文も確認してください。
+> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。数値や主張は原論文を確認して記載していますが、利用時は原文も確認してください。
 
 今回取り上げるのは、Carolina Zhengらが2025年4月2日にarXivへ投稿した「[Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID](https://arxiv.org/abs/2504.02137)」です。Columbia UniversityとMetaの研究者によるpreprintで、Meta Adsのproduction systemへSemantic IDを導入した経験まで報告しています。
 

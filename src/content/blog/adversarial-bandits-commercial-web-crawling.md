@@ -13,7 +13,7 @@ draft: false
 ---
 
 > **AI利用の明示**  
-> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。数値や主張は原論文を確認して記載していますが、人間による内容確認は行っていません。利用時は必ず原論文も確認してください。
+> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。数値や主張は原論文を確認して記載しています。利用時は必ず原論文も確認してください。
 
 今回取り上げるのは、Google ResearchのShuguang HanらがWWW 2020で発表した論文「[Adversarial Bandits Policy for Crawling Commercial Web Content](https://research.google/pubs/adversarial-bandits-policy-for-crawling-commercial-web-content/)」です（[PDF](https://storage.googleapis.com/gweb-research2023-media/pubtools/5512.pdf)、[DOI](https://doi.org/10.1145/3366423.3380125)）。
 

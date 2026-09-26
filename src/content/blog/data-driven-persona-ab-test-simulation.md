@@ -14,7 +14,7 @@ draft: false
 
 > **AI利用の明示**
 >
-> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。人間による内容確認はまだ実施していません。数値や主張は原論文を確認して記載していますが、利用時は原文も確認してください。
+> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。数値や主張は原論文を確認して記載していますが、利用時は原文も確認してください。
 
 今回取り上げるのは、AmazonのZiyad Benomarらによる論文「[Data-Driven Persona-Conditioned Agents for A/B Test Simulation](https://arxiv.org/abs/2609.01038)」です。2026年9月1日にarXiv v1が公開され、EMNLP 2026 Industry Trackに採択されています。[PDFはこちら](https://arxiv.org/pdf/2609.01038)です。
 

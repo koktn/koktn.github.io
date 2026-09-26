@@ -14,7 +14,7 @@ draft: false
 
 > **AI利用の明示**
 >
-> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。人間による内容確認はまだ実施していません。数値や主張は原論文と公開codeを確認して記載していますが、利用時は原文も確認してください。
+> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。数値や主張は原論文と公開codeを確認して記載していますが、利用時は原文も確認してください。
 
 今回取り上げるのは、Yupeng HouらによるKDD 2025論文「[Generating Long Semantic IDs in Parallel for Recommendation](https://arxiv.org/abs/2506.05781)」です。UC San DiegoとMeta AIの研究者が、generative recommendationのSemantic IDを自己回帰せず、一度に並列予測する**RPG（Recommendation with Parallel semantic ID Generation）**を提案しています。
 

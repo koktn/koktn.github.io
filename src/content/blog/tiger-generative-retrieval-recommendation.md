@@ -14,7 +14,7 @@ draft: false
 
 > **AI利用の明示**
 >
-> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。人間による内容確認はまだ実施していません。数値と手法は原論文を確認して記載していますが、利用時は原文も確認してください。
+> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。数値と手法は原論文を確認して記載していますが、利用時は原文も確認してください。
 
 推薦システムの候補検索では、ユーザーと商品をベクトルに変換し、近似最近傍探索（ANN）で商品を探す構成が一般的です。[Shashank Rajputらの「Recommender Systems with Generative Retrieval」](https://arxiv.org/abs/2305.05065)は、商品を短い**Semantic ID**で表し、ユーザーの行動履歴から次に選ばれる商品のIDを生成する**TIGER**（Transformer Index for GEnerative Recommenders）を提案しました。対象はarXiv v3（2023年11月3日改訂）のNeurIPS 2023論文です。
 

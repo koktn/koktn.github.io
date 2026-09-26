@@ -14,7 +14,7 @@ draft: false
 
 > **AI利用の明示**
 >
-> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。人間による内容確認はまだ実施していません。数値や主張は原論文を確認して記載していますが、利用時は原文も確認してください。
+> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。数値や主張は原論文を確認して記載していますが、利用時は原文も確認してください。
 
 今回取り上げるのは、Microsoft AI & ResearchのHongfei Zhangらによる論文「[Generic Intent Representation in Web Search](https://arxiv.org/abs/1907.10710)」です。SIGIR 2019で発表された10ページのconference paperで、arXivには2019年7月24日にv1が公開されています（[PDF](https://arxiv.org/pdf/1907.10710)、[Microsoft Researchの公開ページ](https://www.microsoft.com/en-us/research/publication/generic-intent-representation-in-web-search/)）。
 
