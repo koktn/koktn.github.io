@@ -18,7 +18,7 @@ image: /img/posts/mit-vnav-image-formation.png
 
 MITの講義資料は充実していますが、PDFをiPhoneで読み、英語と数式を行き来しながら学ぶには少し根気が要ります。そこで、[MIT 16.485 Visual Navigation for Autonomous Vehicles（VNAV）の講義資料](https://vnav.mit.edu/lectures.html)を、**スライドを見ながら日本語訳・補足・Notesを読める個人用のモバイル教材**へ変換しました。
 
-完成したのは、講義1〜33とMathematical Preliminariesをまとめた全27トピック、956ページのWebアプリです。ソースコードは[learning-labリポジトリ](https://github.com/koktn/learning-lab/tree/main/examples/vnav-mobile)に置きましたが、変換済み教材は個人学習とtailnet内での閲覧を前提にしています。
+完成したのは、講義1〜33とMathematical Preliminariesをまとめた全27トピック、956ページのWebアプリです。
 
 ![iPhone幅で表示した第11講「Image Formation」。上段に原スライド、下段に日本語解説と投影シミュレーターを表示している](/img/posts/mit-vnav-image-formation.png)
 
@@ -58,24 +58,15 @@ v = fY / Z
 
 講義一覧には、Slidesだけがある回、Notesだけがある回、両方がある回が混在しています。そこで資料の違いを吸収し、1ページずつ共通形式へ変換するPythonスクリプトを作りました。
 
-```text
-講義カタログ
-  ↓ PDFを取得
-SlidesがあればSlides、なければNotesを主教材に選択
-  ↓
-pypdfでページごとの英語テキストを抽出
-  ＋
-pdftoppmで各ページをJPEG化
-  ↓
-関連するNotes候補を付与
-  ↓
-OllamaのローカルLLMで
-タイトル／日本語訳／補足／Notes参照／Notes要約を生成
-  ↓
-ページごとにチェックポイントへ保存
-  ↓
-library.jsonとページ画像をWebアプリから読み込む
-```
+次の図では、PDFから表示用画像とLLMへの入力を並行して作り、生成結果を1ページごとに保存してからWeb教材へまとめる流れを示しています。下段のチェックポイントが、長時間処理を最初からやり直さないための要です。
+
+<figure class="article-figure">
+  <picture>
+    <source media="(max-width: 600px)" srcset="/img/posts/mit-vnav-content-pipeline-mobile.svg">
+    <img src="/img/posts/mit-vnav-content-pipeline.svg" alt="MIT VNAVのPDFをテキスト抽出と画像化に分け、Notes候補を付けて1ページずつ日本語教材へ変換し、チェックポイント経由でWebアプリへ出力する流れ" loading="lazy">
+  </picture>
+  <figcaption>図1：今回実装した教材生成フローを本記事用に整理。入力資料は<a href="https://vnav.mit.edu/lectures.html">MIT 16.485 VNAVのLecture schedule</a>に掲載されたSlidesとNotes。</figcaption>
+</figure>
 
 ### 翻訳はローカルのOllamaへ1ページずつ渡す
 
@@ -157,4 +148,3 @@ Funnelは使っていないので、URLは同じtailnetの端末からだけ開�
 
 - [MIT 16.485 VNAV — Lecture schedule](https://vnav.mit.edu/lectures.html)
 - [Tailscale Serve CLI documentation](https://tailscale.com/docs/reference/tailscale-cli/serve)
-- [learning-lab / VNAV Mobile Study](https://github.com/koktn/learning-lab/tree/main/examples/vnav-mobile)
