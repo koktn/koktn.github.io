@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1120" viewBox="0 0 720 1120" role="img" aria-labelledby="title desc">
+  <title id="title">スマートフォン向けのJev主要結果</title>
+  <desc id="desc">しきい値別F1中央値と、Jevおよび既存API judgeの費用を縦型に比較する。</desc>
+  <rect width="720" height="1120" rx="28" fill="#f7faf8"/>
+  <text x="42" y="60" fill="#17362b" font-family="system-ui, sans-serif" font-size="31" font-weight="750">主要結果</text>
+  <text x="42" y="115" fill="#17362b" font-family="system-ui, sans-serif" font-size="27" font-weight="750">汎用NoulのF1中央値</text>
+  <g font-family="system-ui, sans-serif" font-size="23" fill="#17362b">
+    <text x="50" y="190">しきい値 0.5</text><text x="50" y="285">10件で調整</text><text x="50" y="380">交差検証</text>
+  </g>
+  <rect x="210" y="158" width="339" height="44" rx="10" fill="#8ea9c4"/><text x="565" y="189" fill="#28557f" font-family="system-ui, sans-serif" font-size="24" font-weight="750">0.706</text>
+  <rect x="210" y="253" width="381" height="44" rx="10" fill="#4b9878"/><text x="607" y="284" fill="#1c5b43" font-family="system-ui, sans-serif" font-size="24" font-weight="750">0.793</text>
+  <rect x="210" y="348" width="395" height="44" rx="10" fill="#2f7d5c"/><text x="621" y="379" fill="#1c5b43" font-family="system-ui, sans-serif" font-size="24" font-weight="750">0.822</text>
+  <line x1="42" y1="450" x2="678" y2="450" stroke="#d8e1dd" stroke-width="2"/>
+  <text x="42" y="510" fill="#17362b" font-family="system-ui, sans-serif" font-size="27" font-weight="750">19ベンチマークの費用試算</text>
+  <text x="50" y="590" fill="#17362b" font-family="system-ui, sans-serif" font-size="23">Jev</text>
+  <rect x="175" y="555" width="12" height="48" rx="6" fill="#2f7d5c"/><text x="205" y="588" fill="#1c5b43" font-family="system-ui, sans-serif" font-size="24" font-weight="750">$0.30</text>
+  <text x="50" y="700" fill="#17362b" font-family="system-ui, sans-serif" font-size="23">既存judge</text>
+  <rect x="175" y="665" width="448" height="48" rx="10" fill="#c97028"/><text x="640" y="698" fill="#92511b" font-family="system-ui, sans-serif" font-size="24" font-weight="750">$18.96</text>
+  <line x1="175" y1="750" x2="646" y2="750" stroke="#91a39b" stroke-width="3"/>
+  <g fill="#587067" font-family="system-ui, sans-serif" font-size="20"><text x="175" y="780">$0</text><text x="410" y="780" text-anchor="middle">$10</text><text x="646" y="780" text-anchor="end">$20</text></g>
+  <rect x="42" y="840" width="636" height="205" rx="22" fill="#fff1df"/>
+  <text x="72" y="890" fill="#92511b" font-family="system-ui, sans-serif" font-size="25" font-weight="750">費用比の読み方</text>
+  <text x="72" y="936" fill="#17362b" font-family="system-ui, sans-serif" font-size="22">約63倍は実験時の定価による合算比。</text>
+  <text x="72" y="978" fill="#17362b" font-family="system-ui, sans-serif" font-size="22">全judgeをGPT-4o-mini料金に揃えると、</text>
+  <text x="72" y="1020" fill="#17362b" font-family="system-ui, sans-serif" font-size="22">保守的な試算では約12倍になる。</text>
+</svg>
