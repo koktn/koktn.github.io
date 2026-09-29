@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1450" viewBox="0 0 720 1450" role="img" aria-labelledby="title desc">
+  <title id="title">取引履歴から属性データベースを作る二経路の処理</title>
+  <desc id="desc">生の購入履歴から、単一商品はResolveを、複数商品の組み合わせは独立したFP-Growthを通り、Profileで合流してTagとユーザー集約を経て属性データベースになる。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12Z" fill="#597068"/></marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#17362b" flood-opacity=".11"/></filter>
+  </defs>
+  <style>text{font-size:26px!important}.title{font-size:36px!important}.note{font-size:21px!important}</style>
+  <rect width="720" height="1450" rx="28" fill="#f7faf8"/>
+  <text class="title" x="44" y="62" fill="#17362b" font-family="system-ui, sans-serif" font-size="29" font-weight="750">別経路でProfileへ合流する</text>
+
+  <g filter="url(#shadow)"><rect x="150" y="105" width="420" height="100" rx="20" fill="#ffffff" stroke="#b9c9c2" stroke-width="2"/><text x="360" y="148" text-anchor="middle" fill="#17362b" font-family="system-ui, sans-serif" font-size="25" font-weight="750">生の購入履歴</text><text x="360" y="180" text-anchor="middle" fill="#597068" font-family="system-ui, sans-serif" font-size="19">ユーザー横断の入力</text></g>
+  <path d="M360 205V258" fill="none" stroke="#597068" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <text x="70" y="286" fill="#597068" font-family="system-ui, sans-serif" font-size="18" font-weight="700">経路A：単一商品</text>
+  <g filter="url(#shadow)"><rect x="70" y="305" width="580" height="150" rx="22" fill="#e8f4ee" stroke="#70a18b" stroke-width="2"/><text x="105" y="350" fill="#1d6046" font-family="system-ui, sans-serif" font-size="27" font-weight="750">Resolve</text><text x="105" y="393" fill="#17362b" font-family="system-ui, sans-serif" font-size="21">検索要否 → 根拠取得 → 意味の抽象化</text><text x="105" y="427" fill="#597068" font-family="system-ui, sans-serif" font-size="18">商品ごとに推論入力を整える</text></g>
+  <path d="M360 455V502" fill="none" stroke="#597068" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <text x="70" y="530" fill="#597068" font-family="system-ui, sans-serif" font-size="18" font-weight="700">経路B：複数商品（生データから独立実行）</text>
+  <g filter="url(#shadow)"><rect x="70" y="550" width="580" height="150" rx="22" fill="#fff1df" stroke="#d9a05d" stroke-width="2"/><text x="105" y="595" fill="#91511c" font-family="system-ui, sans-serif" font-size="27" font-weight="750">FP-Growth</text><text x="105" y="638" fill="#17362b" font-family="system-ui, sans-serif" font-size="21">頻出する同時購入の組み合わせを抽出</text><text x="105" y="672" fill="#597068" font-family="system-ui, sans-serif" font-size="18">Resolveとは独立した非LLM処理</text></g>
+  <path d="M360 700V748" fill="none" stroke="#597068" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <g filter="url(#shadow)"><rect x="70" y="775" width="580" height="260" rx="24" fill="#eaf0f8" stroke="#7596bc" stroke-width="2"/><text x="105" y="820" fill="#2a5680" font-family="system-ui, sans-serif" font-size="27" font-weight="780">Profile：LLM 1回／パターン</text><rect x="105" y="850" width="510" height="48" rx="12" fill="#ffffff"/><text x="130" y="881" fill="#17362b" font-family="system-ui, sans-serif" font-size="20">固定選択式属性</text><rect x="105" y="910" width="510" height="48" rx="12" fill="#ffffff"/><text x="130" y="941" fill="#17362b" font-family="system-ui, sans-serif" font-size="20">自由記述式属性</text><rect x="105" y="970" width="510" height="48" rx="12" fill="#ffffff"/><text x="130" y="1001" fill="#17362b" font-family="system-ui, sans-serif" font-size="20">属性別の事前スコア π(d)</text></g>
+  <path d="M360 1035V1080" fill="none" stroke="#597068" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <g filter="url(#shadow)"><rect x="70" y="1105" width="580" height="130" rx="22" fill="#f0eafa" stroke="#9b80be" stroke-width="2"/><text x="105" y="1150" fill="#633f8d" font-family="system-ui, sans-serif" font-size="27" font-weight="750">Tag：検索語彙へまとめる</text><text class="note" x="105" y="1194" fill="#17362b" font-family="system-ui, sans-serif" font-size="20">埋め込み → UMAP → HDBSCAN → タグ命名</text></g>
+  <path d="M360 1235V1280" fill="none" stroke="#597068" stroke-width="4" marker-end="url(#arrow)"/>
+  <g filter="url(#shadow)"><rect x="70" y="1305" width="580" height="100" rx="22" fill="#2f7d5c"/><text x="360" y="1347" text-anchor="middle" fill="#ffffff" font-family="system-ui, sans-serif" font-size="25" font-weight="780">ユーザーへ集約した属性DB</text><text x="360" y="1380" text-anchor="middle" fill="#e6f4ed" font-family="system-ui, sans-serif" font-size="18">固定属性 ＋ タグ ＋ 属性別スコア</text></g>
+  <text class="note" x="44" y="1432" fill="#597068" font-family="system-ui, sans-serif" font-size="15">経路AとBは、読みやすさのため縦に配置。</text>
+</svg>

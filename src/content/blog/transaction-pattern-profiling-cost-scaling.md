@@ -2,7 +2,7 @@
 title: 「誰を推測するか」から「購入の意味」へ――銀行規模のLLMプロファイリング
 description: ユーザー単位のLLM推論を取引パターン単位へ置き換え、検索可能な属性データベースを構築する研究を、手法、評価、実運用、再現性から解説します。
 publishedAt: 2026-09-25
-updatedAt: 2026-09-25
+updatedAt: 2026-09-29
 category: AI
 tags:
   - LLM
@@ -59,24 +59,15 @@ draft: false
 
 論文上のパイプラインは、商品や取引先の意味を整えるResolve、属性を生成するProfile、自由文を検索可能な語彙へまとめるTagで構成されます。
 
-```text
-取引履歴
-  ├─ Resolve: 商品名を解釈し、属性推論に必要な意味へ抽象化
-  │       ↓
-  │   単一商品の推論入力
-  │
-  └─ 頻出パターン抽出: 同時購入された商品の組み合わせを抽出
-          ↓
-      複数商品の推論入力
-          ↓
-Profile: パターンごとに固定属性・自由文属性・事前スコアを生成
-          ↓
-Tag: 自由文属性をクラスタ化してタグを付与
-          ↓
-パターンの結果をユーザーへ集約した属性データベース
-```
+<figure class="article-figure">
+  <picture>
+    <source media="(max-width: 600px)" srcset="/img/posts/transaction-pattern-pipeline-mobile.svg">
+    <img src="/img/posts/transaction-pattern-pipeline.svg" alt="生の購入履歴から単一商品はResolve、複数商品の組み合わせは独立したFP-Growthを経てProfileへ合流し、Tagとユーザー集約を通って属性データベースになる処理" loading="lazy">
+  </picture>
+  <figcaption>図1：公開実装における単一商品と複数商品の処理経路。<a href="https://arxiv.org/html/2609.19928#S4">原論文§IV</a>と<a href="https://github.com/CyberAgentAILab/profiling-agent-open-ecommerce#pipeline">公式実装README</a>の記述を基に本記事用に整理した独自図（原図の転載ではない）。</figcaption>
+</figure>
 
-この図では、単一商品と複数商品の二つの経路を分けています。論文の概念説明ではResolve・Profile・Tagという3段階に整理されていますが、**公式実装の頻出組み合わせ抽出はResolveの後に直列実行されるわけではありません**。生の購入データからFP-Growthで独立して実行され、事前計算した組み合わせをProfile相当の`predict_user`段階が読み込みます。単一商品はResolve系の処理を通り、複数商品パターンは別経路から合流します。
+図1で見るべき点は、左側の入力から二つの経路へ分かれ、Profileで合流するところです。論文の概念説明ではResolve・Profile・Tagという3段階に整理されていますが、**公式実装の頻出組み合わせ抽出はResolveの後に直列実行されるわけではありません**。生の購入データからFP-Growthで独立して実行され、事前計算した組み合わせをProfile相当の`predict_user`段階が読み込みます。単一商品はResolve系の処理を通り、複数商品パターンは別経路から合流します。
 
 ### Resolve：推論前に商品の意味を整える
 
@@ -112,6 +103,16 @@ Profileでは、単一商品に加え、複数ユーザーに出現する商品�
 
 1人のユーザーは複数の商品・取引パターンに一致するため、パターンごとの出力が食い違うことがあります。論文の固定属性評価では、属性の性質に合わせて次の規則を使い分けます。
 
+<figure class="article-figure">
+  <picture>
+    <source media="(max-width: 600px)" srcset="/img/posts/pattern-to-user-aggregation-mobile.svg">
+    <img src="/img/posts/pattern-to-user-aggregation.svg" alt="転居をOR、年齢と収入を階級代表値の加重中央値、性別と教育を最頻値でユーザー属性へ集約する三つの規則" loading="lazy">
+  </picture>
+  <figcaption>図2：固定属性をパターンからユーザーへ集約する3種類の規則。<a href="https://arxiv.org/html/2609.19928#S5.SS1">原論文§V-A</a>を基に本記事用に整理。図中の属性値は仕組みを示す仮想例であり、論文の実験データではない。</figcaption>
+</figure>
+
+図2の緑色の結果欄を見ると、同じパターン出力でも、転居は一件の陽性を拾い、性別・教育は多数派へ寄せることが分かります。年齢・収入は順序のある階級なので、単純な多数決ではなく、階級代表値を並べた加重中央値を使います。
+
 | 属性 | パターンからユーザーへの集約 | 競合した場合の意味 |
 | --- | --- | --- |
 | 転居 | OR | 一つでも「転居あり」のパターンがあれば陽性とする |
@@ -129,6 +130,16 @@ Profileでは、単一商品に加え、複数ユーザーに出現する商品�
 評価には[Open E-Commerce 1.0](https://doi.org/10.1038/s41597-024-03329-6)が使われています。Amazonの購入履歴と自己申告アンケートを組み合わせたデータセットで、約5,027人、約185万件の購入、97,801商品を含みます。商品を3人以上が購入していることなどの絞り込み後、固定属性の評価には4,990人、タグを用いる評価には3,781人が使われました。
 
 論文の中心的な問いは、属性データベースへ圧縮した後も、生の履歴が持つ情報を保てるかです。ただし、固定属性とタグ属性では、評価時のLLMの使い方が異なります。
+
+<figure class="article-figure">
+  <picture>
+    <source media="(max-width: 600px)" srcset="/img/posts/profiling-evaluation-design-mobile.svg">
+    <img src="/img/posts/profiling-evaluation-design.svg" alt="固定属性評価では生履歴側だけにLLMを使い、タグ属性評価では生履歴と属性データベースの両方に同じLLM評価役を使う実験設計" loading="lazy">
+  </picture>
+  <figcaption>図3：固定属性評価とタグ属性評価におけるLLM利用の違い。<a href="https://arxiv.org/html/2609.19928#S5">原論文§V</a>を基に本記事用に整理した独自図。</figcaption>
+</figure>
+
+図3の上段では、属性データベース側にLLMがありません。下段では二つの入力が同じLLM評価役へ入り、入力表現以外の条件をそろえています。この非対称・対称の違いを押さえると、次の表と結果を読み違えにくくなります。
 
 | 評価 | 対象属性 | 生履歴側 | 属性DB側 | 指標 |
 | --- | --- | --- | --- | --- |
