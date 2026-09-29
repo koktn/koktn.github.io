@@ -62,15 +62,95 @@ retrievalでは、履歴から次にpositive actionを得るcontentの分布を�
 
 ## HSTUはTransformerと何が違うのか
 
-HSTUは、同じlayerをresidual connectionで積み重ねるcausalなsequence encoderです。各layerは大きく3段に分かれます。
+HSTUは、同じlayerをresidual connectionで積み重ねるcausalなsequence encoderです。論文のFigure 3は、左に従来のDLRM、右に3層だけ描いたHSTUを並べています。左側ではfeature extraction、feature interaction、表現変換を別々のmoduleが担当します。右側では、同じHSTU layerを繰り返して3つの役割をまとめます。
 
-1. 入力から `U`、`V`、`Q`、`K` を一度にprojectする
-2. `QKᵀ`、位置・時間のrelative bias、`V`から履歴をaggregateする
-3. aggregate結果をnormalizeし、`U`との要素積でgateして出力へprojectする
+![論文Figure 3。左側ではDLRMが数値・カテゴリfeatureの抽出、feature interaction、表現変換を別moduleで処理し、右側ではHSTU layerを積み重ねて処理する](/img/posts/hstu-dlrm-gr-figure-3.png)
 
-通常のTransformerと比べた中核的な違いは、attention weightをsequence全体のsoftmaxで正規化せず、SiLUを使った**pointwise aggregated attention**にしたことです。
+*出典：Jiaqi Zhai et al., [Actions Speak Louder than Words: Trillion-Parameter Sequential Transducers for Generative Recommendations, Figure 3](https://arxiv.org/pdf/2402.17152#page=4)。原図からFigure 3を切り出して掲載。画像部分は[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)です。*
 
-softmaxは各行のweight総和を1にするため、関連する行動が増えても「どの履歴を相対的に重く見るか」は表現できる一方、関連行動が何件あったかという強度を薄める可能性があります。推薦では、特定topicを1回見た人と100回見た人の違いが重要です。HSTUはpointwiseにweightを作り、集約後のlayer normalizationで学習を安定させます。位置と経過時間をrelative attention biasへ含めるため、順序だけでなく時間間隔も扱えます。
+1 layerの処理を先に一本のflowへすると、次のようになります。
+
+```text
+入力 X（N個のtoken × d次元）
+  ↓ 1つのlinear projection + SiLU
+大きなtensorを U, V, Q, K に分割
+  ↓
+QKᵀ + 位置・時間bias → SiLU → attention weight A
+  ↓
+A × V → 履歴から集めたcontext
+  ↓
+LayerNorm(context) ⊙ U → f₂でd次元へ戻す
+  ↓
+元の入力をresidual connectionで加えて次のlayerへ
+```
+
+ここで `X` は、長さ `N` のsequenceを `d` 次元vectorで表した行列です。1行が「ある時刻に表示されたcontent」「そのときのaction」「途中へmergeした属性」など、1 tokenに対応します。HSTU layerは、各tokenが過去のどのtokenを参照し、何を受け取り、その情報を出力のどの成分へ通すかを計算します。
+
+### 1. U、V、Q、Kは同じ入力を見る4つの役割
+
+最初に `X` をlearnableなlinear layer `f₁`へ通し、SiLUを適用します。その大きな出力tensorを4つに分割したものが `U`、`V`、`Q`、`K`です。「同じvectorを4個copyする」のではなく、学習された異なる重みにより、同じ入力から役割別の表現を一度に作ります。
+
+| 記号 | 役割 | 直感的な読み方 |
+| --- | --- | --- |
+| `Q`（query） | 現在位置が過去から探したい情報を表す | 「この候補を判断するため、何を知りたいか」 |
+| `K`（key） | 各履歴tokenが何に関係するかを表す | 「この履歴は何についての情報か」 |
+| `V`（value） | 選ばれた履歴から実際に運ぶ内容を表す | 「参照されたとき、何を渡すか」 |
+| `U`（gate） | 集めた情報を出力の成分ごとに通す量を決める | 「この位置では、どの情報を効かせるか」 |
+
+`Q`、`K`、`V`はTransformerとほぼ同じ役割です。`U`はHSTUの特徴で、attention後の出力を制御するgateです。論文のshapeでは、`Q`と`K`は `h × N × d_qk`、`U`と`V`は `h × N × d_v`です。`h`はattention head数で、複数の観点から同じsequenceを見るための軸です。
+
+4種類を別々のlayerで順番に計算するのではなく、`f₁(X)`という1回の大きなprojectionにまとめてからsplitするのは、GPU上で計算をbatch化・fuseしやすくするためです。
+
+### 2. QKᵀで「どの履歴を見るか」を決める
+
+現在位置 `i` のquery `Qᵢ`と、履歴位置 `j` のkey `Kⱼ`のdot productを取ると、両者の関連度を表すscoreが得られます。そこへ、sequence上の距離と実時間の差を表すrelative attention biasを足します。
+
+```text
+score(i, j) = Qᵢ · Kⱼ + position_bias(i, j) + time_bias(i, j)
+```
+
+たとえば同じ「ランニングシューズを見た」という行動でも、5分前と半年前では次の推薦への効き方を変えられます。sequence上で何token離れているかだけでなく、実際の経過時間もbiasに入れるのが推薦向けの設計です。causal maskがあるため、位置 `i` から未来のtokenは見えません。ranking候補を履歴の末尾へ置けば、その候補は自分より前の行動だけを参照できます。
+
+通常のTransformerは、各queryについてscoreをsoftmaxへ通し、履歴全体のweight合計を1にします。HSTUは代わりに各scoreへSiLUを個別適用します。
+
+```text
+Aᵢⱼ = SiLU(score(i, j))
+contextᵢ = Σⱼ Aᵢⱼ Vⱼ
+```
+
+したがって `Aᵢⱼ` は合計1の確率ではありません。あるtopicに関係する履歴が増えれば、対応するvalueが複数回足し合わされます。softmaxは「10件の中でどれが最重要か」を表しやすい一方、1件しかない人と100件ある人でもweight総和は1です。HSTUがpointwise aggregationを使う狙いは、推薦で重要な**興味の相対順位だけでなく、関連行動がどれだけ蓄積したかという強度も残すこと**です。
+
+この仕組みはscoreの規模がsequence長や履歴内容によって変わりやすいため、`A × V`でcontextを作った後にLayerNormを入れて学習を安定させます。論文では、このLayerNormがpointwise pooling後に必要だとしています。
+
+### 3. Uでcontextをgateし、次のlayerへ渡す
+
+履歴から得たcontextをnormalizeした後、同じ位置の `U`と要素ごとに掛けます。
+
+```text
+Zᵢ = LayerNorm(contextᵢ) ⊙ Uᵢ
+Yᵢ = f₂(Zᵢ)
+```
+
+`⊙`はvectorの要素ごとの積です。`Uᵢ`は履歴tokenを選ぶweightではなく、**集約済みcontextの各channelを開閉するgate**です。たとえばcontextに「ブランド」「価格帯」「カテゴリ」「直近性」に対応する成分があるなら、現在の候補やuser stateに応じて、必要な成分を強く通し、不要な成分を弱めるイメージです。これは厳密に各channelが人間の概念へ対応するという意味ではなく、gateの働きを理解するための比喩です。
+
+最後に `f₂`がmulti-headの出力をmodel次元 `d`へ戻します。通常のTransformerはattentionの後に大きなfeed-forward networkを持ちますが、HSTUは `U`によるgateと `f₂`で表現変換を担い、独立したfeed-forward blockを使いません。論文は `LayerNorm(A × V) ⊙ U`をSwiGLUのvariantとして解釈でき、従来DLRMのMixture of Expertsに近い条件付き計算も要素積で表現できると説明しています。
+
+Figure 3の`Add&Norm`はresidual connectionです。layerが作った `Y(X)`だけで入力を上書きせず、元の `X`を足してnormalizeしてから次のlayerへ渡します。これにより、元のtoken情報を残しながら、layerを重ねるごとにより長い履歴とのinteractionを追加できます。
+
+### 具体例：シューズ候補をrankingする場合
+
+ユーザー履歴の末尾へ「新しいランニングシューズ」という候補を置いた場合を考えます。
+
+1. 候補位置の `Q`が「この候補と関係する過去のsignal」を探す。
+2. 過去のシューズ閲覧、スポーツ用品購入、skipなどの `K`との関連度を計算する。
+3. 位置・時間biasにより、直近の行動と古い行動の効き方を調整する。
+4. 関連度を使って、それぞれの履歴が持つ `V`を足し合わせる。
+5. 候補位置の `U`が、集めたcontextのうち今回の予測へ通す成分を調整する。
+6. `f₂`とresidual connectionを経て、次のHSTU layerまたは予測headへ渡す。
+
+この処理を複数layerで繰り返すことで、「この候補と直前の1行動」の関係だけでなく、複数の行動や属性を組み合わせたpatternを表現します。
+
+通常のTransformerと比べた中核的な違いは、attention weightをsequence全体のsoftmaxで正規化せず、SiLUを使った**pointwise aggregated attention**にしたことです。位置と経過時間をrelative attention biasへ含めるため、順序だけでなく時間間隔も扱えます。
 
 非定常なvocabularyを模したsynthetic streaming dataでは、HR@10が標準Transformerの `0.0442`、softmax版HSTUの `0.0617`、pointwise版HSTUの `0.0893`でした。pointwise版はsoftmax版より**44.7%の相対改善**ですが、これは合成data上のablationであり、production全体における単独効果ではありません。[論文Table 2](https://arxiv.org/pdf/2402.17152#page=5)
 
