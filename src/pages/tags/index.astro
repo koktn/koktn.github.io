@@ -1,18 +1,308 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { isPublished, taxonomySlug } from '../../utils/posts';
+import { isPublished, postPath, sortPosts, taxonomySlug } from '../../utils/posts';
 
-const posts = (await getCollection('blog')).filter(isPublished);
+const posts = sortPosts((await getCollection('blog')).filter(isPublished));
 const names = [...new Set(posts.flatMap((post) => post.data.tags))];
+
 const tags = names
-  .map((name) => ({ name, count: posts.filter((post) => post.data.tags.includes(name)).length }))
-  .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+  .map((name) => {
+    const taggedPosts = posts.filter((post) => post.data.tags.includes(name));
+    const relatedCounts = new Map<string, number>();
+
+    for (const post of taggedPosts) {
+      for (const relatedName of post.data.tags) {
+        if (relatedName === name) continue;
+        relatedCounts.set(relatedName, (relatedCounts.get(relatedName) ?? 0) + 1);
+      }
+    }
+
+    const related = [...relatedCounts]
+      .map(([relatedName, count]) => ({
+        name: relatedName,
+        count,
+        slug: taxonomySlug(relatedName),
+      }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'ja'))
+      .slice(0, 8);
+
+    return {
+      name,
+      slug: taxonomySlug(name),
+      count: taggedPosts.length,
+      related,
+      posts: taggedPosts.slice(0, 2).map((post) => ({
+        title: post.data.title,
+        path: postPath(post),
+      })),
+    };
+  })
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'ja'));
+
+const maxCount = Math.max(1, ...tags.map((tag) => tag.count));
+const initialTag = tags[0];
 ---
 
-<BaseLayout title="タグ" description="記事タグの一覧">
-  <header class="page-header page-width"><p class="eyebrow">Index</p><h1>タグ</h1></header>
-  <ul class="taxonomy-cloud page-width">
-    {tags.map(({ name, count }) => <li><a href={`/tags/${taxonomySlug(name)}/`}><span>#{name}</span><small>{count}件</small></a></li>)}
-  </ul>
+<BaseLayout title="タグ" description="キーワードのつながりから記事を探せるタグ一覧">
+  <header class="page-header tag-page-header page-width">
+    <p class="eyebrow">Explore</p>
+    <div class="tag-page-heading">
+      <div>
+        <h1>タグを探索</h1>
+        <p>気になる言葉から、記事とテーマのつながりをたどれます。</p>
+      </div>
+      <dl class="tag-overview" aria-label="タグ一覧の概要">
+        <div><dt>Tags</dt><dd>{tags.length}</dd></div>
+        <div><dt>Articles</dt><dd>{posts.length}</dd></div>
+      </dl>
+    </div>
+  </header>
+
+  <section class="tag-explorer page-width" data-tag-explorer>
+    <div class="tag-toolbar">
+      <label class="tag-search">
+        <span class="visually-hidden">タグを検索</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+        <input type="search" placeholder="タグを検索" autocomplete="off" data-tag-search />
+      </label>
+
+      <div class="tag-sort" role="group" aria-label="タグの並び順">
+        <button type="button" class="is-active" aria-pressed="true" data-tag-sort="popular">人気順</button>
+        <button type="button" aria-pressed="false" data-tag-sort="name">名前順</button>
+      </div>
+
+      <button type="button" class="tag-random" data-tag-random>
+        <span aria-hidden="true">✦</span> 気まぐれに探索
+      </button>
+    </div>
+
+    <p class="tag-result-count" data-tag-result aria-live="polite">{tags.length}個のタグ</p>
+
+    <div class="tag-map" data-tag-map>
+      <svg class="tag-relations" aria-hidden="true" data-tag-relations></svg>
+      <ul class="tag-constellation" data-tag-list>
+        {tags.map((tag) => {
+          const weight = maxCount === 1 ? 0.5 : (tag.count - 1) / (maxCount - 1);
+          return (
+            <li
+              data-tag-item
+              data-name={tag.name}
+              data-slug={tag.slug}
+              data-count={tag.count}
+              data-detail={JSON.stringify(tag)}
+              style={`--tag-weight: ${weight};`}
+            >
+              <a href={`/tags/${tag.slug}/`} data-tag-link>
+                <span>#{tag.name}</span>
+                <small>{tag.count}</small>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+      <p class="tag-empty" data-tag-empty hidden>一致するタグがありません。</p>
+    </div>
+
+    {initialTag && (
+      <aside class="tag-inspector" data-tag-inspector>
+        <div class="tag-inspector-main">
+          <p class="eyebrow">Focused tag</p>
+          <h2 data-inspector-name>#{initialTag.name}</h2>
+          <p><strong data-inspector-count>{initialTag.count}</strong>件の記事</p>
+          <a class="tag-inspector-link" href={`/tags/${initialTag.slug}/`} data-inspector-link>
+            すべて見る <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <div class="tag-inspector-group">
+          <h3>関連するタグ</h3>
+          <ul class="tag-related-list" data-inspector-related>
+            {initialTag.related.slice(0, 4).map((tag) => (
+              <li><a href={`/tags/${tag.slug}/`}>#{tag.name}</a><small>共起 {tag.count}回</small></li>
+            ))}
+          </ul>
+        </div>
+        <div class="tag-inspector-group">
+          <h3>新しい記事</h3>
+          <ul class="tag-article-list" data-inspector-posts>
+            {initialTag.posts.map((post) => <li><a href={post.path}>{post.title}</a></li>)}
+          </ul>
+        </div>
+      </aside>
+    )}
+  </section>
+
+  <script>
+    type TagDetail = {
+      name: string;
+      slug: string;
+      count: number;
+      related: { name: string; slug: string; count: number }[];
+      posts: { title: string; path: string }[];
+    };
+
+    const explorer = document.querySelector<HTMLElement>('[data-tag-explorer]');
+
+    if (explorer) {
+      const list = explorer.querySelector<HTMLElement>('[data-tag-list]');
+      const map = explorer.querySelector<HTMLElement>('[data-tag-map]');
+      const relationSvg = explorer.querySelector<SVGSVGElement>('[data-tag-relations]');
+      const search = explorer.querySelector<HTMLInputElement>('[data-tag-search]');
+      const result = explorer.querySelector<HTMLElement>('[data-tag-result]');
+      const empty = explorer.querySelector<HTMLElement>('[data-tag-empty]');
+      const inspector = explorer.querySelector<HTMLElement>('[data-tag-inspector]');
+      const randomButton = explorer.querySelector<HTMLButtonElement>('[data-tag-random]');
+      const sortButtons = [...explorer.querySelectorAll<HTMLButtonElement>('[data-tag-sort]')];
+      const items = [...explorer.querySelectorAll<HTMLElement>('[data-tag-item]')];
+      const collator = new Intl.Collator('ja');
+      let selected: HTMLElement | null = items[0] ?? null;
+      let active: HTMLElement | null = selected;
+
+      const normalize = (value: string) => value.normalize('NFKC').toLocaleLowerCase('ja');
+
+      const getDetail = (item: HTMLElement): TagDetail =>
+        JSON.parse(item.dataset.detail ?? '{}') as TagDetail;
+
+      const renderInspector = (item: HTMLElement) => {
+        if (!inspector) return;
+        const detail = getDetail(item);
+        const name = inspector.querySelector<HTMLElement>('[data-inspector-name]');
+        const count = inspector.querySelector<HTMLElement>('[data-inspector-count]');
+        const link = inspector.querySelector<HTMLAnchorElement>('[data-inspector-link]');
+        const relatedList = inspector.querySelector<HTMLElement>('[data-inspector-related]');
+        const postList = inspector.querySelector<HTMLElement>('[data-inspector-posts]');
+
+        if (name) name.textContent = `#${detail.name}`;
+        if (count) count.textContent = String(detail.count);
+        if (link) link.href = `/tags/${detail.slug}/`;
+
+        if (relatedList) {
+          relatedList.replaceChildren(...detail.related.slice(0, 4).map((related) => {
+            const item = document.createElement('li');
+            const anchor = document.createElement('a');
+            const meta = document.createElement('small');
+            anchor.href = `/tags/${related.slug}/`;
+            anchor.textContent = `#${related.name}`;
+            meta.textContent = `共起 ${related.count}回`;
+            item.append(anchor, meta);
+            return item;
+          }));
+        }
+
+        if (postList) {
+          postList.replaceChildren(...detail.posts.map((post) => {
+            const item = document.createElement('li');
+            const anchor = document.createElement('a');
+            anchor.href = post.path;
+            anchor.textContent = post.title;
+            item.append(anchor);
+            return item;
+          }));
+        }
+      };
+
+      const drawRelations = () => {
+        if (!map || !relationSvg || !active || active.hidden) return;
+        const detail = getDetail(active);
+        const mapRect = map.getBoundingClientRect();
+        const sourceRect = active.getBoundingClientRect();
+        const source = {
+          x: sourceRect.left - mapRect.left + sourceRect.width / 2,
+          y: sourceRect.top - mapRect.top + sourceRect.height / 2,
+        };
+
+        relationSvg.setAttribute('viewBox', `0 0 ${mapRect.width} ${mapRect.height}`);
+        relationSvg.replaceChildren(...detail.related.flatMap((related) => {
+          const target = items.find((item) => item.dataset.slug === related.slug && !item.hidden);
+          if (!target) return [];
+          const targetRect = target.getBoundingClientRect();
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', String(source.x));
+          line.setAttribute('y1', String(source.y));
+          line.setAttribute('x2', String(targetRect.left - mapRect.left + targetRect.width / 2));
+          line.setAttribute('y2', String(targetRect.top - mapRect.top + targetRect.height / 2));
+          line.setAttribute('data-strength', String(Math.min(related.count, 3)));
+          return [line];
+        }));
+      };
+
+      const activate = (item: HTMLElement | null, updateDetails = true) => {
+        active = item;
+        for (const tag of items) tag.classList.remove('is-active', 'is-related', 'is-dimmed');
+
+        if (!item) {
+          relationSvg?.replaceChildren();
+          return;
+        }
+
+        const relatedSlugs = new Set(getDetail(item).related.map((tag) => tag.slug));
+        item.classList.add('is-active');
+        for (const tag of items) {
+          if (tag === item || tag.hidden) continue;
+          tag.classList.add(relatedSlugs.has(tag.dataset.slug ?? '') ? 'is-related' : 'is-dimmed');
+        }
+        if (updateDetails) renderInspector(item);
+        requestAnimationFrame(drawRelations);
+      };
+
+      const visibleItems = () => items.filter((item) => !item.hidden);
+
+      const filterItems = () => {
+        const query = normalize(search?.value.trim() ?? '');
+        for (const item of items) item.hidden = !normalize(item.dataset.name ?? '').includes(query);
+        const visible = visibleItems();
+        if (result) result.textContent = query ? `${visible.length} / ${items.length}個のタグ` : `${items.length}個のタグ`;
+        if (empty) empty.hidden = visible.length !== 0;
+        if (inspector) inspector.hidden = visible.length === 0;
+        if (!selected || selected.hidden) selected = visible[0] ?? null;
+        activate(selected);
+      };
+
+      const sortItems = (mode: string) => {
+        const sorted = [...items].sort((a, b) => {
+          if (mode === 'popular') {
+            const countDifference = Number(b.dataset.count) - Number(a.dataset.count);
+            if (countDifference) return countDifference;
+          }
+          return collator.compare(a.dataset.name ?? '', b.dataset.name ?? '');
+        });
+        for (const item of sorted) list?.append(item);
+        for (const button of sortButtons) {
+          const pressed = button.dataset.tagSort === mode;
+          button.classList.toggle('is-active', pressed);
+          button.setAttribute('aria-pressed', String(pressed));
+        }
+        requestAnimationFrame(drawRelations);
+      };
+
+      for (const item of items) {
+        const link = item.querySelector<HTMLAnchorElement>('[data-tag-link]');
+        item.addEventListener('pointerenter', () => {
+          selected = item;
+          activate(item);
+        });
+        item.addEventListener('pointerleave', () => activate(selected));
+        link?.addEventListener('focus', () => {
+          selected = item;
+          activate(item);
+        });
+      }
+
+      search?.addEventListener('input', filterItems);
+      for (const button of sortButtons) {
+        button.addEventListener('click', () => sortItems(button.dataset.tagSort ?? 'popular'));
+      }
+      randomButton?.addEventListener('click', () => {
+        const visible = visibleItems();
+        if (!visible.length) return;
+        selected = visible[Math.floor(Math.random() * visible.length)];
+        selected.querySelector<HTMLAnchorElement>('[data-tag-link]')?.focus({ preventScroll: true });
+        activate(selected);
+      });
+
+      const resizeObserver = new ResizeObserver(() => requestAnimationFrame(drawRelations));
+      if (map) resizeObserver.observe(map);
+      activate(selected, false);
+    }
+  </script>
 </BaseLayout>

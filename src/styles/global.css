@@ -64,6 +64,7 @@
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
   ::selection { background: var(--accent-soft); }
   .page-width { width: var(--page); margin-inline: auto; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; margin: -1px; padding: 0; border: 0; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 
 @layer components {
@@ -149,6 +150,62 @@
   .taxonomy-cloud a:hover { transform: translateY(-2px); border-color: var(--accent); }
   .taxonomy-cloud small { color: var(--muted); }
 
+  .tag-page-header { padding-bottom: 42px; }
+  .tag-page-heading { display: flex; align-items: end; justify-content: space-between; gap: 48px; }
+  .tag-page-heading > div > p { max-width: 560px; margin-top: 18px; color: var(--muted); }
+  .tag-overview { display: flex; gap: 36px; margin: 0; }
+  .tag-overview div { min-width: 72px; }
+  .tag-overview dt { color: var(--muted); font-size: .7rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+  .tag-overview dd { margin: 2px 0 0; font-size: 1.75rem; font-weight: 750; line-height: 1.2; letter-spacing: -.04em; }
+  .tag-explorer { padding-block: 28px 96px; }
+  .tag-toolbar { display: grid; grid-template-columns: minmax(220px, 1fr) auto auto; align-items: center; gap: 12px; }
+  .tag-search { position: relative; display: block; }
+  .tag-search svg { position: absolute; top: 50%; left: 16px; width: 18px; fill: none; stroke: var(--muted); stroke-linecap: round; stroke-width: 1.8; transform: translateY(-50%); pointer-events: none; }
+  .tag-search input { width: 100%; min-height: 46px; padding: 10px 16px 10px 46px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); color: var(--text); outline: none; }
+  .tag-search input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+  .tag-search input::placeholder { color: var(--muted); }
+  .tag-sort { display: flex; padding: 4px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); }
+  .tag-sort button, .tag-random { min-height: 38px; border: 0; color: var(--muted); font-size: .82rem; font-weight: 700; cursor: pointer; }
+  .tag-sort button { padding: 6px 13px; border-radius: 99px; background: transparent; }
+  .tag-sort button.is-active { background: var(--accent-soft); color: var(--accent); }
+  .tag-random { min-height: 46px; padding: 9px 17px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); }
+  .tag-random:hover { border-color: var(--accent); color: var(--accent); }
+  .tag-random span { margin-right: 4px; color: var(--accent); }
+  .tag-result-count { margin: 18px 4px 0; color: var(--muted); font-size: .78rem; }
+  .tag-map { position: relative; min-height: 300px; margin-top: 10px; overflow: hidden; border: 1px solid var(--line); border-radius: 24px; background-color: var(--surface); background-image: radial-gradient(circle, color-mix(in srgb, var(--accent) 24%, transparent) 1px, transparent 1px); background-size: 28px 28px; isolation: isolate; }
+  .tag-map::before, .tag-map::after { position: absolute; z-index: -1; width: 280px; height: 280px; border-radius: 50%; background: color-mix(in srgb, var(--accent-soft) 68%, transparent); filter: blur(4px); content: ''; }
+  .tag-map::before { top: -180px; right: 8%; }
+  .tag-map::after { bottom: -210px; left: 12%; }
+  .tag-relations { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  .tag-relations line { stroke: color-mix(in srgb, var(--accent) 34%, transparent); stroke-linecap: round; stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .tag-relations line[data-strength='2'] { stroke-width: 1.5; }
+  .tag-relations line[data-strength='3'] { stroke-width: 2; }
+  .tag-constellation { position: relative; z-index: 1; display: flex; min-height: 300px; flex-wrap: wrap; align-content: center; align-items: center; justify-content: center; gap: 12px 14px; margin: 0; padding: clamp(38px, 7vw, 76px); list-style: none; }
+  .tag-constellation li { --scale: calc(.92 + var(--tag-weight) * .16); transform: scale(var(--scale)); transition: opacity .2s ease, filter .2s ease, transform .2s ease; }
+  .tag-constellation a { display: inline-flex; min-height: 40px; align-items: center; gap: 9px; padding: 8px 13px; border: 1px solid color-mix(in srgb, var(--line) 82%, var(--accent)); border-radius: 99px; background: color-mix(in srgb, var(--surface) 92%, var(--accent-soft)); box-shadow: 0 6px 18px rgb(35 46 40 / 5%); font-size: calc(.82rem + var(--tag-weight) * .22rem); font-weight: calc(600 + var(--tag-weight) * 100); text-decoration: none; transition: border-color .2s ease, background-color .2s ease, box-shadow .2s ease, color .2s ease; }
+  .tag-constellation small { display: grid; min-width: 21px; height: 21px; place-items: center; border-radius: 50%; background: var(--code-bg); color: var(--muted); font-size: .66rem; font-weight: 750; }
+  .tag-constellation li.is-dimmed { opacity: .36; filter: saturate(.55); transform: scale(.9); }
+  .tag-constellation li.is-related { transform: scale(1.02); }
+  .tag-constellation li.is-related a { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+  .tag-constellation li.is-active { transform: scale(1.08); }
+  .tag-constellation li.is-active a { border-color: var(--accent); background: var(--accent); color: var(--bg); box-shadow: 0 10px 28px color-mix(in srgb, var(--accent) 24%, transparent); }
+  .tag-constellation li.is-active small { background: color-mix(in srgb, var(--bg) 22%, transparent); color: inherit; }
+  .tag-empty { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); }
+  .tag-empty[hidden] { display: none; }
+  .tag-inspector { display: grid; grid-template-columns: minmax(190px, .7fr) 1fr 1.35fr; gap: 36px; margin-top: 18px; padding: 28px; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); box-shadow: var(--shadow); }
+  .tag-inspector .eyebrow { margin-bottom: 8px; }
+  .tag-inspector h2 { overflow-wrap: anywhere; font-size: clamp(1.45rem, 3vw, 2.15rem); line-height: 1.2; letter-spacing: -.04em; }
+  .tag-inspector-main > p:not(.eyebrow) { margin-top: 8px; color: var(--muted); font-size: .84rem; }
+  .tag-inspector-main strong { color: var(--text); font-size: 1.05rem; }
+  .tag-inspector-link { display: inline-block; margin-top: 18px; color: var(--accent); font-size: .84rem; font-weight: 700; }
+  .tag-inspector-group { padding-left: 28px; border-left: 1px solid var(--line); }
+  .tag-inspector-group h3 { margin-bottom: 13px; color: var(--muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+  .tag-related-list, .tag-article-list { display: grid; gap: 9px; padding: 0; list-style: none; }
+  .tag-related-list li { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .tag-related-list a, .tag-article-list a { font-size: .84rem; font-weight: 650; text-decoration: none; }
+  .tag-related-list small { flex: none; color: var(--muted); font-size: .67rem; }
+  .tag-article-list a { display: inline-block; line-height: 1.5; }
+
   .article-shell { width: min(760px, calc(100% - 40px)); margin-inline: auto; padding-block: clamp(56px, 9vw, 104px) 96px; }
   .article-header { padding-bottom: 40px; border-bottom: 1px solid var(--line); }
   .article-header h1 { font-size: clamp(2.15rem, 5.5vw, 4.2rem); line-height: 1.18; letter-spacing: -.05em; text-wrap: balance; }
@@ -209,6 +266,17 @@
     .post-card-meta { grid-row: auto; }
     .section-heading { align-items: start; flex-direction: column; }
     .taxonomy-cloud { grid-template-columns: 1fr; }
+    .tag-page-heading { align-items: start; flex-direction: column; gap: 28px; }
+    .tag-overview { gap: 26px; }
+    .tag-toolbar { grid-template-columns: 1fr; }
+    .tag-sort { justify-content: center; }
+    .tag-sort button { flex: 1; }
+    .tag-random { width: 100%; }
+    .tag-constellation { gap: 10px; padding: 38px 18px; }
+    .tag-constellation li { --scale: 1; }
+    .tag-constellation a { font-size: .82rem; }
+    .tag-inspector { grid-template-columns: 1fr; gap: 24px; padding: 24px; }
+    .tag-inspector-group { padding: 22px 0 0; border-top: 1px solid var(--line); border-left: 0; }
     .article-shell { width: min(100% - 28px, 760px); }
     .post-navigation { grid-template-columns: 1fr; }
     .post-navigation .next { text-align: left; }
@@ -216,5 +284,6 @@
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    .tag-constellation li { transform: none !important; }
   }
 }
