@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">DV365のoffline処理とonline推薦の分担</title>
+  <desc id="desc">長期履歴をofflineで圧縮して共有埋め込みを作り、onlineでは直近履歴と組み合わせて複数の推薦モデルへ渡す流れ</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#315c54"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#1d2c28" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="760" rx="28" fill="#f7f5f0"/>
+  <text x="60" y="62" fill="#202522" font-family="Inter, Hiragino Sans, Yu Gothic, sans-serif" font-size="34" font-weight="750">DV365は「長期」と「直近」を別の経路で扱う</text>
+  <text x="60" y="98" fill="#5e6965" font-family="Inter, Hiragino Sans, Yu Gothic, sans-serif" font-size="19">重い長期履歴処理はofflineで1回、鮮度が必要なsignalはonline modelに残す</text>
+
+  <rect x="42" y="128" width="1116" height="332" rx="24" fill="#e4f1eb" stroke="#91b9aa" stroke-width="2"/>
+  <rect x="62" y="148" width="126" height="38" rx="19" fill="#196c5b"/>
+  <text x="125" y="174" text-anchor="middle" fill="#ffffff" font-family="Inter, Hiragino Sans, Yu Gothic, sans-serif" font-size="18" font-weight="700">OFFLINE</text>
+  <text x="210" y="174" fill="#315c54" font-family="Inter, Hiragino Sans, Yu Gothic, sans-serif" font-size="18" font-weight="650">数時間単位で更新するstable interest</text>
+
+  <g filter="url(#shadow)" font-family="Inter, Hiragino Sans, Yu Gothic, sans-serif">
+    <rect x="72" y="218" width="230" height="178" rx="18" fill="#ffffff"/>
+    <text x="92" y="250" fill="#196c5b" font-size="15" font-weight="700">01  長期行動履歴</text>
+    <text x="92" y="286" fill="#202522" font-size="20" font-weight="700">UniTi timeline</text>
+    <text x="92" y="320" fill="#5e6965" font-size="16">implicit: 平均30K</text>
+    <text x="92" y="347" fill="#5e6965" font-size="16">explicit: 平均10K</text>
+    <text x="92" y="378" fill="#315c54" font-size="16" font-weight="700">合計 最大70K</text>
+
+    <rect x="348" y="218" width="230" height="178" rx="18" fill="#ffffff"/>
+    <text x="368" y="250" fill="#196c5b" font-size="15" font-weight="700">02  MULTI-SLICING</text>
+    <text x="368" y="286" fill="#202522" font-size="20" font-weight="700">条件別にpooling</text>
+    <text x="368" y="320" fill="#5e6965" font-size="16">action・source・ID</text>
+    <text x="368" y="347" fill="#5e6965" font-size="16">dwell time・3日・7日</text>
+    <text x="368" y="378" fill="#315c54" font-size="16" font-weight="700">200 × 256</text>
+
+    <rect x="624" y="218" width="230" height="178" rx="18" fill="#ffffff"/>
+    <text x="644" y="250" fill="#196c5b" font-size="15" font-weight="700">03  USER ENCODER</text>
+    <text x="644" y="286" fill="#202522" font-size="20" font-weight="700">FSA + LCE</text>
+    <text x="644" y="320" fill="#5e6965" font-size="16">24時間gapで学習</text>
+    <text x="644" y="347" fill="#5e6965" font-size="16">DLRMでdownstreamを模擬</text>
+    <text x="644" y="378" fill="#315c54" font-size="16" font-weight="700">58 × 256</text>
+
+    <rect x="900" y="218" width="230" height="178" rx="18" fill="#ffffff"/>
+    <text x="920" y="250" fill="#196c5b" font-size="15" font-weight="700">04  PUBLISH</text>
+    <text x="920" y="286" fill="#202522" font-size="20" font-weight="700">4-bit quantization</text>
+    <text x="920" y="320" fill="#5e6965" font-size="16">6時間ごとに生成</text>
+    <text x="920" y="347" fill="#5e6965" font-size="16">user IDでKV storeへ</text>
+    <text x="920" y="378" fill="#315c54" font-size="16" font-weight="700">30億user分</text>
+  </g>
+
+  <g stroke="#315c54" stroke-width="3" fill="none" marker-end="url(#arrow)">
+    <path d="M 306 307 L 338 307"/>
+    <path d="M 582 307 L 614 307"/>
+    <path d="M 858 307 L 890 307"/>
+  </g>
+
+  <rect x="42" y="490" width="1116" height="220" rx="24" fill="#e7edf5" stroke="#9bb1c8" stroke-width="2"/>
+  <rect x="62" y="510" width="126" height="38" rx="19" fill="#315f86"/>
+  <text x="125" y="536" text-anchor="middle" fill="#ffffff" font-family="Inter, Hiragino Sans, Yu Gothic, sans-serif" font-size="18" font-weight="700">ONLINE</text>
+  <text x="210" y="536" fill="#465f78" font-family="Inter, Hiragino Sans, Yu Gothic, sans-serif" font-size="18" font-weight="650">requestごとに更新するemerging interestと合流</text>
+
+  <path d="M 1015 406 L 1015 554 L 507 554 L 507 568" stroke="#315c54" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+
+  <g font-family="Inter, Hiragino Sans, Yu Gothic, sans-serif" filter="url(#shadow)">
+    <rect x="72" y="574" width="250" height="96" rx="18" fill="#ffffff"/>
+    <text x="92" y="606" fill="#315f86" font-size="15" font-weight="700">RECENT SEQUENCE</text>
+    <text x="92" y="641" fill="#202522" font-size="19" font-weight="700">直近履歴 + HSTU</text>
+
+    <rect x="382" y="574" width="250" height="96" rx="18" fill="#ffffff"/>
+    <text x="402" y="606" fill="#315f86" font-size="15" font-weight="700">SHARED FEATURE</text>
+    <text x="402" y="641" fill="#202522" font-size="19" font-weight="700">DV365 embedding</text>
+
+    <rect x="692" y="574" width="188" height="96" rx="18" fill="#ffffff"/>
+    <text x="712" y="606" fill="#315f86" font-size="15" font-weight="700">ADAPT</text>
+    <text x="712" y="641" fill="#202522" font-size="19" font-weight="700">projection / gate</text>
+
+    <rect x="940" y="574" width="190" height="96" rx="18" fill="#315f86"/>
+    <text x="960" y="607" fill="#dceaf6" font-size="15" font-weight="700">DOWNSTREAM</text>
+    <text x="960" y="636" fill="#ffffff" font-size="17" font-weight="700">15 production</text>
+    <text x="960" y="658" fill="#ffffff" font-size="17" font-weight="700">models</text>
+  </g>
+
+  <g stroke="#587791" stroke-width="3" fill="none" marker-end="url(#arrow)">
+    <path d="M 326 622 L 350 622 L 350 688 L 660 688 L 660 640"/>
+    <path d="M 636 622 L 642 622"/>
+    <path d="M 674 622 L 682 622"/>
+    <path d="M 884 622 L 930 622"/>
+  </g>
+  <circle cx="660" cy="622" r="14" fill="#f7f5f0" stroke="#587791" stroke-width="3"/>
+  <path d="M 653 622 L 667 622 M 660 615 L 660 629" stroke="#587791" stroke-width="3"/>
+
+  <text x="60" y="738" fill="#6e7774" font-family="Inter, Hiragino Sans, Yu Gothic, sans-serif" font-size="15">K = 1,000。数値は原論文で報告されたInstagramの設定。</text>
+</svg>
