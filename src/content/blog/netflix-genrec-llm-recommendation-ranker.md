@@ -38,17 +38,9 @@ GenRecは、事前学習済みLLMの意味理解を利用しながら、Netflix�
 
 GenRecのonline inferenceを単純化すると、次の流れになります。
 
-```text
-memberの履歴・profile・request context
-  ↓ verbalizationと圧縮
-自然言語または軽く構造化したtext
-  ↓ decoder-only LLMをprefill-onlyで1回実行
-userの嗜好とcontextを表すpooled hidden state h
-  ↓ catalog-aware ranking head
-catalog内の各item embeddingとのscore
-  ↓ sort
-catalog全体または候補集合のranking
-```
+![会員履歴、作品メタデータ、リクエスト文脈を文章化し、LLMのprefillを一度だけ実行して、catalog-aware ranking headでカタログ内作品を採点するGenRecの流れ](/img/posts/netflix-genrec-inference-flow.svg)
+
+*図1：[原論文Figure 1と§4.5・§4.7](https://arxiv.org/html/2608.10257v2#S4)の記述をもとに本記事で再構成した独自図。原図の転載ではありません。*
 
 LLMは自己回帰的に推薦文やitem IDを生成しません。入力contextをencodeした特定位置のhidden stateを、userの嗜好と現在のcontextを要約するvector `h` として使います。各itemは学習可能なembedding `e_i` を持ち、scoring head `φ` が `h` と `e_i` からscoreを計算します。
 
@@ -61,6 +53,15 @@ s_i = φ(h, e_i)
 LLM、scoring head、item embeddingはjoint trainingされます。scoreをcatalogまたは候補集合上でsoftmaxし、降順に並べればrankingになります。catalogが大きすぎて学習時に全itemを評価できない場合はsampled softmaxを組み合わせられます。
 
 この設計には二つの実務上の利点があります。第一に、出力空間がcatalog内のitemへ固定されるため、catalog外の作品を推薦しません。第二に、beam searchでitem tokenを順に生成する方式と違い、一度のforward passで候補集合を採点できます。[TIGERのようなSemantic ID生成型推薦](/posts/2026/09/13/tiger-generative-retrieval-recommendation/)とは、LLM backboneを使うかどうかだけでなく、onlineで自己回帰生成をするか、ranking headで一括採点するかが異なります。
+
+| 観点 | GenRec | 論文が対比する典型的なgenerative retrieval |
+| --- | --- | --- |
+| modelの出力 | catalog内itemのscore | itemを表すtoken列 |
+| online inference | prefill 1回とranking head | 複数回のdecodeとbeam search |
+| catalogへの制約 | catalog item embeddingだけを採点 | constrained decodingや生成後のlookupが必要 |
+| 主なcost要因 | model size × context lengthと候補採点 | context処理に加えてdecode stepとbeam幅 |
+
+右列は論文が対比に使う代表的な構成であり、すべてのgenerative recommenderが同じ実装という意味ではありません。GenRec自身もdecoder-only LLMをbackboneに使いますが、onlineではその生成機能を使わない点が重要です。
 
 ただし「LLMがすべての推薦処理を置き換えた」とまでは書かれていません。論文が対象とするのはfull-catalog ranking、または別途candidate setが与えられるtop-K rankingであり、A/B testは主要なbatch-compute surfaceに限られます。
 
@@ -91,6 +92,10 @@ Phase 2のdataは、memberとrecommenderのsingle-turnまたはmulti-turnの「�
 短期から中期の履歴は比較的細かくし、古い履歴は省略するか興味の要約へ変えます。さらに、保持するevent数を変えてMRRを測り、追加eventの効果が小さくなるelbow pointを探します。そのうえで、各eventの説明量、文言、few-shot exampleの有無を変えて比較します。
 
 論文の実験では、この手順によりcontextを約5,000 tokenから約1,700 tokenへ、元の約3分の1に短縮できました。offline ranking metricの低下はnegligibleとされ、GenRecが主にcompute-boundでcostがcontext長へほぼ比例する条件では、serving costも約3分の1になりました。
+
+![GenRecのcontextを約5000 tokenから約1700 tokenへ圧縮し、offline MRRをほぼ維持しながらserving costも約3分の1へ減らした結果](/img/posts/netflix-genrec-context-compression.svg)
+
+*図2：[原論文Figure 5と§5.4](https://arxiv.org/html/2608.10257v2#S5.SS4)の公開値をもとに本記事で作成した独自図。棒の長さはtoken数の概算比で、MRRの絶対値は公開されていません。*
 
 ここで重要なのは、LLM化によってfeature engineeringが消えたのではなく、設計対象が変わったことです。eventの選択、時系列の範囲、metadataの粒度、要約方法には、依然として実験とdata pipelineが必要です。
 

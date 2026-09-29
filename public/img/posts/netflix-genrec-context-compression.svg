@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 620" role="img" aria-labelledby="title desc">
+  <title id="title">GenRecのcontext圧縮とserving cost</title>
+  <desc id="desc">入力contextを約5000 tokenから約1700 tokenへ圧縮し、offline MRRをほぼ維持しながらserving costも約3分の1へ減らした実験結果。</desc>
+  <style>
+    :root { color-scheme: light dark; }
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .bg { fill: #f7f5f0; }
+    .track { fill: #e4e1d9; }
+    .bar-before { fill: #85958d; }
+    .bar-after { fill: #4ea78a; }
+    .card { fill: #fffdf8; stroke: #c8d4cd; stroke-width: 2; }
+    .title { fill: #202522; font-size: 32px; font-weight: 750; }
+    .label { fill: #202522; font-size: 26px; font-weight: 700; }
+    .body { fill: #3f4944; font-size: 23px; }
+    .small { fill: #59635e; font-size: 21px; }
+    .accent { fill: #24634f; }
+    .white { fill: #ffffff; }
+    .guide { stroke: #9aa79f; stroke-width: 2; stroke-dasharray: 7 7; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #171918; }
+      .track { fill: #343a36; }
+      .bar-before { fill: #68756e; }
+      .bar-after { fill: #58b897; }
+      .card { fill: #212522; stroke: #4d5953; }
+      .title, .label { fill: #ecf0ec; }
+      .body, .small { fill: #bdc7c1; }
+      .accent { fill: #83d6b8; }
+      .guide { stroke: #68756e; }
+    }
+  </style>
+
+  <rect class="bg" width="820" height="620" rx="28"/>
+  <text class="title" x="410" y="58" text-anchor="middle">長いcontextを、そのまま使う必要はなかった</text>
+  <text class="small" x="410" y="91" text-anchor="middle">Netflixによるcontext length ablation（原論文§5.4）</text>
+
+  <text class="label" x="60" y="145">圧縮前</text>
+  <rect class="track" x="60" y="165" width="700" height="72" rx="16"/>
+  <rect class="bar-before" x="60" y="165" width="700" height="72" rx="16"/>
+  <text class="label white" x="410" y="210" text-anchor="middle">約5,000 token</text>
+
+  <line class="guide" x1="60" y1="254" x2="760" y2="254"/>
+  <text class="small" x="60" y="287">低signal eventを除外し、反復や古い履歴を要約</text>
+
+  <text class="label" x="60" y="337">圧縮後</text>
+  <rect class="track" x="60" y="357" width="700" height="72" rx="16"/>
+  <rect class="bar-after" x="60" y="357" width="238" height="72" rx="16"/>
+  <text class="label white" x="179" y="402" text-anchor="middle">約1,700 token</text>
+  <text class="label accent" x="330" y="402">元の約34%</text>
+
+  <rect class="card" x="60" y="472" width="330" height="105" rx="20"/>
+  <text class="small" x="225" y="505" text-anchor="middle">offline ranking quality</text>
+  <text class="label accent" x="225" y="541" text-anchor="middle">MRR低下はnegligible</text>
+  <text class="small" x="225" y="566" text-anchor="middle">絶対値は非公開</text>
+
+  <rect class="card" x="430" y="472" width="330" height="105" rx="20"/>
+  <text class="small" x="595" y="505" text-anchor="middle">compute-boundなserving条件</text>
+  <text class="label accent" x="595" y="541" text-anchor="middle">costも約3分の1</text>
+  <text class="small" x="595" y="566" text-anchor="middle">context長へほぼ比例</text>
+
+  <text class="small" x="410" y="606" text-anchor="middle">割合は概算。別環境で同じcost比になるとは限らない。</text>
+</svg>

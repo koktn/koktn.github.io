@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 1040" role="img" aria-labelledby="title desc">
+  <title id="title">GenRecのprefill-only推薦フロー</title>
+  <desc id="desc">会員履歴、作品メタデータ、リクエスト文脈を選別して文章化し、decoder-only LLMで一度だけ読み、catalog-aware ranking headでカタログ内作品を採点する流れ。</desc>
+  <style>
+    :root { color-scheme: light dark; }
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .bg { fill: #f7f5f0; }
+    .card { fill: #fffdf8; stroke: #c8d4cd; stroke-width: 2; }
+    .accent-card { fill: #e6f1ec; stroke: #397d68; stroke-width: 3; }
+    .soft-card { fill: #f0eee8; stroke: #c8c5bc; stroke-width: 2; }
+    .title { fill: #202522; font-size: 32px; font-weight: 750; }
+    .subtitle { fill: #59635e; font-size: 21px; }
+    .label { fill: #202522; font-size: 26px; font-weight: 700; }
+    .body { fill: #3f4944; font-size: 24px; }
+    .small { fill: #59635e; font-size: 20px; }
+    .accent { fill: #24634f; }
+    .arrow { stroke: #397d68; stroke-width: 4; fill: none; marker-end: url(#arrowhead); }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #171918; }
+      .card { fill: #212522; stroke: #4d5953; }
+      .accent-card { fill: #19382e; stroke: #6ac3a5; }
+      .soft-card { fill: #292d2a; stroke: #4d5953; }
+      .title, .label { fill: #ecf0ec; }
+      .subtitle, .body, .small { fill: #bdc7c1; }
+      .accent { fill: #83d6b8; }
+      .arrow { stroke: #6ac3a5; }
+    }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#4ea78a"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="820" height="1040" rx="28"/>
+  <text class="title" x="410" y="54" text-anchor="middle">GenRecは「生成」せずにcatalogを採点する</text>
+  <text class="subtitle" x="410" y="86" text-anchor="middle">online inferenceを論文の記述から単純化</text>
+
+  <rect class="soft-card" x="45" y="120" width="220" height="86" rx="18"/>
+  <text class="label" x="155" y="154" text-anchor="middle">会員の履歴</text>
+  <text class="small" x="155" y="184" text-anchor="middle">再生・評価・行動</text>
+
+  <rect class="soft-card" x="300" y="120" width="220" height="86" rx="18"/>
+  <text class="label" x="410" y="154" text-anchor="middle">作品metadata</text>
+  <text class="small" x="410" y="184" text-anchor="middle">title・genre・公開時期</text>
+
+  <rect class="soft-card" x="555" y="120" width="220" height="86" rx="18"/>
+  <text class="label" x="665" y="154" text-anchor="middle">request context</text>
+  <text class="small" x="665" y="184" text-anchor="middle">推薦面・時刻・device</text>
+
+  <path class="arrow" d="M155 207 C155 235, 260 230, 300 260"/>
+  <path class="arrow" d="M410 207 L410 254"/>
+  <path class="arrow" d="M665 207 C665 235, 560 230, 520 260"/>
+
+  <rect class="accent-card" x="105" y="265" width="610" height="200" rx="22"/>
+  <text class="label accent" x="410" y="307" text-anchor="middle">Context engineering / verbalization</text>
+  <text class="body" x="180" y="347">残す　　長時間再生・高評価</text>
+  <text class="body" x="180" y="382">省く　　短時間再生・noisyな行動</text>
+  <text class="body" x="180" y="417">圧縮　　反復・古い履歴</text>
+  <text class="body" x="180" y="452">詳しく　新作・cold-start作品</text>
+
+  <path class="arrow" d="M410 467 L410 505"/>
+
+  <rect class="card" x="140" y="515" width="540" height="138" rx="22"/>
+  <text class="label" x="410" y="558" text-anchor="middle">Decoder-only LLM</text>
+  <text class="title accent" x="410" y="602" text-anchor="middle">prefillを1回だけ実行</text>
+  <text class="small" x="410" y="636" text-anchor="middle">逐次decode / beam searchは行わない</text>
+
+  <path class="arrow" d="M410 655 L410 700"/>
+
+  <rect class="accent-card" x="245" y="710" width="330" height="88" rx="44"/>
+  <text class="label accent" x="410" y="746" text-anchor="middle">pooled hidden state h</text>
+  <text class="small" x="410" y="778" text-anchor="middle">嗜好と現在のcontextを要約</text>
+
+  <path class="arrow" d="M410 800 L410 842"/>
+  <rect class="soft-card" x="30" y="850" width="230" height="92" rx="18"/>
+  <text class="label" x="145" y="885" text-anchor="middle">item embeddings</text>
+  <text class="body" x="145" y="920" text-anchor="middle">catalog内の eᵢ</text>
+  <path class="arrow" d="M262 896 L284 896"/>
+
+  <rect class="card" x="295" y="844" width="410" height="104" rx="22"/>
+  <text class="label" x="500" y="884" text-anchor="middle">catalog-aware ranking head</text>
+  <text class="body" x="500" y="920" text-anchor="middle">sᵢ = φ(h, eᵢ) をまとめて計算</text>
+
+  <path class="arrow" d="M500 950 L500 982"/>
+  <rect class="accent-card" x="225" y="988" width="550" height="42" rx="21"/>
+  <text class="label accent" x="500" y="1018" text-anchor="middle">catalog内のscoreを並べてranking</text>
+</svg>
