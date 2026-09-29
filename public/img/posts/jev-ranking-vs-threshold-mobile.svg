@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="900" viewBox="0 0 720 900" role="img" aria-labelledby="title desc">
+  <title id="title">スマートフォン向けの順位付け性能としきい値判定の違い</title>
+  <desc id="desc">失敗例のスコアが正常例より高くても、0.5未満なら固定しきい値では検出できない説明図。</desc>
+  <rect width="720" height="900" rx="28" fill="#f7faf8"/>
+  <text x="42" y="60" fill="#17362b" font-family="system-ui, sans-serif" font-size="31" font-weight="750">順位が正しくても見逃す例</text>
+  <text x="42" y="103" fill="#587067" font-family="system-ui, sans-serif" font-size="22">説明用の仮想スコア</text>
+  <line x1="120" y1="690" x2="660" y2="690" stroke="#91a39b" stroke-width="3"/>
+  <line x1="120" y1="190" x2="120" y2="690" stroke="#91a39b" stroke-width="3"/>
+  <line x1="120" y1="190" x2="660" y2="190" stroke="#c97028" stroke-width="4" stroke-dasharray="12 10"/>
+  <text x="650" y="175" text-anchor="end" fill="#92511b" font-family="system-ui, sans-serif" font-size="24" font-weight="700">固定しきい値 0.5</text>
+  <g fill="#587067" font-family="system-ui, sans-serif" font-size="21">
+    <text x="103" y="697" text-anchor="end">0.0</text><text x="103" y="597" text-anchor="end">0.1</text><text x="103" y="497" text-anchor="end">0.2</text><text x="103" y="397" text-anchor="end">0.3</text><text x="103" y="297" text-anchor="end">0.4</text><text x="103" y="197" text-anchor="end">0.5</text>
+  </g>
+  <rect x="165" y="290" width="95" height="400" rx="12" fill="#2f7d5c"/>
+  <text x="212" y="274" text-anchor="middle" fill="#1c5b43" font-family="system-ui, sans-serif" font-size="25" font-weight="750">0.40</text>
+  <text x="212" y="730" text-anchor="middle" fill="#17362b" font-family="system-ui, sans-serif" font-size="23">失敗A</text>
+  <rect x="285" y="340" width="95" height="350" rx="12" fill="#4b9878"/>
+  <text x="332" y="324" text-anchor="middle" fill="#1c5b43" font-family="system-ui, sans-serif" font-size="25" font-weight="750">0.35</text>
+  <text x="332" y="730" text-anchor="middle" fill="#17362b" font-family="system-ui, sans-serif" font-size="23">失敗B</text>
+  <rect x="435" y="590" width="95" height="100" rx="12" fill="#8ea9c4"/>
+  <text x="482" y="574" text-anchor="middle" fill="#28557f" font-family="system-ui, sans-serif" font-size="25" font-weight="750">0.10</text>
+  <text x="482" y="730" text-anchor="middle" fill="#17362b" font-family="system-ui, sans-serif" font-size="23">正常A</text>
+  <rect x="555" y="640" width="95" height="50" rx="12" fill="#b3c5d7"/>
+  <text x="602" y="624" text-anchor="middle" fill="#28557f" font-family="system-ui, sans-serif" font-size="25" font-weight="750">0.05</text>
+  <text x="602" y="730" text-anchor="middle" fill="#17362b" font-family="system-ui, sans-serif" font-size="23">正常B</text>
+  <rect x="55" y="790" width="610" height="72" rx="22" fill="#fff1df"/>
+  <text x="360" y="820" text-anchor="middle" fill="#92511b" font-family="system-ui, sans-serif" font-size="23" font-weight="700">順位は正しい</text>
+  <text x="360" y="850" text-anchor="middle" fill="#92511b" font-family="system-ui, sans-serif" font-size="23" font-weight="700">しきい値0.5の検出数は0件</text>
+</svg>

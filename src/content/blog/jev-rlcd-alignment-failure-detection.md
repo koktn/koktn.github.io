@@ -2,6 +2,7 @@
 title: 「Just Ask Jev」解説――AIの失敗を見抜く確率と、判定に使える確率は違う
 description: Jevを44のベンチマークで評価したRLCDAlignBenchを解説。質問設計、文脈、確率の較正、ラベル監査を通じて、AUROC 0.886と約63分の1の評価コストが示す範囲を整理します。
 publishedAt: 2026-09-28
+updatedAt: 2026-09-29
 category: AI
 tags:
   - LLM
@@ -9,6 +10,7 @@ tags:
   - AI安全性
   - 論文解説
 draft: false
+image: /img/posts/jev-rlcd-detection-pipeline.svg
 ---
 
 > **AI利用の明示**<br>
@@ -51,6 +53,16 @@ alignment failureとは、ここではユーザーへの迎合、脱獄への追
 
 質問が曖昧だから見逃したのか、それとも判断に必要な情報が存在しないから見逃したのか。この区別がつかないままプロンプトだけを調整しても、改善できる範囲には限界があります。
 
+<figure class="article-figure">
+  <picture>
+    <source media="(max-width: 600px)" srcset="/img/posts/jev-rlcd-detection-pipeline-mobile.svg">
+    <img src="/img/posts/jev-rlcd-detection-pipeline.svg" alt="Jevが見るstateとJevへ尋ねるquestionを別々に変え、確率スコアをAUROCとF1で評価する流れ" loading="lazy">
+  </picture>
+  <figcaption>図1：RLCDAlignBenchの評価フロー。Guoら「<a href="https://arxiv.org/html/2609.29429v1#S3">Just Ask Jev</a>」Figure 2・§3を基に本記事用に再構成（原図の転載ではない）。原論文は<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</figcaption>
+</figure>
+
+図の左側にある`state`と`question`を別々に変えることで、失敗の原因を切り分けます。右側では、同じ確率スコアを「順位付け」と「実際にフラグを立てる判定」の二通りで評価します。この二つを混同しないことが、後半の結果を理解する鍵です。
+
 ## RLCDAlignBenchの評価範囲
 
 著者らが構築したRLCDAlignBenchは、44ベンチマーク、7,193件の検出用事例を含みます。対象は次の10種類の失敗です。
@@ -90,6 +102,16 @@ alignment failureとは、ここではユーザーへの迎合、脱獄への追
 | 小問を0.5で二値化して組み合わせるrubric | 10件中9件で直接の特化質問に劣り、AUROC差の中央値−0.137 |
 
 AUROCは、失敗例を非失敗例より高く順位付けする能力を測ります。0.886という値は、任意のしきい値で88.6%を正しく分類できるという意味ではありません。
+
+<figure class="article-figure">
+  <picture>
+    <source media="(max-width: 600px)" srcset="/img/posts/jev-ranking-vs-threshold-mobile.svg">
+    <img src="/img/posts/jev-ranking-vs-threshold.svg" alt="失敗例が正常例より高い確率を持つため順位は正しいが、すべて0.5未満なので固定しきい値では検出できない例" loading="lazy">
+  </picture>
+  <figcaption>図2：AUROCとしきい値判定の違いを示す本記事独自の仮想例。数値は説明用であり、論文の実験値ではない。</figcaption>
+</figure>
+
+図2では、失敗例が正常例より上に並んでいるため順位付けは正しい一方、全スコアが0.5未満なので、固定しきい値では失敗を一件も検出できません。AUROCが高いことと、既定のしきい値で運用できることは別問題です。
 
 質問の比較では、多数の候補から同じ評価データ上で最高の質問を選ぶと、たまたま合ったものを選んでしまいます。そこで著者らは、データの半分で質問を選び、もう半分で評価するsplit-halfを用いました。特化質問の改善幅+0.006の信頼区間にはゼロが含まれ、強い改善の証拠とはいえません。
 
@@ -144,6 +166,16 @@ StrongREJECTの人手評価セットでは、Jevと人間のCohen’s κは0.809
 ただし既存judgeの費用は、記録されたテキストからトークン数を数え、モデルの定価を適用した試算です。Jev側は100万入力トークン当たり0.042ドルという実験時の条件を使っています。すべての比較judgeをGPT-4o-miniの単価で再計算し、Jevも汎用質問一つにすると、合算費用の比は約12分の1になります。
 
 ルールだけで判定できる20ベンチマークでは、Jevを使うことで追加費用が発生します。**約63分の1は特定のAPI judge群との費用比であり、全検出処理に対する普遍的な削減率ではありません**（原論文§4.5、付録H）。
+
+<figure class="article-figure">
+  <picture>
+    <source media="(max-width: 600px)" srcset="/img/posts/jev-key-results-mobile.svg">
+    <img src="/img/posts/jev-key-results.svg" alt="Jevの汎用Noulにおけるしきい値別F1中央値と、19のAPI judgeベンチマークを一巡する費用の比較" loading="lazy">
+  </picture>
+  <figcaption>図3：しきい値別F1はGuoら「<a href="https://arxiv.org/html/2609.29429v1#S4.SS4">Just Ask Jev</a>」§4.4、費用は§4.5・Table 29を基に本記事用に可視化。原図表の転載ではない。原論文は<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</figcaption>
+</figure>
+
+図3の上段は、少量のラベルでしきい値を合わせるとF1が改善し得ることを示します。下段はAPI型judgeとの費用差を示しますが、料金モデルを揃えた場合は差が約12倍まで縮むため、63倍という数字だけを一般化できません。
 
 ## 検出器の不一致を、ベンチマークの監査に使う
 

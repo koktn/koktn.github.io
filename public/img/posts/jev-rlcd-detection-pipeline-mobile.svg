@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1120" viewBox="0 0 720 1120" role="img" aria-labelledby="title desc">
+  <title id="title">スマートフォン向けのRLCDAlignBench評価フロー</title>
+  <desc id="desc">stateとquestionを別々に変え、Jevが確率を返し、AUROCとF1で評価する縦型の流れ。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0L12 6L0 12Z" fill="#587067"/></marker>
+  </defs>
+  <rect width="720" height="1120" rx="28" fill="#f7faf8"/>
+  <text x="42" y="62" fill="#17362b" font-family="system-ui, sans-serif" font-size="31" font-weight="750">質問と入力を分けて原因を切り分ける</text>
+
+  <rect x="55" y="110" width="610" height="190" rx="22" fill="#e9f4ef" stroke="#77a591" stroke-width="2"/>
+  <text x="85" y="155" fill="#1c5b43" font-family="system-ui, sans-serif" font-size="29" font-weight="750">Jevが見るもの：state</text>
+  <text x="85" y="202" fill="#17362b" font-family="system-ui, sans-serif" font-size="25">対象モデルへの入力・出力</text>
+  <text x="85" y="246" fill="#587067" font-family="system-ui, sans-serif" font-size="23">参照情報を1項目ずつ追加</text>
+
+  <rect x="55" y="340" width="610" height="190" rx="22" fill="#fff1df" stroke="#dda45f" stroke-width="2"/>
+  <text x="85" y="385" fill="#92511b" font-family="system-ui, sans-serif" font-size="29" font-weight="750">Jevへ尋ねること：question</text>
+  <text x="85" y="432" fill="#17362b" font-family="system-ui, sans-serif" font-size="25">汎用／対象特化の文言</text>
+  <text x="85" y="476" fill="#587067" font-family="system-ui, sans-serif" font-size="23">Noul／Choice／Score</text>
+
+  <path d="M250 300V326" stroke="#587067" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M360 530V575" stroke="#587067" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="205" y="595" width="310" height="150" rx="75" fill="#2f7d5c"/>
+  <text x="360" y="655" text-anchor="middle" fill="#ffffff" font-family="system-ui, sans-serif" font-size="42" font-weight="800">Jev</text>
+  <text x="360" y="699" text-anchor="middle" fill="#e5f5ed" font-family="system-ui, sans-serif" font-size="24">1回で複数の質問に回答</text>
+
+  <path d="M360 745V790" stroke="#587067" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="80" y="810" width="560" height="125" rx="22" fill="#e9eff8" stroke="#7797bd" stroke-width="2"/>
+  <text x="360" y="858" text-anchor="middle" fill="#28557f" font-family="system-ui, sans-serif" font-size="29" font-weight="750">確率スコア P(failure) = 0〜1</text>
+  <text x="360" y="902" text-anchor="middle" fill="#587067" font-family="system-ui, sans-serif" font-size="23">argmaxで丸めず保持する</text>
+
+  <path d="M360 935V970" stroke="#587067" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="80" y="990" width="255" height="90" rx="18" fill="#e9f4ef"/>
+  <text x="207" y="1028" text-anchor="middle" fill="#1c5b43" font-family="system-ui, sans-serif" font-size="26" font-weight="750">AUROC</text>
+  <text x="207" y="1060" text-anchor="middle" fill="#587067" font-family="system-ui, sans-serif" font-size="21">順位付け</text>
+  <rect x="385" y="990" width="255" height="90" rx="18" fill="#fff1df"/>
+  <text x="512" y="1028" text-anchor="middle" fill="#92511b" font-family="system-ui, sans-serif" font-size="26" font-weight="750">F1</text>
+  <text x="512" y="1060" text-anchor="middle" fill="#587067" font-family="system-ui, sans-serif" font-size="21">しきい値判定</text>
+</svg>

@@ -234,6 +234,9 @@
   .prose :not(pre) > code { padding: .16em .42em; border-radius: 5px; background: var(--code-bg); font-size: .88em; }
   .prose pre { overflow-x: auto; padding: 20px; border: 1px solid var(--line); border-radius: 12px; font-size: .86rem; line-height: 1.65; }
   .prose img { height: auto; margin-inline: auto; border-radius: 12px; box-shadow: var(--shadow); }
+  .prose .article-figure { margin: 2.2em 0; }
+  .prose .article-figure img { width: 100%; border: 1px solid var(--line); background: #f7faf8; }
+  .prose .article-figure figcaption { margin-top: .8em; color: var(--muted); font-size: .82rem; line-height: 1.65; }
   .prose table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; font-size: .9rem; }
   .prose th, .prose td { min-width: 110px; padding: 10px 12px; border: 1px solid var(--line); text-align: left; }
   .prose th { background: var(--code-bg); }

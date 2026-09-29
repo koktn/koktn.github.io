@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" role="img" aria-labelledby="title desc">
+  <title id="title">順位付け性能としきい値判定の違い</title>
+  <desc id="desc">失敗例のスコアが正常例より高く順位付けは正しくても、すべてが0.5未満なら固定しきい値では失敗を一件も検出できない説明図。</desc>
+  <rect width="1200" height="600" rx="28" fill="#f7faf8"/>
+  <text x="70" y="68" fill="#17362b" font-family="system-ui, sans-serif" font-size="34" font-weight="750">順位が正しくても、しきい値0.5では見逃すことがある</text>
+  <text x="70" y="106" fill="#587067" font-family="system-ui, sans-serif" font-size="19">説明用の仮想例：失敗例 0.40・0.35、正常例 0.10・0.05</text>
+
+  <line x1="150" y1="460" x2="1080" y2="460" stroke="#91a39b" stroke-width="3"/>
+  <line x1="150" y1="170" x2="150" y2="460" stroke="#91a39b" stroke-width="3"/>
+  <g fill="#587067" font-family="system-ui, sans-serif" font-size="18">
+    <text x="138" y="468" text-anchor="end">0.0</text>
+    <text x="138" y="410" text-anchor="end">0.1</text>
+    <text x="138" y="352" text-anchor="end">0.2</text>
+    <text x="138" y="294" text-anchor="end">0.3</text>
+    <text x="138" y="236" text-anchor="end">0.4</text>
+    <text x="138" y="178" text-anchor="end">0.5</text>
+  </g>
+  <g stroke="#d8e1dd" stroke-width="1">
+    <line x1="150" y1="402" x2="1080" y2="402"/>
+    <line x1="150" y1="344" x2="1080" y2="344"/>
+    <line x1="150" y1="286" x2="1080" y2="286"/>
+    <line x1="150" y1="228" x2="1080" y2="228"/>
+  </g>
+  <line x1="150" y1="170" x2="1080" y2="170" stroke="#c97028" stroke-width="4" stroke-dasharray="12 10"/>
+  <text x="1065" y="155" text-anchor="end" fill="#92511b" font-family="system-ui, sans-serif" font-size="21" font-weight="700">固定しきい値 0.5</text>
+
+  <rect x="270" y="228" width="120" height="232" rx="12" fill="#2f7d5c"/>
+  <text x="330" y="215" text-anchor="middle" fill="#1c5b43" font-family="system-ui, sans-serif" font-size="22" font-weight="750">0.40</text>
+  <text x="330" y="500" text-anchor="middle" fill="#17362b" font-family="system-ui, sans-serif" font-size="20">失敗A</text>
+  <rect x="455" y="257" width="120" height="203" rx="12" fill="#4b9878"/>
+  <text x="515" y="244" text-anchor="middle" fill="#1c5b43" font-family="system-ui, sans-serif" font-size="22" font-weight="750">0.35</text>
+  <text x="515" y="500" text-anchor="middle" fill="#17362b" font-family="system-ui, sans-serif" font-size="20">失敗B</text>
+  <rect x="680" y="402" width="120" height="58" rx="12" fill="#8ea9c4"/>
+  <text x="740" y="389" text-anchor="middle" fill="#28557f" font-family="system-ui, sans-serif" font-size="22" font-weight="750">0.10</text>
+  <text x="740" y="500" text-anchor="middle" fill="#17362b" font-family="system-ui, sans-serif" font-size="20">正常A</text>
+  <rect x="865" y="431" width="120" height="29" rx="12" fill="#b3c5d7"/>
+  <text x="925" y="418" text-anchor="middle" fill="#28557f" font-family="system-ui, sans-serif" font-size="22" font-weight="750">0.05</text>
+  <text x="925" y="500" text-anchor="middle" fill="#17362b" font-family="system-ui, sans-serif" font-size="20">正常B</text>
+
+  <rect x="210" y="532" width="780" height="46" rx="23" fill="#fff1df"/>
+  <text x="600" y="562" text-anchor="middle" fill="#92511b" font-family="system-ui, sans-serif" font-size="21" font-weight="700">AUROCの順位は正しい ／ しきい値0.5の検出数は0件</text>
+</svg>
