@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 1250" role="img" aria-labelledby="title desc">
+  <title id="title">専門家の知識からcontext-specific benchmarkを作る流れ</title>
+  <desc id="desc">domain expertの知識をpopulation、concept、instanceのschemaへ整理し、LLMで評価例を生成して、4つの品質指標と専門家reviewで診断し、schemaへ反映する縦向きの図。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 z" fill="#334155"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .box { fill: #ffffff; stroke: #475569; stroke-width: 2.5; }
+      .expert { fill: #ecfeff; stroke: #0e7490; }
+      .schema { fill: #eef2ff; stroke: #4f46e5; }
+      .generate { fill: #f0fdf4; stroke: #15803d; }
+      .metric { fill: #fff7ed; stroke: #c2410c; }
+      .review { fill: #fdf2f8; stroke: #be185d; }
+      .title { font: 700 31px system-ui, sans-serif; fill: #0f172a; }
+      .heading { font: 700 31px system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 28px system-ui, sans-serif; fill: #334155; }
+      .small { font: 24px system-ui, sans-serif; fill: #475569; }
+      .arrow { fill: none; stroke: #334155; stroke-width: 4; marker-end: url(#arrow); }
+      .loop { fill: none; stroke: #be185d; stroke-width: 4; stroke-dasharray: 10 8; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="760" height="1250" rx="28"/>
+  <text class="title" x="380" y="48" text-anchor="middle">expert knowledgeを仕様と診断基準へ</text>
+
+  <rect class="box expert" x="80" y="82" width="600" height="130" rx="18"/>
+  <text class="heading" x="380" y="123" text-anchor="middle">1. Domain expert</text>
+  <text class="body" x="380" y="158" text-anchor="middle">現場の目標・利用context</text>
+  <text class="small" x="380" y="190" text-anchor="middle">重要なfactorを言語化</text>
+
+  <path class="arrow" d="M380 212 V246"/>
+  <rect class="box schema" x="80" y="258" width="600" height="236" rx="18"/>
+  <text class="heading" x="380" y="301" text-anchor="middle">2. Schema</text>
+  <text class="body" x="124" y="347">
+    <tspan x="124" dy="0">Population：利用者とcontext</tspan>
+    <tspan x="124" dy="42">Concept：測るものと構成要素</tspan>
+    <tspan x="124" dy="42">Instance：入力の必須・可変部分</tspan>
+    <tspan x="124" dy="42">＋ representativeなseed</tspan>
+  </text>
+
+  <path class="arrow" d="M380 494 V528"/>
+  <rect class="box generate" x="80" y="540" width="600" height="148" rx="18"/>
+  <text class="heading" x="380" y="583" text-anchor="middle">3. Guided generation</text>
+  <text class="body" x="380" y="625" text-anchor="middle">LLMが評価promptを生成</text>
+  <text class="small" x="380" y="661" text-anchor="middle">factor labelと生成条件もlogへ残す</text>
+
+  <path class="arrow" d="M380 688 V722"/>
+  <rect class="box metric" x="80" y="734" width="600" height="196" rx="18"/>
+  <text class="heading" x="380" y="777" text-anchor="middle">4. Dataset-level diagnostics</text>
+  <rect x="113" y="811" width="250" height="46" rx="10" fill="#ffffff" stroke="#fb923c"/>
+  <text class="body" x="238" y="842" text-anchor="middle">Coverage</text>
+  <rect x="397" y="811" width="250" height="46" rx="10" fill="#ffffff" stroke="#fb923c"/>
+  <text class="body" x="522" y="842" text-anchor="middle">Diversity</text>
+  <rect x="113" y="871" width="250" height="46" rx="10" fill="#ffffff" stroke="#fb923c"/>
+  <text class="body" x="238" y="902" text-anchor="middle">Content realism</text>
+  <rect x="397" y="871" width="250" height="46" rx="10" fill="#ffffff" stroke="#fb923c"/>
+  <text class="body" x="522" y="902" text-anchor="middle">Stylistic realism</text>
+
+  <path class="arrow" d="M380 930 V964"/>
+  <rect class="box review" x="80" y="976" width="600" height="140" rx="18"/>
+  <text class="heading" x="380" y="1019" text-anchor="middle">5. Expert review</text>
+  <text class="body" x="380" y="1060" text-anchor="middle">現場で起こるか・相談するか</text>
+  <text class="small" x="380" y="1096" text-anchor="middle">価値観に沿うか。metricを判断の代替にしない</text>
+
+  <path class="loop" d="M680 1046 H710 V1190 H50 V376 H68"/>
+  <text class="small" x="380" y="1224" text-anchor="middle">指摘をschema revisionへ戻す</text>
+</svg>

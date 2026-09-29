@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">専門家の知識からcontext-specific benchmarkを作る流れ</title>
+  <desc id="desc">domain expertの知識をpopulation、concept、instanceのschemaへ整理し、LLMで評価例を生成して、4つの品質指標と専門家reviewで診断し、schemaへ反映する循環を示す。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 z" fill="#334155"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .box { fill: #ffffff; stroke: #475569; stroke-width: 2; }
+      .expert { fill: #ecfeff; stroke: #0e7490; }
+      .schema { fill: #eef2ff; stroke: #4f46e5; }
+      .generate { fill: #f0fdf4; stroke: #15803d; }
+      .metric { fill: #fff7ed; stroke: #c2410c; }
+      .review { fill: #fdf2f8; stroke: #be185d; }
+      .title { font: 700 28px system-ui, sans-serif; fill: #0f172a; }
+      .heading { font: 700 22px system-ui, sans-serif; fill: #0f172a; }
+      .body { font: 17px system-ui, sans-serif; fill: #334155; }
+      .small { font: 15px system-ui, sans-serif; fill: #475569; }
+      .arrow { fill: none; stroke: #334155; stroke-width: 3; marker-end: url(#arrow); }
+      .loop { fill: none; stroke: #be185d; stroke-width: 3; stroke-dasharray: 8 7; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="680" rx="28"/>
+  <text class="title" x="600" y="54" text-anchor="middle">expert knowledgeを生成仕様と診断基準の両方に使う</text>
+
+  <rect class="box expert" x="52" y="130" width="200" height="172" rx="18"/>
+  <text class="heading" x="152" y="172" text-anchor="middle">Domain expert</text>
+  <text class="body" x="78" y="212">
+    <tspan x="78" dy="0">・現場の目標</tspan>
+    <tspan x="78" dy="29">・利用context</tspan>
+    <tspan x="78" dy="29">・重要なfactor</tspan>
+  </text>
+
+  <rect class="box schema" x="316" y="92" width="270" height="248" rx="18"/>
+  <text class="heading" x="451" y="134" text-anchor="middle">Schema</text>
+  <rect x="342" y="158" width="218" height="43" rx="10" fill="#ffffff" stroke="#818cf8"/>
+  <text class="body" x="451" y="186" text-anchor="middle">Population：誰・どこで</text>
+  <rect x="342" y="214" width="218" height="43" rx="10" fill="#ffffff" stroke="#818cf8"/>
+  <text class="body" x="451" y="242" text-anchor="middle">Concept：何を測るか</text>
+  <rect x="342" y="270" width="218" height="43" rx="10" fill="#ffffff" stroke="#818cf8"/>
+  <text class="body" x="451" y="298" text-anchor="middle">Instance：入力の構造</text>
+  <text class="small" x="451" y="333" text-anchor="middle">＋ representativeなseed</text>
+
+  <rect class="box generate" x="650" y="130" width="218" height="172" rx="18"/>
+  <text class="heading" x="759" y="172" text-anchor="middle">Guided generation</text>
+  <text class="body" x="676" y="212">
+    <tspan x="676" dy="0">LLMへschemaを渡す</tspan>
+    <tspan x="676" dy="29">評価promptと</tspan>
+    <tspan x="676" dy="29">factor labelを生成</tspan>
+  </text>
+
+  <rect class="box" x="932" y="130" width="216" height="172" rx="18"/>
+  <text class="heading" x="1040" y="172" text-anchor="middle">Synthetic dataset</text>
+  <text class="body" x="958" y="212">
+    <tspan x="958" dy="0">context固有の入力</tspan>
+    <tspan x="958" dy="29">＋ constituent label</tspan>
+    <tspan x="958" dy="29">＋ 生成条件のlog</tspan>
+  </text>
+
+  <path class="arrow" d="M252 216 H303"/>
+  <path class="arrow" d="M586 216 H637"/>
+  <path class="arrow" d="M868 216 H919"/>
+
+  <rect class="box metric" x="348" y="422" width="504" height="174" rx="18"/>
+  <text class="heading" x="600" y="464" text-anchor="middle">Dataset-level diagnostics</text>
+  <rect x="374" y="490" width="105" height="72" rx="12" fill="#ffffff" stroke="#fb923c"/>
+  <text class="body" x="426" y="521" text-anchor="middle">Coverage</text>
+  <text class="small" x="426" y="545" text-anchor="middle">取りこぼし</text>
+  <rect x="490" y="490" width="105" height="72" rx="12" fill="#ffffff" stroke="#fb923c"/>
+  <text class="body" x="542" y="521" text-anchor="middle">Diversity</text>
+  <text class="small" x="542" y="545" text-anchor="middle">重複・偏り</text>
+  <rect x="606" y="490" width="105" height="72" rx="12" fill="#ffffff" stroke="#fb923c"/>
+  <text class="body" x="658" y="514" text-anchor="middle">Content</text>
+  <text class="body" x="658" y="537" text-anchor="middle">realism</text>
+  <rect x="722" y="490" width="105" height="72" rx="12" fill="#ffffff" stroke="#fb923c"/>
+  <text class="body" x="774" y="514" text-anchor="middle">Stylistic</text>
+  <text class="body" x="774" y="537" text-anchor="middle">realism</text>
+
+  <rect class="box review" x="932" y="424" width="216" height="170" rx="18"/>
+  <text class="heading" x="1040" y="466" text-anchor="middle">Expert review</text>
+  <text class="body" x="958" y="506">
+    <tspan x="958" dy="0">現場で起こるか</tspan>
+    <tspan x="958" dy="29">相談する場面か</tspan>
+    <tspan x="958" dy="29">価値観に沿うか</tspan>
+  </text>
+
+  <path class="arrow" d="M1040 302 V370 Q1040 390 1020 390 H860 Q840 390 840 410 V418"/>
+  <path class="arrow" d="M852 509 H919"/>
+  <path class="loop" d="M932 566 H902 Q884 566 884 584 V626 Q884 644 866 644 H184 Q166 644 166 626 V314"/>
+  <text class="small" x="594" y="668" text-anchor="middle">diagnosticと専門家の指摘をschema revisionへ戻す</text>
+</svg>

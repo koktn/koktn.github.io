@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">few-shot baselineとschema-guided生成の評価結果</title>
+  <desc id="desc">6人の専門家による1から5のstyleとcontent評価、および0から1のstyle、content、coverage、diversity自動指標をbaselineとschemaで比較する。専門家はschemaを高く評価し、自動style指標だけはbaselineが高い。</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; }
+      .title { font: 700 28px system-ui, sans-serif; fill: #0f172a; }
+      .heading { font: 700 22px system-ui, sans-serif; fill: #0f172a; }
+      .label { font: 17px system-ui, sans-serif; fill: #334155; }
+      .small { font: 14px system-ui, sans-serif; fill: #475569; }
+      .value { font: 700 16px system-ui, sans-serif; fill: #0f172a; }
+      .axis { stroke: #94a3b8; stroke-width: 1.5; }
+      .grid { stroke: #e2e8f0; stroke-width: 1; }
+      .baseline { fill: #64748b; }
+      .schema { fill: #0f766e; }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720" rx="28"/>
+  <text class="title" x="600" y="48" text-anchor="middle">専門家評価と自動metricは、styleで逆の結論になった</text>
+  <rect x="420" y="68" width="18" height="18" rx="3" class="baseline"/>
+  <text class="label" x="446" y="83">Few-shot baseline</text>
+  <rect x="635" y="68" width="18" height="18" rx="3" class="schema"/>
+  <text class="label" x="661" y="83">Schema-guided</text>
+
+  <rect class="panel" x="42" y="110" width="422" height="550" rx="18"/>
+  <text class="heading" x="253" y="150" text-anchor="middle">Domain expert（1〜5）</text>
+  <text class="small" x="253" y="177" text-anchor="middle">6人、各方式5例をreview</text>
+  <line class="axis" x1="120" y1="590" x2="414" y2="590"/>
+  <line class="grid" x1="120" y1="213" x2="414" y2="213"/>
+  <line class="grid" x1="120" y1="288" x2="414" y2="288"/>
+  <line class="grid" x1="120" y1="363" x2="414" y2="363"/>
+  <line class="grid" x1="120" y1="439" x2="414" y2="439"/>
+  <line class="grid" x1="120" y1="514" x2="414" y2="514"/>
+  <text class="small" x="102" y="218" text-anchor="end">5</text>
+  <text class="small" x="102" y="293" text-anchor="end">4</text>
+  <text class="small" x="102" y="368" text-anchor="end">3</text>
+  <text class="small" x="102" y="444" text-anchor="end">2</text>
+  <text class="small" x="102" y="519" text-anchor="end">1</text>
+  <text class="small" x="102" y="595" text-anchor="end">0</text>
+
+  <rect class="baseline" x="164" y="364" width="58" height="226" rx="6"/>
+  <text class="value" x="193" y="348" text-anchor="middle">3.0±1.2</text>
+  <rect class="schema" x="232" y="273" width="58" height="317" rx="6"/>
+  <text class="value" x="261" y="257" text-anchor="middle">4.2±0.8</text>
+  <text class="label" x="227" y="624" text-anchor="middle">Style</text>
+
+  <rect class="baseline" x="322" y="341" width="58" height="249" rx="6"/>
+  <text class="value" x="351" y="325" text-anchor="middle">3.3±1.0</text>
+  <rect class="schema" x="390" y="266" width="58" height="324" rx="6"/>
+  <text class="value" x="419" y="250" text-anchor="middle">4.3±0.5</text>
+  <text class="label" x="385" y="624" text-anchor="middle">Content</text>
+  <text class="small" x="253" y="648" text-anchor="middle">6人中5人がschema-guidedを選好</text>
+
+  <rect class="panel" x="492" y="110" width="666" height="550" rx="18"/>
+  <text class="heading" x="825" y="150" text-anchor="middle">自動quality metric（0〜1）</text>
+  <text class="small" x="825" y="177" text-anchor="middle">各方式100例、seed 3件、Claude Sonnet 4.6</text>
+  <line class="axis" x1="650" y1="610" x2="1110" y2="610"/>
+  <line class="grid" x1="650" y1="199" x2="650" y2="610"/>
+  <line class="grid" x1="742" y1="199" x2="742" y2="610"/>
+  <line class="grid" x1="834" y1="199" x2="834" y2="610"/>
+  <line class="grid" x1="926" y1="199" x2="926" y2="610"/>
+  <line class="grid" x1="1018" y1="199" x2="1018" y2="610"/>
+  <line class="grid" x1="1110" y1="199" x2="1110" y2="610"/>
+  <text class="small" x="650" y="634" text-anchor="middle">0</text>
+  <text class="small" x="742" y="634" text-anchor="middle">0.2</text>
+  <text class="small" x="834" y="634" text-anchor="middle">0.4</text>
+  <text class="small" x="926" y="634" text-anchor="middle">0.6</text>
+  <text class="small" x="1018" y="634" text-anchor="middle">0.8</text>
+  <text class="small" x="1110" y="634" text-anchor="middle">1.0</text>
+
+  <text class="label" x="630" y="238" text-anchor="end">Style realism</text>
+  <rect class="baseline" x="650" y="211" width="276" height="25" rx="5"/>
+  <rect class="schema" x="650" y="244" width="258" height="25" rx="5"/>
+  <text class="value" x="936" y="230">0.60±0.01</text>
+  <text class="value" x="918" y="263">0.56±0.01</text>
+
+  <text class="label" x="630" y="338" text-anchor="end">Content realism</text>
+  <rect class="baseline" x="650" y="311" width="336" height="25" rx="5"/>
+  <rect class="schema" x="650" y="344" width="354" height="25" rx="5"/>
+  <text class="value" x="996" y="330">0.73±0.01</text>
+  <text class="value" x="1014" y="363">0.77±0.02</text>
+
+  <text class="label" x="630" y="438" text-anchor="end">Coverage</text>
+  <rect class="baseline" x="650" y="411" width="74" height="25" rx="5"/>
+  <rect class="schema" x="650" y="444" width="106" height="25" rx="5"/>
+  <text class="value" x="734" y="430">0.16±0.04</text>
+  <text class="value" x="766" y="463">0.23±0.02</text>
+
+  <text class="label" x="630" y="538" text-anchor="end">Diversity</text>
+  <rect class="baseline" x="650" y="511" width="64" height="25" rx="5"/>
+  <rect class="schema" x="650" y="544" width="60" height="25" rx="5"/>
+  <text class="value" x="724" y="530">0.14±0.02</text>
+  <text class="value" x="720" y="563">0.13±0.01</text>
+  <text class="small" x="825" y="648" text-anchor="middle">高いほど良い。ただし4指標を一つの総合点にはしない</text>
+</svg>

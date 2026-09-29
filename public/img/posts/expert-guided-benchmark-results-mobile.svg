@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 1240" role="img" aria-labelledby="title desc">
+  <title id="title">few-shot baselineとschema-guided生成の評価結果</title>
+  <desc id="desc">6人の専門家による1から5のstyleとcontent評価、および0から1のstyle、content、coverage、diversity自動指標をbaselineとschemaで比較する縦向きの図。</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .panel { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2.5; }
+      .title { font: 700 31px system-ui, sans-serif; fill: #0f172a; }
+      .heading { font: 700 30px system-ui, sans-serif; fill: #0f172a; }
+      .label { font: 25px system-ui, sans-serif; fill: #334155; }
+      .small { font: 22px system-ui, sans-serif; fill: #475569; }
+      .value { font: 700 23px system-ui, sans-serif; fill: #0f172a; }
+      .grid { stroke: #e2e8f0; stroke-width: 1.5; }
+      .baseline { fill: #64748b; }
+      .schema { fill: #0f766e; }
+    </style>
+  </defs>
+  <rect class="bg" width="760" height="1240" rx="28"/>
+  <text class="title" x="380" y="45" text-anchor="middle">styleだけ人と自動metricが逆方向</text>
+  <rect x="120" y="67" width="22" height="22" rx="4" class="baseline"/>
+  <text class="small" x="153" y="85">Few-shot baseline</text>
+  <rect x="410" y="67" width="22" height="22" rx="4" class="schema"/>
+  <text class="small" x="443" y="85">Schema-guided</text>
+
+  <rect class="panel" x="55" y="112" width="650" height="416" rx="18"/>
+  <text class="heading" x="380" y="155" text-anchor="middle">Domain expert（1〜5）</text>
+  <text class="small" x="380" y="184" text-anchor="middle">6人、各方式5例をreview</text>
+  <text class="label" x="92" y="245">Style</text>
+  <rect class="baseline" x="190" y="214" width="270" height="30" rx="6"/>
+  <text class="value" x="470" y="237">3.0±1.2</text>
+  <rect class="schema" x="190" y="255" width="378" height="30" rx="6"/>
+  <text class="value" x="578" y="278">4.2±0.8</text>
+
+  <text class="label" x="92" y="355">Content</text>
+  <rect class="baseline" x="190" y="324" width="297" height="30" rx="6"/>
+  <text class="value" x="497" y="347">3.3±1.0</text>
+  <rect class="schema" x="190" y="365" width="387" height="30" rx="6"/>
+  <text class="value" x="587" y="388">4.3±0.5</text>
+  <line class="grid" x1="190" y1="416" x2="640" y2="416"/>
+  <text class="small" x="190" y="444" text-anchor="middle">0</text>
+  <text class="small" x="280" y="444" text-anchor="middle">1</text>
+  <text class="small" x="370" y="444" text-anchor="middle">2</text>
+  <text class="small" x="460" y="444" text-anchor="middle">3</text>
+  <text class="small" x="550" y="444" text-anchor="middle">4</text>
+  <text class="small" x="640" y="444" text-anchor="middle">5</text>
+  <text class="small" x="380" y="495" text-anchor="middle">6人中5人がschema-guidedを選好</text>
+
+  <rect class="panel" x="55" y="556" width="650" height="620" rx="18"/>
+  <text class="heading" x="380" y="600" text-anchor="middle">自動quality metric（0〜1）</text>
+  <text class="small" x="380" y="630" text-anchor="middle">各方式100例、seed 3件</text>
+
+  <text class="label" x="92" y="691">Style realism</text>
+  <rect class="baseline" x="270" y="660" width="240" height="28" rx="6"/>
+  <text class="value" x="520" y="682">0.60±0.01</text>
+  <rect class="schema" x="270" y="699" width="224" height="28" rx="6"/>
+  <text class="value" x="504" y="721">0.56±0.01</text>
+
+  <text class="label" x="92" y="811">Content realism</text>
+  <rect class="baseline" x="270" y="780" width="292" height="28" rx="6"/>
+  <text class="value" x="572" y="802">0.73±0.01</text>
+  <rect class="schema" x="270" y="819" width="308" height="28" rx="6"/>
+  <text class="value" x="588" y="841">0.77±0.02</text>
+
+  <text class="label" x="92" y="931">Coverage</text>
+  <rect class="baseline" x="270" y="900" width="64" height="28" rx="6"/>
+  <text class="value" x="344" y="922">0.16±0.04</text>
+  <rect class="schema" x="270" y="939" width="92" height="28" rx="6"/>
+  <text class="value" x="372" y="961">0.23±0.02</text>
+
+  <text class="label" x="92" y="1051">Diversity</text>
+  <rect class="baseline" x="270" y="1020" width="56" height="28" rx="6"/>
+  <text class="value" x="336" y="1042">0.14±0.02</text>
+  <rect class="schema" x="270" y="1059" width="52" height="28" rx="6"/>
+  <text class="value" x="332" y="1081">0.13±0.01</text>
+
+  <line class="grid" x1="270" y1="1110" x2="670" y2="1110"/>
+  <text class="small" x="270" y="1138" text-anchor="middle">0</text>
+  <text class="small" x="470" y="1138" text-anchor="middle">0.5</text>
+  <text class="small" x="670" y="1138" text-anchor="middle">1.0</text>
+  <text class="small" x="380" y="1208" text-anchor="middle">4指標は総合点にせず、失敗の種類を診断する</text>
+</svg>
