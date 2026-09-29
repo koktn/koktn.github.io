@@ -45,21 +45,14 @@ DV365はここで、userの興味を2つの時間軸へ分けて考えます。
 
 ## 全体像：7万件を200個に集約し、58個へ圧縮する
 
-DV365のdata flowを単純化すると次のようになります。
+DV365のdata flowを、offlineとonlineの責務に分けて整理すると次のようになります。
 
-```text
-最大70,000件のuser行動履歴
-  ↓ explicit／implicit timelineへ整理
-action・視聴時間・期間・ID種別などでmulti-slicing
-  ↓ 各sliceをmean／weighted mean pooling
-200個 × 256次元の埋め込み
-  ↓ Funnel Summarization Arch（FSA）
-58個 × 256次元のuser埋め込み
-  ↓ 4-bit quantization
-user IDをkeyにonline key-value storeへ保存
-  ↓
-ranking／retrieval modelが軽量なadaptation moduleで利用
-```
+<picture>
+  <source media="(max-width: 760px)" srcset="/img/posts/dv365-offline-online-architecture-mobile.svg">
+  <img src="/img/posts/dv365-offline-online-architecture.svg" alt="DV365の構成。offlineでは最大7万件の長期履歴を200個へmulti-slicingし、FSAで58個に圧縮して共有する。onlineでは直近履歴を処理するHSTUとDV365 embeddingを合流させ、adapter経由で15個のproduction modelへ渡す">
+</picture>
+
+*図1：Wenhan Lyu et al.「[DV365: Extremely Long User History Modeling at Instagram](https://arxiv.org/html/2506.00450v1)」のFigure 1・2と本文の記述に基づき、本記事でoffline／onlineの責務へ再構成した図。原図の転載ではありません。*
 
 上流のfoundation modelは定期的に学習され、user towerの中間出力を全active userについて生成します。論文では30億user分の `user ID → embedding` をkey-value storeへ保存し、埋め込みを6時間ごとに生成するとしています。
 
@@ -129,6 +122,13 @@ Multi-slicing後の入力は `N = 200` 個、各 `D = 256` 次元の埋め込み
 
 Funnel Transformerのblock間ではtoken軸をmean poolingし、token数を段階的に減らします。並列にLinear Compression Encoder（LCE）も置き、両方の出力を合わせます。最終出力は58個の256次元embeddingです。
 
+<picture>
+  <source media="(max-width: 760px)" srcset="/img/posts/dv365-fsa-compression-flow-mobile.svg">
+  <img src="/img/posts/dv365-fsa-compression-flow.svg" alt="Funnel Summarization Archの圧縮flow。200個×256次元を256×200へ転置し、Funnel TransformerとLCEの並列経路で58個×256次元へ要約した後、4-bit量子化する">
+</picture>
+
+*図2：同論文のSection 2.3.2、Algorithm 1、Figure 1の記述に基づき、本記事でFSAのtensor形状と圧縮方向を新規に図解。原図の転載ではありません。*
+
 比較実験では、同じ58出力でもdim-wiseなMLP／Transformerよりtoken-wise版が一貫して良く、token-wise TransformerとFSAが上位でした。FSAは通常のTransformerよりparameterが少なく、training QPSが10%高かったため採用されています。
 
 最後に4-bit quantizationを適用します。論文の表現では、`200 × 256` 個のFP32値を `58 × 17` 個の64-bit整数へpackし、約50倍に圧縮します。1 userあたりでは、58個の出力がそれぞれ136 bytes、合計約7.9 KBです。
@@ -173,6 +173,15 @@ retrievalではhit rate@1／@10を測定しています。たとえばGateNetを
 
 最終的にDV365はInstagramとThreadsの15個のproduction modelへ導入され、各launchのA/B testを累積してInstagram appのtime spentを0.7%改善したと報告されています。これはoffline NEとは別のonline成果です。一方、control、期間、traffic量、confidence interval、個別launchの寄与は公開されていません。
 
+評価の層を混ぜないよう、結果をまとめると次のようになります。
+
+| Evidenceの層 | 比較対象 | 論文の結果 | 読み方 |
+| --- | --- | --- | --- |
+| FSA ablation | 圧縮方式・encoder | token-wiseがdim-wiseを上回り、FSAは通常Transformer比でtraining QPS +10% | 上流user encoderの設計比較 |
+| Downstream ranking | HSTUを含むReels production baseline | 全task改善、平均Relative NE -0.4%超 | 非公開data上のoffline評価 |
+| Downstream retrieval | MoL baseline | hit rateの相対改善は全表で0.5〜7.9%、GateNet版1.3〜7.5% | task・接続方法で効果が異なる |
+| Production rollout | Instagram／Threadsの15 model | 累積A/B testでInstagram time spent +0.7% | 実験期間や個別寄与は非公開 |
+
 ## Staleness：更新が遅れても本当に使えるのか
 
 offline embeddingには、常に鮮度の問題があります。論文のproduction pipelineは定期更新ですが、上流の学習dataはonline trainingが使うdataより約2日遅れます。
@@ -191,12 +200,12 @@ Appendix Bでは、次の3モデルを7日分のdataで比較しています。
 
 論文は、同等の長期履歴処理を各modelへend-to-endで組み込む場合と、DV365を共有する場合のcostを試算しています。
 
-| 項目 | 長い履歴をonline／各modelで処理する想定 | DV365 |
-| --- | ---: | ---: |
-| feature取得・加工 | 約100 MW | embedding servingの実測21 kW |
-| 30億user分の低latency storage | 11 PB | 24 TB |
-| Reels 1 modelのserving前処理 | 6 MW | offline側へ移動 |
-| Reels 1 modelの追加推論GPU | H100 78基相当 | downstreamでは圧縮embeddingを利用 |
+| 項目 | 長い履歴をonline／各modelで処理する想定 | DV365 | 数値の根拠 |
+| --- | ---: | ---: | --- |
+| feature取得・加工 | 約100 MW | embedding serving 21 kW | 左は長さ60のload testから40Kへ線形外挿、右はproduction load testの実測 |
+| 30億user分の低latency storage | 11 PB | 24 TB | raw attributeと量子化embeddingのsizeから算出 |
+| Reels 1 modelのserving前処理 | 6 MW | offline側へ移動 | 900 kWのload test、長さ比、`0.01`の最適化係数による試算 |
+| Reels 1 modelの追加推論GPU | H100 78基相当 | downstreamでは圧縮embeddingを利用 | user encoder追加時のinference QPS低下から換算 |
 
 storageは、raw timelineの各attributeをint64で保持する想定と、4-bit量子化した58個のembeddingを比較しています。11 PBから24 TBは約458分の1です。
 

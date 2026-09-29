@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1500" role="img" aria-labelledby="title desc">
+  <title id="title">DV365のFunnel Summarization Archによる圧縮</title>
+  <desc id="desc">200個の256次元埋め込みを転置し、Funnel TransformerとLinear Compression Encoderで58個へ要約して量子化する流れを縦に配置したモバイル向け図</desc>
+  <defs>
+    <marker id="fa" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 11 5.5 L 0 11 z" fill="#315c54"/>
+    </marker>
+    <linearGradient id="fm1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#79bca8"/><stop offset="1" stop-color="#d5e9e1"/></linearGradient>
+    <linearGradient id="fm2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5f87ad"/><stop offset="1" stop-color="#dce7f1"/></linearGradient>
+  </defs>
+  <rect width="720" height="1500" rx="28" fill="#f7f5f0"/>
+  <g font-family="Inter, Hiragino Sans, Yu Gothic, sans-serif">
+    <text x="42" y="62" fill="#202522" font-size="38" font-weight="750">FSAは「embedding次元」ではなく</text>
+    <text x="42" y="108" fill="#202522" font-size="38" font-weight="750">「200個のtoken」を絞る</text>
+    <text x="42" y="148" fill="#5e6965" font-size="23">transposeでparameter共有の向きを変える</text>
+
+    <text x="52" y="214" fill="#196c5b" font-size="22" font-weight="700">01  INPUT｜pooled embeddings</text>
+    <rect x="230" y="250" width="260" height="224" rx="18" fill="url(#fm1)" stroke="#4d8d7a" stroke-width="3"/>
+    <g stroke="#ffffff" stroke-opacity="0.75" stroke-width="3">
+      <path d="M 282 250 V 474 M 334 250 V 474 M 386 250 V 474 M 438 250 V 474"/>
+      <path d="M 230 294 H 490 M 230 338 H 490 M 230 382 H 490 M 230 426 H 490"/>
+    </g>
+    <text x="360" y="516" text-anchor="middle" fill="#315c54" font-size="27" font-weight="700">[N, D] = [200, 256]</text>
+
+    <path d="M 360 536 L 360 592" stroke="#315c54" stroke-width="5" fill="none" marker-end="url(#fa)"/>
+    <text x="382" y="570" fill="#5e6965" font-size="22">transpose</text>
+
+    <text x="52" y="638" fill="#196c5b" font-size="22" font-weight="700">02  TOKEN-WISE VIEW</text>
+    <text x="52" y="678" fill="#202522" font-size="27" font-weight="700">同じ処理を各embedding次元で共有</text>
+    <rect x="176" y="716" width="368" height="190" rx="18" fill="url(#fm1)" stroke="#4d8d7a" stroke-width="3"/>
+    <g stroke="#ffffff" stroke-opacity="0.75" stroke-width="3">
+      <path d="M 228 716 V 906 M 280 716 V 906 M 332 716 V 906 M 384 716 V 906 M 436 716 V 906 M 488 716 V 906"/>
+      <path d="M 176 754 H 544 M 176 792 H 544 M 176 830 H 544 M 176 868 H 544"/>
+    </g>
+    <text x="360" y="948" text-anchor="middle" fill="#315c54" font-size="27" font-weight="700">[D, N] = [256, 200]</text>
+
+    <path d="M 360 968 L 360 1022" stroke="#315c54" stroke-width="5" fill="none" marker-end="url(#fa)"/>
+
+    <rect x="52" y="1042" width="298" height="148" rx="18" fill="#ffffff" stroke="#aac9bd" stroke-width="2"/>
+    <text x="78" y="1080" fill="#196c5b" font-size="20" font-weight="700">MAIN PATH</text>
+    <text x="78" y="1122" fill="#202522" font-size="26" font-weight="700">Funnel Transformer</text>
+    <text x="78" y="1160" fill="#5e6965" font-size="21">attention → token pooling</text>
+
+    <rect x="370" y="1042" width="298" height="148" rx="18" fill="#ffffff" stroke="#aabed1" stroke-width="2"/>
+    <text x="396" y="1080" fill="#315f86" font-size="20" font-weight="700">PARALLEL PATH</text>
+    <text x="396" y="1122" fill="#202522" font-size="26" font-weight="700">LCE</text>
+    <text x="396" y="1160" fill="#5e6965" font-size="21">linear compression</text>
+
+    <path d="M 201 1200 L 201 1246 L 326 1246" stroke="#315c54" stroke-width="4" fill="none" marker-end="url(#fa)"/>
+    <path d="M 519 1200 L 519 1246 L 394 1246" stroke="#315f86" stroke-width="4" fill="none" marker-end="url(#fa)"/>
+    <circle cx="360" cy="1246" r="22" fill="#f7f5f0" stroke="#587791" stroke-width="4"/>
+    <path d="M 349 1246 H 371 M 360 1235 V 1257" stroke="#587791" stroke-width="4"/>
+
+    <path d="M 360 1270 L 360 1310" stroke="#315c54" stroke-width="5" fill="none" marker-end="url(#fa)"/>
+    <rect x="258" y="1324" width="204" height="72" rx="16" fill="url(#fm2)" stroke="#315f86" stroke-width="3"/>
+    <text x="360" y="1368" text-anchor="middle" fill="#ffffff" font-size="27" font-weight="700">58 × 256</text>
+
+    <rect x="42" y="1420" width="636" height="54" rx="16" fill="#fff4d9" stroke="#ddbd6d" stroke-width="2"/>
+    <text x="62" y="1455" fill="#72571f" font-size="20" font-weight="650">4-bit後：58 × 17 int64｜約7.9 KB / user｜約50分の1</text>
+  </g>
+</svg>
