@@ -122,7 +122,7 @@ Humanoid-Gym、UnitreeのRL toolchain、ASAPなどは、この世界的な基盤
 
 追加で読む3本は、現在のhumanoidへつながる別の枝を補います。
 
-- [DeepMimic](https://arxiv.org/abs/1804.02717)（2018）は、参照資料 motionを追う模倣目的とタスク目的を組み合わせました。ASAPやBeyondMimicへ進む前に、人間らしい運動とタスク達成を報酬上でどう分担するかを学べます。ただし、結果は物理シミュレーション内のcharacterとAtlas modelであり、実機転送を示した研究ではありません。
+- [DeepMimic](https://arxiv.org/abs/1804.02717)（2018）は、参照モーションを追う模倣目的とタスク目的を組み合わせました。ASAPやBeyondMimicへ進む前に、人間らしい運動とタスク達成を報酬上でどう分担するかを学べます。ただし、結果は物理シミュレーション内のcharacterとAtlas modelであり、実機転送を示した研究ではありません。
 - [RMA](https://arxiv.org/abs/2107.04034)（2021）は、学習時に得られるfrictionやpayloadなどのprivileged informationをlatent表現へ圧縮し、実行時には直近0.5秒の状態・行動履歴からその表現を推定します。Unitree A1へ追加学習なしで展開しました。ここでいうonline adaptationは、実機上でnetwork weightを再学習することではなく、学習済みadaptation moduleが環境に応じたlatentを更新することです。
 - [Berkeley Humanoid](https://arxiv.org/abs/2407.21781)（2024）は、複雑な閉linkやelastic elementを避け、通信delayを抑え、転倒に耐える小型機を作ることで、シミュレーションを単純にし、軽いdomain randomizationと基本的なMLP policyでも実機転送しやすくする考え方を示します。中国製機体ではありませんが、「高度な学習器」だけでなく「学習しやすいハードウェア」を設計する比較対象になります。
 
@@ -242,9 +242,9 @@ Humanoid-Gymの後は、解こうとしている問題の違いを意識して�
 
 ### DeepMimic：motion imitationの出発点を押さえる
 
-[DeepMimic](https://arxiv.org/abs/1804.02717)は、motion captureなどの参照資料を追うimitation objectiveと、目標方向へ歩くといったtask objectiveを組み合わせました。単にposeを再生するのではなく、物理シミュレーション内で外乱から回復し、目的に応じて参照資料から外れる余地を方策に与えます。
+[DeepMimic](https://arxiv.org/abs/1804.02717)は、motion captureなどの参照モーションを追うimitation objectiveと、目標方向へ歩くといったtask objectiveを組み合わせました。単にposeを再生するのではなく、物理シミュレーション内で外乱から回復し、目的に応じて参照モーションから外れる余地を方策に与えます。
 
-本稿では実機humanoidの成果としてではなく、OmniH2O、ASAP、BeyondMimicへ続く「参照資料 motionを物理的に成立する制御へ変える」という発想の基盤として位置づけます。
+本稿では実機humanoidの成果としてではなく、OmniH2O、ASAP、BeyondMimicへ続く「参照モーションを物理的に成立する制御へ変える」という発想の基盤として位置づけます。
 
 ### RMA：観測履歴から環境変化へ適応する
 
@@ -354,7 +354,7 @@ DR02での実機評価は、7種類・9設定を各20 trial実施し、70 cmの�
 
 PRIMOは、特定のlocomotion policyのrolloutだけでodometry estimatorを学ぶと、ポリシー更新後のmotionを覆えない問題を扱います。約64時間のretargeted human motionをtrackingするsimulation rolloutから学習データを作り、physics・左右対称性のpriorを入れたestimatorを学習します。
 
-実機は31 body DoFのAgiBot A3 Ultraで、入力には両脚12 jointと腰3 jointのposition／velocity、pelvis IMUを使います。cameraとLiDARを使わない自己運動推定の研究ですが、評価参照資料にはLiDAR map localizationやmotion captureを用いています。つまり「推定時に外界センサーを使わない」ことと「正解データ作成にも使わない」ことは別です。
+実機は31 body DoFのAgiBot A3 Ultraで、入力には両脚12 jointと腰3 jointのposition／velocity、pelvis IMUを使います。cameraとLiDARを使わない自己運動推定の研究ですが、評価用の参照データにはLiDAR map localizationやmotion captureを用いています。つまり「推定時に外界センサーを使わない」ことと「正解データ作成にも使わない」ことは別です。
 
 この3本は同じ方向を向いているようで、役割が異なります。
 
@@ -422,7 +422,7 @@ G1／H1で現在の公式toolchainを使いたい場合は、Isaac Gym系の[uni
 
 IMU、joint position／velocity、contact判定を保存し、まずInEKF系の予測・更新を可視化します。その後、DWLやPRIMOのようなlearned estimatorが何を追加で推定するかを比較します。
 
-比較では平均誤差だけでなく、足滑り、着地impact、急旋回、controller変更後に誤差がどう増えるかを分けます。PRIMOの数値を再現するには、同論文のtraining 事例集、real-robot protocol、正解データ条件まで揃える必要があります。
+比較では平均誤差だけでなく、足滑り、着地impact、急旋回、controller変更後に誤差がどう増えるかを分けます。PRIMOの数値を再現するには、同論文の学習コーパス、real-robot protocol、正解データ条件まで揃える必要があります。
 
 ### Stage 5：terrain表現を比較する
 
