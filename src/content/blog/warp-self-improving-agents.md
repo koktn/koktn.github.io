@@ -1,7 +1,8 @@
 ---
-title: Warpのself-improving agent設計――2つのSkillでfeedbackを継続的な改善に変える
-description: WarpがClaude上で構築したself-improving agentを、base skill、improver skill、human feedback、評価と実装の観点から解説します。
+title: フィードバックでエージェントを改善するWarpの設計：2つのスキルで継続的な改善を管理する
+description: WarpがClaude上で構築した継続的に改善するエージェントを、実行用スキル、改善用スキル、人間からのフィードバック、評価と実装の観点から解説します。
 publishedAt: 2026-09-05
+updatedAt: 2026-10-01
 category: AI
 tags:
   - AI Agent
@@ -11,31 +12,31 @@ tags:
 draft: false
 ---
 
-> **AI利用の明示**  
+> AI利用の明示<br>
 > 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。主張と数値は参照元を確認していますが、利用時は原文も確認してください。
 
-今回取り上げるのは、Claude公式blogで2026年8月26日に公開された「[How Warp builds self-improving agents on Claude](https://claude.com/blog/how-warp-builds-self-improving-agents-on-claude)」です。AnthropicのMichael Segner氏が、Warpによるself-improving agentの設計と運用例を紹介しています。
+今回取り上げるのは、Claude公式ブログで2026年8月26日に公開された「[How Warp builds self-improving agents on Claude](https://claude.com/blog/how-warp-builds-self-improving-agents-on-claude)」です。AnthropicのMichael Segner氏が、Warpによる継続的に改善するエージェントの設計と運用例を紹介しています。
 
-この記事の要点は、**taskを実行するbase skillと、human feedbackからbase skillの小さな修正を提案するimprover skillを分け、通常のPull Request workflowで改善を管理する**というものです。
+この記事の要点は、タスクを処理する実行用スキルと、人間のフィードバックをもとに実行用スキルの小さな修正を提案する改善用スキルを分け、通常のPull Requestのワークフローで改善を管理するというものです。
 
-## 課題：agentへのfeedbackが次のsessionに残らない
+## 課題：エージェントへのフィードバックが次のセッションに残らない
 
-Warpでは、社内のcode review agentが役に立たないcommentや低品質なoutputを返し、engineerから不満が出ていました。失敗例を見ながら人がpromptを書き直したり、`AGENTS.md`のようなcontext fileを改善したりすると一時的には良くなります。しかし、taskごとのfeedbackはsession終了時に消え、修正作業も人手のままなのでscaleしません。
+Warpでは、社内のコードレビューエージェントが役に立たないコメントや低品質な出力を返し、エンジニアから不満が出ていました。失敗例を見ながら人がプロンプトを書き直したり、`AGENTS.md`のような文脈を与えるファイルを改善したりすると一時的には良くなります。しかし、タスクごとのフィードバックはセッション終了時に消え、修正作業も人手のままなので規模を拡大できません。
 
-初回のpromptでtaskの80%を正しく処理できたとしても、残り20%の不要な指摘が繰り返し現れれば、userにとってはnoiseになります。必要なのは「強いpromptを一度書くこと」だけでなく、productionで得たfeedbackを次の実行へ安全に反映するloopです。
+初回のプロンプトでタスクの80%を正しく処理できたとしても、残り20%の不要な指摘が繰り返し現れれば、ユーザーにとってはノイズになります。必要なのは「強いプロンプトを一度書くこと」だけでなく、本番環境で得たフィードバックを次の実行へ安全に反映するループです。
 
-## 2-skill architecture
+## 2つのスキルで構成する
 
-Warpの構成には、役割の異なる2つのSkillがあります。
+Warpの構成には、役割の異なる2つのスキルがあります。
 
-| Component | 実行timing | 役割 |
+| 構成要素 | 実行タイミング | 役割 |
 | --- | --- | --- |
-| inner / base skill | taskごと | domain knowledgeと実行手順をagentへ与える |
-| human feedback | task後 | outputの良否と、その理由を普段の作業場所で記録する |
-| outer / improver skill | schedule実行 | feedbackを集約し、base skillへの小さな変更を提案する |
-| human review | Skill更新時 | 提案されたdiffを確認し、mergeするか判断する |
+| inner / 実行用スキル | タスクごと | 専門知識と実行手順をエージェントへ与える |
+| 人間からのフィードバック | タスク後 | 出力の良否と、その理由を普段の作業場所で記録する |
+| outer / 改善用スキル | スケジュール実行 | フィードバックを集約し、実行用スキルへの小さな変更を提案する |
+| 人間によるレビュー | スキル更新時 | 提案された差分を確認し、マージするか判断する |
 
-処理のflowは次のようになります。
+処理の流れは次のようになります。
 
 ```text
 base skillを使ってtaskを実行
@@ -47,72 +48,71 @@ base skillを使ってtaskを実行
   → 次のtaskから更新済みbase skillを利用
 ```
 
-重要なのは、improver agentがbase skillを直接書き換えて即時反映するのではない点です。Skillはplain fileなので、diffを確認でき、version control、review、rollbackという既存のsoftware development workflowへ載せられます。
+改善担当エージェントが実行用スキルを直接書き換え、即時反映するわけではありません。この区別が重要です。スキルは通常のファイルなので、差分を確認でき、バージョン管理、レビュー、切り戻しという既存のソフトウェア開発のワークフローに組み込めます。
 
-## Warpのissue triage agentでの実例
+## Warpのissueを分類するエージェントでの実例
 
-紹介されているissue triage agentは、新しいGitHub issueをtriggerに起動します。codebaseを調べ、complexityとfeasibilityを分析し、labelと修正方針を提案します。base skillには、各labelの意味や調査手順が書かれています。
+紹介されているissueを分類するエージェントは、新しいGitHub issueをtriggerに起動します。コードベースを調べ、complexityとfeasibilityを分析し、ラベルと修正方針を提案します。実行用スキルには、各ラベルの意味や調査手順が書かれています。
 
-あるissueでagentは主要な判断には成功しましたが、仕様作成へ進めることを示す`ready to spec` labelを付け忘れました。maintainerはissue上で、付けるべきlabelだけでなく、なぜ必要なのかもfeedbackとして残しました。
+あるissueでエージェントは主要な判断には成功しましたが、仕様作成へ進めることを示す`ready to spec`ラベルを付け忘れました。メンテナーはissue上で、付けるべきラベルだけでなく、なぜ必要なのかもフィードバックとして残しました。
 
-その後、Warpのorchestration platformであるOz上のscheduled agentが動きます。SkillにbundleされたPython scriptでfeedback付きissueを取得してJSONへまとめ、improver agentが読み込みます。agentはfeedbackから具体的なsignalを取り出し、`ready to spec`を適用する条件をbase skillへ加える小さな変更を提案してPull Requestを作成します。最終的に人間がreviewしてmergeし、次回から新しい知識が使われます。
+その後、Warpのエージェントの実行を管理する基盤であるOz上の定期実行のエージェントが動きます。スキルにbundleされたPythonスクリプトでフィードバック付きissueを取得してJSONへまとめ、改善担当エージェントが読み込みます。エージェントはフィードバックから具体的なシグナルを取り出し、`ready to spec`を適用する条件を実行用スキルへ加える小さな変更を提案してPull Requestを作成します。最終的に人間がレビューしてマージし、次回から新しい知識が使われます。
 
-公開されている「[Ambient Agents Demo - GitHub Actions](https://github.com/warpdotdev/warp-agents-demo-github-issue-triage)」では、GitHub ActionからWarp agentを起動する構成を確認できます。ただし、このrepositoryは2026年6月2日にarchiveされておりread-onlyです。Claude公式blogの完全なself-improvement loop一式が、そのまま実行可能な形で公開されているわけではありません。
+公開されている「[Ambient Agents Demo - GitHub Actions](https://github.com/warpdotdev/warp-agents-demo-github-issue-triage)」では、GitHub ActionからWarpのエージェントを起動する構成を確認できます。ただし、このリポジトリは2026年6月2日にアーカイブされており読み取り専用です。Claude公式ブログの完全な自己改善のループ一式が、そのまま実行可能な形で公開されているわけではありません。
 
-## Skillを書くときのポイント
+## スキルを書くときのポイント
 
 Warpの推奨事項は、次のように整理できます。
 
-### Rulesではなくprinciplesを書く
+### 個別の規則ではなく原則を書く
 
-変数名の全patternを列挙するようなrulesより、「重複したcodeを探す」のようなprincipleを与えます。agentが未知のcaseへgeneralizeしやすくなるためです。
+変数名の全パターンを列挙するような規則より、「重複したコードを探す」のような原則を与えます。エージェントが未知の事例へ汎化しやすくなるためです。
 
-### Whyを含める
+### 理由を含める
 
-指示だけでなく理由を書くと、agentは表面的なpattern matchingではなく、目的に沿って判断できます。feedbackにも「間違い」だけでなく「なぜ間違いか」を含めます。
+指示だけでなく理由を書くと、エージェントは表面的なパターン照合ではなく、目的に沿って判断できます。フィードバックにも「間違い」だけでなく「なぜ間違いか」を含めます。
 
-### Feedbackの摩擦を下げる
+### フィードバックを残す負担を減らす
 
-専用formへ転記させず、Pull Request commentやissue commentなど、普段の作業場所でfeedbackを収集します。収集が面倒だと改善のsignalが途切れます。
+専用フォームへ転記させず、Pull Request commentやissue commentなど、普段の作業場所でフィードバックを収集します。収集が面倒だと改善のシグナルが途切れます。
 
-### Skillを小さく保つ
+### スキルを小さく保つ
 
-すべてを`SKILL.md`へ詰め込まず、必要なreferenceやscriptを別fileにしてprogressive disclosureを使います。[Claude PlatformのAgent Skills overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview)でも、必要なfileだけをon-demandで読み込む構成が説明されています。
+すべてを`SKILL.md`へ詰め込まず、必要な参照資料やスクリプトを別ファイルにしてprogressive disclosureを使います。[Claude PlatformのAgent Skills overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview)でも、必要なファイルだけをon-demandで読み込む構成が説明されています。
 
 ### 量より質。ただし質の高い量は役立つ
 
-単純なthumbs-up／downを大量に集めるより、domain expertによる具体的なfeedbackの方が改善に使えます。一方で、質の揃ったsignalならcorpusが増えるほど繰り返しpatternを見つけやすくなります。
+単純なthumbs-up／downを大量に集めるより、分野の専門家による具体的なフィードバックの方が改善に使えます。一方で、質の揃ったシグナルなら事例集が増えるほど繰り返しパターンを見つけやすくなります。
 
-### Improverへ投資する
+### 改善担当の処理へ投資する
 
-domain knowledgeを持つbase skillはtaskごとに変わりますが、feedback収集、差分抽出、最小patch作成、評価、PR作成というimprover側の処理は再利用しやすい部分です。
+専門知識を持つ実行用スキルはタスクごとに変わりますが、フィードバック収集、差分抽出、最小修正作成、評価、PR作成という改善担当エージェント側の処理は再利用しやすい部分です。
 
-## Skillとmemoryは別物
+## スキルとメモリは別物
 
-Claude公式blogは、Skillとmemoryの違いも明確にしています。
+Claude公式ブログは、スキルとメモリの違いも明確にしています。
 
-- **Skill**：taskの進め方を表すproceduralで比較的stableな知識。意図的なreviewを経て更新する
-- **Memory**：inference時にagentが書き込み、sessionやuserに関する状態として継続的に変化する
+スキルはタスクの進め方を表す手続き的な知識で、比較的安定しています。意図的なレビューを経て更新します。メモリは推論時にエージェントが書き込み、セッションやユーザーに関する状態として継続的に変化します。
 
-すべてのfeedbackをmemoryへ自動保存すると、誤った指示や一時的な例外が蓄積する恐れがあります。組織の標準手順として繰り返し使う知識は、review可能なSkillとして管理する方が向いています。
+すべてのフィードバックをメモリへ自動保存すると、誤った指示や一時的な例外が蓄積する恐れがあります。組織の標準手順として繰り返し使う知識は、レビュー可能なスキルとして管理する方が向いています。
 
 ## どこまで効果が検証されているか
 
-元記事には、Warpで月間80万人のdeveloperがbuildしている、Fortune 500企業の56%が利用している、Warp内のClaude Code sessionが累計1,000万回・週40万回以上、Warp Agentのconversationが累計4,000万件、といった利用規模が掲載されています。
+元記事には、Warpで月間80万人の開発者が開発している、Fortune 500企業の56%が利用している、Warp内のClaude Code sessionが累計1,000万回・週40万回以上、Warp Agentの会話が累計4,000万件、といった利用規模が掲載されています。
 
-ただし、これらはWarpやClaudeの利用規模であり、2-skill loopによる品質改善を直接測った値ではありません。記事では、導入前後の正解率、不要comment率、Skill変更の採用率、control groupとの比較などは公開されていません。
+ただし、これらはWarpやClaudeの利用規模であり、2-skill loopによる品質改善を直接測った値ではありません。記事では、導入前後の正解率、不要コメント率、スキル変更の採用率、対照群との比較などは公開されていません。
 
-したがって、このsourceから言えるのは「Warpが複数のagentでこのpatternをproduction運用している」「issue triageの改善例がある」というcase studyまでです。self-improvementの改善率や、別組織でも同じ効果が出ることが定量的に実証された、とまでは言えません。
+したがって、この参照元から言えるのは「Warpが複数のエージェントでこのパターンを本番で運用している」「issue triageの改善例がある」という事例研究までです。自己改善の改善率や、別組織でも同じ効果が出ることが定量的に実証された、とまでは言えません。
 
 ## 実際に実装するには
 
-以下は、元記事の設計を一般的なcode review agentへ適用する実装案です。Warpの内部platformやimprover promptは公開されていないため、完全再現ではありません。
+以下は、元記事の設計を一般的なコードレビューエージェントへ適用する実装案です。Warpの内部プラットフォームや改善担当エージェント promptは公開されていないため、完全再現ではありません。
 
-### 1. Base skillと評価対象を固定する
+### 1. 実行用スキルと評価対象を固定する
 
-まず、1つの狭いtaskから始めます。たとえば「Pull Requestにsecurity上の問題がないかreviewする」のように対象を限定します。base skill、model version、tool、repository revisionを実行logへ保存し、どの条件で生成されたoutputか追跡できるようにします。
+まず、1つの狭いタスクから始めます。たとえば「Pull Requestにセキュリティ上の問題がないかレビューする」のように対象を限定します。実行用スキル、モデルのバージョン、ツール、リポジトリのリビジョンを実行ログへ保存し、どの条件で生成された出力か追跡できるようにします。
 
-### 2. Feedback schemaを決める
+### 2. フィードバックの記録形式を決める
 
 thumbs-up／downだけでなく、期待する動作と理由を保存します。
 
@@ -130,11 +130,11 @@ type AgentFeedback = {
 };
 ```
 
-feedback本文はuntrusted inputとして扱います。issueやPRに書かれた命令をそのままSkillへコピーせず、誰のfeedbackを採用対象にするか、どのrepositoryやlabelを収集するかをallowlistで制限します。
+フィードバック本文は信頼できない入力として扱います。issueやPRに書かれた命令をそのままスキルへコピーせず、誰のフィードバックを採用対象にするか、どのリポジトリやラベルを収集するかを許可リストで制限します。
 
-### 3. Improverをschedule実行する
+### 3. 改善担当エージェントを定期実行する
 
-毎回のtask終了時ではなく、日次または週次でまとめて処理します。単発の例外をgeneral ruleにしにくく、関連するfeedbackを比較できるためです。
+毎回のタスク終了時ではなく、日次または週次でまとめて処理します。単発の例外を一般的な規則にしにくく、関連するフィードバックを比較できるためです。
 
 ```text
 承認されたfeedbackを取得
@@ -146,64 +146,47 @@ feedback本文はuntrusted inputとして扱います。issueやPRに書かれ�
   → evidenceと結果を添えてdraft PRを作成
 ```
 
-改善内容を一度に詰め込まず、1つのPRを1つのbehavior changeへ絞ると、失敗時の原因特定とrevertが容易になります。
+改善内容を一度に詰め込まず、1つのPRを1つの動作の変更へ絞ると、失敗時の原因特定と変更の取り消しが容易になります。
 
-### 4. Eval harnessを先に作る
+### 4. 評価基盤を先に作る
 
-improverが「改善した」と自己評価するだけでは不十分です。過去の成功例、失敗例、境界例からgolden corpusを作り、現行Skillと変更後Skillを同じmodel・設定で比較します。
+改善担当エージェントが「改善した」と自己評価するだけでは不十分です。過去の成功例、失敗例、境界例からgolden 事例集を作り、現行スキルと変更後スキルを同じモデル・設定で比較します。
 
-code reviewなら、次のmetricが候補になります。
+コードレビューなら、次の指標が候補になります。
 
-- 実際に採用されたcommentの割合
-- false positiveとなった指摘の割合
-- 重大な問題のrecall
-- maintainerによるusefulness評価
-- token／API costとlatency
-- time to mergeなどsystem全体のmetric
+コードレビューなら、実際に採用されたコメントの割合、偽陽性となった指摘の割合、重大な問題の再現率が評価指標の候補になります。メンテナーによる有用性の評価も使えます。トークン／APIコストと遅延に加え、マージまでの時間などシステム全体の指標も候補です。
 
-改善対象のmetricだけでなく、既に成功していたcaseを壊していないかregression testも行います。domainが機械的に検証しにくい場合は、golden outputを使える部分をdeterministic evalにし、主観評価は少数のdomain expertへ限定します。
+改善対象の指標だけでなく、既に成功していた事例で性能が低下していないか回帰テストも行います。ドメインが機械的に検証しにくい場合は、golden outputを使える部分をdeterministic 評価にし、主観評価は少数の分野の専門家へ限定します。
 
 ### 5. Pull Requestを安全装置にする
 
-improverが作るPRには、少なくとも次を含めます。
+改善担当エージェントが作るPRには、少なくとも次を含めます。
 
-- 根拠となったfeedbackへのlink
-- 問題が繰り返しpatternなのか、単発なのか
-- Skillの変更前後のdiff
-- eval結果とregressionの有無
-- 想定する影響範囲
-- rollback方法
+PRには、根拠となったフィードバックへのリンクと、問題が繰り返しのパターンなのか単発なのかを記載します。スキルの変更前後の差分、評価結果、既存の性能が低下していないかも示します。想定する影響範囲と切り戻し方法も必要です。
 
-`CODEOWNERS`などでdomain ownerのapproveを必須にし、agent自身にはmerge権限を与えない構成が安全です。feedbackが誤っている前提でsanity checkし、機密情報、個人情報、prompt injectionをSkillへ取り込まないreviewも必要です。
+`CODEOWNERS`などで担当分野の責任者の承認を必須にし、エージェント自身にはマージ権限を与えない構成が安全です。フィードバックが誤っている前提でsanity checkし、機密情報、個人情報、プロンプトインジェクションをスキルへ取り込まないレビューも必要です。
 
-### 6. Crawl–walk–runで導入する
+### 6. 段階的に導入する
 
-最初はimproverにreportだけ作らせ、次にdraft PRまで許可し、evalと人間の承認が安定してから対象agentを増やします。次の運用metricを継続して確認します。
+最初は改善担当エージェントにレポートだけ作らせ、次にdraft PRまで許可し、評価と人間の承認が安定してから対象エージェントを増やします。次の運用指標を継続して確認します。
 
-- feedbackが付いたtaskの割合
-- domain expert由来のfeedback数
-- improverが提案したPRの採用率
-- Skill更新後のregression率
-- task品質、time to merge、costの長期trend
+運用では、フィードバックが付いたタスクの割合と、分野の専門家によるフィードバック数を継続して確認します。改善担当エージェントが提案したPRの採用率、スキル更新後の性能低下の割合も確認対象です。タスクの品質、マージまでの時間、コストの長期的な傾向も追います。
 
-## Limitationと改善課題
+## 制約と改善課題
 
-このpatternには、まだ次の課題があります。
+このパターンには、まだ次の課題があります。
 
-- 誤ったfeedback、組織内の少数意見、prompt injectionをどうfilterするか
-- 最新のfeedbackへ過剰適合し、以前のcaseを壊すcatastrophic forgettingをどう防ぐか
-- 複数の矛盾するprincipleをどう統合するか
-- base skillが肥大化したとき、何をreferenceへ移し何を削除するか
-- model更新による変化とSkill更新の効果をどう分離するか
-- user満足度とcost、latencyなど複数metricのtrade-offをどう判断するか
+誤ったフィードバック、組織内の少数意見、プロンプトインジェクションをどう選別するかという課題があります。最新のフィードバックへ過剰適合し、以前の事例での性能を損なうcatastrophic forgettingを防ぐ方法も必要です。
 
-特に、「agentが自分を改善する」という表現から完全自動の自己書き換えを想像しないことが重要です。Warpの設計は、human feedbackを収集し、agentが小さなSkill変更を提案し、人間がreviewしてmergeする**human-in-the-loopの継続改善**です。
+複数の矛盾する原則の統合や、実行用スキルが肥大化したときに参照資料へ移す内容と削除する内容の判断も課題です。モデル更新による変化とスキル更新の効果を分離する必要があります。ユーザー満足度、コスト、遅延など複数指標のトレードオフも判断しなければなりません。
+
+特に、「エージェントが自分を改善する」という表現から完全自動の自己書き換えを想像しないことが重要です。Warpの設計は、人間からのフィードバックを収集し、エージェントが小さなスキル変更を提案し、人間がレビューしてマージするhuman-in-the-loopの継続改善です。
 
 ## まとめ
 
-Warpの事例で最も再利用しやすいのは、base skillとimprover skillを分けたこと、feedbackを普段の作業場所で集めたこと、Skill更新をPull Requestとして扱ったことです。
+Warpの事例で最も再利用しやすいのは、実行用スキルと改善用スキルを分けたこと、フィードバックを普段の作業場所で集めたこと、スキル更新をPull Requestとして扱ったことです。
 
-agentを改善するには、feedbackを増やすだけでなく、どのsignalを信頼し、どのevalで改善を判定し、誰が変更を承認するかを設計する必要があります。Skillをcodeと同じようにversion管理することで、agentの「学習」を監査可能なengineering processへ変えられます。
+エージェントを改善するには、フィードバックを増やすだけでなく、どのシグナルを信頼し、どの評価で改善を判定し、誰が変更を承認するかを設計する必要があります。スキルをコードと同じようにバージョン管理することで、エージェントの「学習」を監査可能な開発工程へ変えられます。
 
 ## 参照
 
