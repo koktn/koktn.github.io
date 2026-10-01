@@ -74,7 +74,7 @@ Proposal / Null Result
 
 ### 3. Experiment Execution
 
-エージェントはsandbox上で設定またはアーキテクチャを変更し、type check、unit test、image 開発、短いsmoke testを通してから本学習を投入します。その後は非同期ジョブを監視し、失敗を次のように分類して対処します。
+エージェントはsandbox上で設定またはアーキテクチャを変更し、type check、unit test、イメージのビルド、短いsmoke testを通してから本学習を投入します。その後は非同期ジョブを監視し、失敗を次のように分類して対処します。
 
 - 一時的な基盤の一時障害なら再試行する
 - コードや設定の問題なら修正する

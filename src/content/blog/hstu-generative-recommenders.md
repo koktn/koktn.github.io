@@ -169,7 +169,7 @@ HSTU layerだけでは、最大8,192トークンの履歴、巨大なID vocabula
 
 これは推論時に常に80%を捨てるという話ではなく、主に高コストな学習を安くするsamplingです。Appendixの比較では、同程度のsparsityを作るzero-shot／追加学習による長さ外挿よりSLのNE悪化が小さかったものの、非公開データに基づく結果です。[論文Section 3.2とAppendix F](https://arxiv.org/pdf/2402.17152#page=5)
 
-### 3. 活性化関数とembedding optimizerのメモリを減らす
+### 3. 活性化状態とembedding optimizerのメモリを減らす
 
 推薦モデルは大きなバッチを必要とするため、パラメータだけでなく活性化のメモリが制約になる箇所になります。論文の見積もりでは、HSTUはlinear layerの削減とoperator fusionにより1層あたりの活性化状態をTransformerの`33d`から`14d`へ減らし、2倍を超える深さを同じメモリで扱えます。
 
