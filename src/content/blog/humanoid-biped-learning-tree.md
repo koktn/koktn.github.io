@@ -1,7 +1,8 @@
 ---
-title: 中国製二足歩行ロボットの学習ツリー――構造・制御・センシングをつなげて理解する
+title: 中国製二足歩行ロボットの学習ツリー：構造・制御・センシングをつなげて理解する
 description: AgiBot X1、OpenLoong、Humanoid-Gym、状態推定と最新の視覚歩行研究を軸に、急速な進歩を支えた基盤技術と、構造・制御・センシングを学ぶ順序を整理します。
 publishedAt: 2026-09-22
+updatedAt: 2026-10-01
 category: AI
 tags:
   - Robotics
@@ -12,11 +13,11 @@ tags:
 draft: false
 ---
 
-> **AI利用の明示**
+> AI利用の明示
 >
 > 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。2026年9月22日時点の公開資料を確認していますが、実機で試す前に原資料と安全手順も確認してください。
 
-二足歩行ロボットを体系的に理解する近道は、**AgiBot X1の設計資料で身体を見る、OpenLoongとHumanoid-Gymで2系統の制御を比べる、状態推定から視覚歩行へ進む**という順序です。
+二足歩行ロボットを体系的に理解する近道は、AgiBot X1の設計資料で身体を見る、OpenLoongとHumanoid-Gymで2系統の制御を比べる、状態推定から視覚歩行へ進むという順序です。
 
 本稿は、中国企業・研究機関のロボットと、中国製の機体を用いた海外大学の研究を対象にします。CAD、公式仕様、論文、公開実装を「何を理解するために読むか」という学習ツリーに並べます。
 
@@ -79,21 +80,21 @@ draft: false
 
 ## なぜ近年、急速に進歩したのか
 
-中国系二足歩行ロボットの進歩を技術面から見ると、単一のbreakthroughよりも、**接触に耐えるactuator、実機差を扱う学習、試行錯誤を高速化するGPU simulation**が順に実用域へ入り、同時に使えるようになった影響が大きいと考えられます。
+中国系二足歩行ロボットの進歩を技術面から見ると、単一のbreakthroughよりも、接触に耐えるactuator、実機差を扱う学習、試行錯誤を高速化するGPU simulationが順に実用域へ入り、同時に使えるようになった影響が大きいと考えられます。
 
 ここで挙げる基盤研究の多くは、中国企業によるものでも二足robotだけを対象にしたものでもありません。これらは現在の中国製robotが個別に採用した設計を証明する資料ではなく、近年の性能向上を可能にした世界的な技術stackを理解するための資料です。また、供給網、量産、投資、政策など産業面の因果は本稿の技術資料だけでは検証できないため、ここでは論じません。
 
-### 3つのbottleneckが続けて小さくなった
+### 3つの制約になる箇所が続けて小さくなった
 
-| 技術上のbottleneck | 基盤資料 | 何が変わったか | 読む際の注意 |
+| 技術上の制約になる箇所 | 基盤資料 | 何が変わったか | 読む際の注意 |
 | --- | --- | --- | --- |
 | 接触・衝撃を扱える駆動系 | [Proprioceptive Actuator Design in the MIT Cheetah](https://dspace.mit.edu/entities/publication/8b15bcc8-c288-43aa-b923-69ce3c13b818)（2017） | torque densityだけでなく、force control bandwidth、backdrivability、impact mitigationを一体で設計する視点を示した | MIT Cheetahの設計であり、Unitreeなどの採用を示す資料ではない |
-| simulationと実機のactuator応答の差 | [Learning Agile and Dynamic Motor Skills for Legged Robots](https://arxiv.org/abs/1901.08652)（2019） | 実機dataからactuator networkを学び、delayや低level制御を含む応答をsimulationへ入れてANYmalへ転送した | 四足robotでの結果。形状と質量だけ合わせれば十分ではないことを学ぶ資料 |
-| 学習の試行回数と待ち時間 | [Learning to Walk in Minutes](https://arxiv.org/abs/2109.11978)（2021） | 1枚のGPU上で数千体を並列simulationし、curriculumとPPOで方策開発の反復を大幅に短縮した | 並列数を増やせば常に良いわけではなく、on-policy更新に必要な時間方向のsampleとのtrade-offがある |
+| シミュレーションと実機のactuator応答の差 | [Learning Agile and Dynamic Motor Skills for Legged Robots](https://arxiv.org/abs/1901.08652)（2019） | 実機データからactuator networkを学び、delayや低level制御を含む応答をシミュレーションへ入れてANYmalへ転送した | 四足robotでの結果。形状と質量だけ合わせれば十分ではないことを学ぶ資料 |
+| 学習の試行回数と待ち時間 | [Learning to Walk in Minutes](https://arxiv.org/abs/2109.11978)（2021） | 1枚のGPU上で数千体を並列シミュレーションし、curriculumとPPOで方策開発の反復を大幅に短縮した | 並列数を増やせば常に良いわけではなく、on-policy更新に必要な時間方向のサンプルとのトレードオフがある |
 
 MIT Cheetahの論文が強調するのは、最大torqueの大きさだけではありません。着地時の外力で関節が動きやすいbackdrivability、高bandwidthなforce control、衝撃を機械・制御の両方で扱えることが、dynamic locomotionの前提になります。構造を見るときは、motor specに加えて減速比、rotor inertia、伝達効率、制御帯域まで追う必要があります。
 
-Hwangboらの2019年の研究は、そのhardwareをsimulation上でどう再現するかという次の問題を扱います。ANYmalの12 actuatorを並列に動かして4分未満で100万件超のsampleを集め、joint position errorやvelocityの履歴からtorqueを予測するnetworkを学習しました。論文では、理想的または解析的なactuator modelで学んだ方策は実機で1歩も進めず、delayやbandwidthのずれが原因と考察されています。これは後述するASAPと同じく実機差をdataで扱いますが、補正場所が異なります。
+Hwangboらの2019年の研究は、そのハードウェアをシミュレーション上でどう再現するかという次の問題を扱います。ANYmalの12 actuatorを並列に動かして4分未満で100万件超のサンプルを集め、joint position errorやvelocityの履歴からtorqueを予測するネットワークを学習しました。論文では、理想的または解析的なactuator modelで学んだ方策は実機で1歩も進めず、delayやbandwidthのずれが原因と考察されています。これは後述するASAPと同じく実機差をデータで扱いますが、補正場所が異なります。
 
 ```text
 Hwangbo et al. (2019)
@@ -103,7 +104,7 @@ ASAP (2025)
   └─ policyを実機で動かしたtrajectoryからdelta action modelを学び、policyをfine-tuneする
 ```
 
-Rudinらの研究は、学習algorithmそのものより、**試行錯誤を回すsystem**が開発速度を変えたことを示します。実験では4096体のANYmalを並列に動かし、不整地用policyを単一のRTX A6000で20分未満に学習したと報告しています。terrainごとに成功すれば難しく、失敗すれば易しくするcurriculumも、広い条件を一度に学ばせる際の重要な要素です。個々の数値は同論文のhardwareと実装条件に依存しますが、「rewardやrandomizationを変えて翌日を待つ」状態から、「短いiterationで比較する」状態への変化が本質です。
+Rudinらの研究は、学習アルゴリズムそのものより、試行錯誤を回すシステムが開発速度を変えたことを示します。実験では4096体のANYmalを並列に動かし、不整地用ポリシーを単一のRTX A6000で20分未満に学習したと報告しています。terrainごとに成功すれば難しく、失敗すれば易しくするcurriculumも、広い条件を一度に学ばせる際の重要な要素です。個々の数値は同論文のハードウェアと実装条件に依存しますが、「報酬やrandomizationを変えて翌日を待つ」状態から、「短い反復で比較する」状態への変化が本質です。
 
 以上から本稿が導く技術的な解釈は、次のとおりです。
 
@@ -115,25 +116,25 @@ Rudinらの研究は、学習algorithmそのものより、**試行錯誤を回�
   → 実機を壊す前に多数の案を絞り、短いcycleでrobotへ移せる
 ```
 
-Humanoid-Gym、UnitreeのRL toolchain、ASAPなどは、この世界的な基盤が中国製humanoidのmodel、実機interface、公開codeと結びついた例として読めます。ただし、公開論文から確認できるのは技術的な接続であり、「中国勢だけが伸びた理由」を国別に因果推定した結果ではありません。
+Humanoid-Gym、UnitreeのRL toolchain、ASAPなどは、この世界的な基盤が中国製humanoidのモデル、実機interface、公開コードと結びついた例として読めます。ただし、公開論文から確認できるのは技術的な接続であり、「中国勢だけが伸びた理由」を国別に因果推定した結果ではありません。
 
 ### 模倣、適応、学習しやすい機体へ発展した
 
 追加で読む3本は、現在のhumanoidへつながる別の枝を補います。
 
-- [DeepMimic](https://arxiv.org/abs/1804.02717)（2018）は、reference motionを追う模倣目的とtask目的を組み合わせました。ASAPやBeyondMimicへ進む前に、人間らしい運動とtask達成をreward上でどう分担するかを学べます。ただし、結果は物理simulation内のcharacterとAtlas modelであり、実機転送を示した研究ではありません。
-- [RMA](https://arxiv.org/abs/2107.04034)（2021）は、training時に得られるfrictionやpayloadなどのprivileged informationをlatent表現へ圧縮し、実行時には直近0.5秒のstate・action履歴からその表現を推定します。Unitree A1へfine-tuningなしで展開しました。ここでいうonline adaptationは、実機上でnetwork weightを再学習することではなく、学習済みadaptation moduleが環境に応じたlatentを更新することです。
-- [Berkeley Humanoid](https://arxiv.org/abs/2407.21781)（2024）は、複雑な閉linkやelastic elementを避け、通信delayを抑え、転倒に耐える小型機を作ることで、simulationを単純にし、軽いdomain randomizationと基本的なMLP policyでも実機転送しやすくする考え方を示します。中国製機体ではありませんが、「高度な学習器」だけでなく「学習しやすいhardware」を設計する比較対象になります。
+- [DeepMimic](https://arxiv.org/abs/1804.02717)（2018）は、参照資料 motionを追う模倣目的とタスク目的を組み合わせました。ASAPやBeyondMimicへ進む前に、人間らしい運動とタスク達成を報酬上でどう分担するかを学べます。ただし、結果は物理シミュレーション内のcharacterとAtlas modelであり、実機転送を示した研究ではありません。
+- [RMA](https://arxiv.org/abs/2107.04034)（2021）は、学習時に得られるfrictionやpayloadなどのprivileged informationをlatent表現へ圧縮し、実行時には直近0.5秒の状態・行動履歴からその表現を推定します。Unitree A1へ追加学習なしで展開しました。ここでいうonline adaptationは、実機上でnetwork weightを再学習することではなく、学習済みadaptation moduleが環境に応じたlatentを更新することです。
+- [Berkeley Humanoid](https://arxiv.org/abs/2407.21781)（2024）は、複雑な閉linkやelastic elementを避け、通信delayを抑え、転倒に耐える小型機を作ることで、シミュレーションを単純にし、軽いdomain randomizationと基本的なMLP policyでも実機転送しやすくする考え方を示します。中国製機体ではありませんが、「高度な学習器」だけでなく「学習しやすいハードウェア」を設計する比較対象になります。
 
 「なぜ進歩が速くなったか」を先に知りたい場合は、次の順で読むと論点がつながります。
 
 1. Learning to Walk in Minutes：開発cycleを変えた大量並列学習
-2. MIT Cheetahのactuator論文：接触を扱うhardware条件
+2. MIT Cheetahのactuator論文：接触を扱うハードウェア条件
 3. Hwangboらの2019年論文：actuatorを含むSim-to-Real
 4. Humanoid-Gym：これらを二足歩行のtraining pipelineへ落とす方法
 5. ASAP：特定実機で観測した差を使ってさらに合わせる方法
 
-各論文では、結果だけでなく「機体を変えたか、modelを変えたか、sample数を増やしたか」「ablationで何を外すと崩れるか」を確認します。これにより、hardware、algorithm、計算資源の寄与を分けて読めます。
+各論文では、結果だけでなく「機体を変えたか、モデルを変えたか、サンプル数を増やしたか」「ablationで何を外すと性能が低下するか」を確認します。これにより、ハードウェア、アルゴリズム、計算資源の寄与を分けて読めます。
 
 ## 1. 構造：X1の設計資料から「制御される身体」を読む
 
@@ -149,7 +150,7 @@ Humanoid-Gym、UnitreeのRL toolchain、ASAPなどは、この世界的な基盤
 
 ### X1でCAD、BOM、組立を往復する
 
-[AgiBot公式のX1設計資料ページ](https://www.agibot.com.cn/DOCS/OS/X1-PDG)とGitHub repositoryには、日付別のdirectoryがあり、2025年3月7日版には部品単位のSTEP、SolidWorks 2022のsource、全体図面、BOM、工具list、組立SOP、組立動画へのlinkが含まれます。
+[AgiBot公式のX1設計資料ページ](https://www.agibot.com.cn/DOCS/OS/X1-PDG)とGitHub repositoryには、日付別のdirectoryがあり、2025年3月7日版には部品単位のSTEP、SolidWorks 2022の参照元、全体図面、BOM、工具list、組立SOP、組立動画へのlinkが含まれます。
 
 学び方は、完成した3D modelを眺めるだけでは不十分です。
 
@@ -159,15 +160,15 @@ Humanoid-Gym、UnitreeのRL toolchain、ASAPなどは、この世界的な基盤
 4. 組立SOPで軸受、配線、締結の順序を確認する。
 5. 同じ部分をURDFで探し、collision形状、質量、慣性、joint limitと照合する。
 
-URDFは制御・simulationに必要な抽象化ですが、製造形状や閉linkの内部まで必ず表現するわけではありません。CADとURDFの差を見ることが、「実機」と「制御model」の差を理解する最初の演習になります。
+URDFは制御・シミュレーションに必要な抽象化ですが、製造形状や閉linkの内部まで必ず表現するわけではありません。CADとURDFの差を見ることが、「実機」と「制御モデル」の差を理解する最初の演習になります。
 
 ### G1の仕様は部品選定の比較軸に使う
 
 UnitreeのG1公式仕様には、片脚6自由度、低慣性・高速の内転子PMSM、dual encoder、joint output部のcross roller bearingなどが掲載されています。標準G1とG1 EDUでは腰や腕などの構成が異なるため、論文に書かれた自由度数を製品ページの一つの列だけで判断してはいけません。
 
-ここでの目的はG1を詳細設計の代わりに使うことではなく、X1のBOMやCADを読むときに「actuator、encoder、bearing、joint limitをどの粒度で比較するか」という観点を得ることです。
+ここでの目的はG1を詳細設計の代わりに使うことではなく、X1のBOMやCADを読むときに「actuator、エンコーダー、bearing、joint limitをどの粒度で比較するか」という観点を得ることです。
 
-### 並列機構を制御modelへつなぐ
+### 並列機構を制御モデルへつなぐ
 
 近年のhumanoidでは、脚先側の質量を減らすため、motorをjoint軸から離し、膝のfour-bar linkageや2自由度のparallel ankleを使う構成があります。この場合、単純なserial joint modelではmotor角、joint角、torque、impedance gainの関係を正しく扱えないことがあります。
 
@@ -189,7 +190,7 @@ motor位置・速度・torque
 
 ### モデルベース制御：OpenLoongでdata flowを追う
 
-[OpenLoong Dynamics Control](https://github.com/loongOpen/OpenLoong-Dyn-Control)は、青龍のMuJoCo modelと、歩行、jump、視覚を使わない障害物踏破のdemoを公開しています。repositoryは実機で歩行とblind obstacle steppingを実現したと報告していますが、公開手順の中心はMuJoCo simulationです。
+[OpenLoong Dynamics Control](https://github.com/loongOpen/OpenLoong-Dyn-Control)は、青龍のMuJoCo modelと、歩行、jump、視覚を使わない障害物踏破のデモを公開しています。リポジトリは実機で歩行とblind obstacle steppingを実現したと報告していますが、公開手順の中心はMuJoCo simulationです。
 
 最初に追うdata flowは次のとおりです。
 
@@ -205,35 +206,35 @@ sensor／MuJoCo state
 
 MPC（Model Predictive Control）は、少し先までのbase姿勢、位置、角速度、速度と、左右足の力・momentを扱います。WBC（Whole-Body Control）は、静止接触、胴体姿勢、水平位置、swing leg、hand trackingなどのtask priorityを、joint accelerationやcontact forceの制約のもとで調整します。
 
-repository内で読む順序は、`demo/walk_mpc_wbc.cpp`から各moduleへの呼び出しを追い、次に`GaitScheduler`、`FootPlacement`、`MPC`、`WBC`、`PVT_ctrl`へ進む形が分かりやすいです。parameterを変える前に、各値がworld frame、local frame、support foot frameのどれで表現されるかを確認します。
+リポジトリ内で読む順序は、`demo/walk_mpc_wbc.cpp`から各moduleへの呼び出しを追い、次に`GaitScheduler`、`FootPlacement`、`MPC`、`WBC`、`PVT_ctrl`へ進む形が分かりやすいです。パラメータを変える前に、各値がworld frame、local frame、support foot frameのどれで表現されるかを確認します。
 
 ### 学習ベース制御：Humanoid-Gymで最小構成を分解する
 
 [Humanoid-Gymの論文](https://arxiv.org/abs/2404.05695)と[実装](https://github.com/roboterax/humanoid-gym)は、RobotEra XBot-S／XBot-Lでzero-shot sim-to-realを検証したRL locomotionの入口です。学習時はIsaac Gym、sim-to-sim検証にはMuJoCoを使います。
 
-主要componentを対応づけると次のようになります。
+主要構成要素を対応づけると次のようになります。
 
-| Component | Humanoid-Gymでの役割 |
+| 構成要素 | Humanoid-Gymでの役割 |
 | --- | --- |
-| Observation | gait clock、速度command、joint position／velocity、base角速度・姿勢、前回action |
-| Privileged state | friction、mass、base linear velocity、外力、contactなどをcritic側で利用 |
+| Observation | gait clock、速度command、joint position／velocity、base角速度・姿勢、前回行動 |
+| Privileged 状態 | friction、mass、base linear velocity、外力、contactなどをcritic側で利用 |
 | Action | 12 jointのtarget position |
 | Low-level control | target positionをPD controllerが追従 |
-| Reward | 速度、姿勢、高さ、contact pattern、joint追従、energy、smoothnessなど |
+| 報酬 | 速度、姿勢、高さ、contact pattern、joint追従、energy、smoothnessなど |
 | Sim-to-Real | system delay、friction、motor strength、payload、sensor noiseなどをrandomize |
 
-論文の構成ではpolicyが100 Hz、内部PD controllerが1,000 Hzで動きます。つまり、neural networkが毎millisecondのmotor出力を直接すべて決めるのではありません。低速側の方策が関節目標を更新し、その間を高速なfeedback loopが支えます。この周波数はHumanoid-Gymの設定であり、全機体に共通する仕様ではありません。
+論文の構成ではポリシーが100 Hz、内部PD controllerが1,000 Hzで動きます。つまり、neural networkが毎millisecondのmotor出力を直接すべて決めるのではありません。低速側の方策が関節目標を更新し、その間を高速なfeedback loopが支えます。この周波数はHumanoid-Gymの設定であり、全機体に共通する仕様ではありません。
 
 OpenLoongとHumanoid-Gymの対応を並べると、違いが見えやすくなります。
 
 | 問い | OpenLoong | Humanoid-Gym |
 | --- | --- | --- |
-| 次の運動をどう決めるか | gait、foot placement、MPC、WBCを明示的に計算 | policyが観測からjoint targetを出す |
-| 接触をどう扱うか | contact制約とforceをmodel内で扱う | contactをreward、privileged state、simulation dynamicsで学ぶ |
-| 調整箇所 | cost weight、task priority、gain、step parameter | observation、reward、randomization、network、curriculum |
-| 失敗の調べ方 | model、constraint、solver、frame、gainを追う | reward、data distribution、value、randomization、sim差を追う |
-| 強み | 中間量の意味を追いやすい | 高次元・非線形な対応をsimulationから獲得できる |
-| 主な弱点 | model誤差と最適化cost | 学習分布外の挙動と原因説明の難しさ |
+| 次の運動をどう決めるか | gait、foot placement、MPC、WBCを明示的に計算 | ポリシーが観測からjoint targetを出す |
+| 接触をどう扱うか | contact制約とforceをモデル内で扱う | contactを報酬、privileged 状態、simulation dynamicsで学ぶ |
+| 調整箇所 | cost weight、task priority、gain、ステップ parameter | observation、報酬、randomization、ネットワーク、curriculum |
+| 失敗の調べ方 | モデル、constraint、solver、frame、gainを追う | 報酬、data distribution、value、randomization、sim差を追う |
+| 強み | 中間量の意味を追いやすい | 高次元・非線形な対応をシミュレーションから獲得できる |
+| 主な弱点 | モデル誤差と最適化コスト | 学習分布外の挙動と原因説明の難しさ |
 
 ## 3. RL歩行から全身運動へ枝を伸ばす
 
@@ -241,21 +242,21 @@ Humanoid-Gymの後は、解こうとしている問題の違いを意識して�
 
 ### DeepMimic：motion imitationの出発点を押さえる
 
-[DeepMimic](https://arxiv.org/abs/1804.02717)は、motion captureなどのreferenceを追うimitation objectiveと、目標方向へ歩くといったtask objectiveを組み合わせました。単にposeを再生するのではなく、物理simulation内で外乱から回復し、目的に応じてreferenceから外れる余地を方策に与えます。
+[DeepMimic](https://arxiv.org/abs/1804.02717)は、motion captureなどの参照資料を追うimitation objectiveと、目標方向へ歩くといったtask objectiveを組み合わせました。単にposeを再生するのではなく、物理シミュレーション内で外乱から回復し、目的に応じて参照資料から外れる余地を方策に与えます。
 
-本稿では実機humanoidの成果としてではなく、OmniH2O、ASAP、BeyondMimicへ続く「reference motionを物理的に成立するcontrolへ変える」という発想の基盤として位置づけます。
+本稿では実機humanoidの成果としてではなく、OmniH2O、ASAP、BeyondMimicへ続く「参照資料 motionを物理的に成立する制御へ変える」という発想の基盤として位置づけます。
 
 ### RMA：観測履歴から環境変化へ適応する
 
-[Rapid Motor Adaptation](https://arxiv.org/abs/2107.04034)（RMA）は、base policyとadaptation moduleを分け、直近のstate・action履歴からfriction、payload、motor strengthなどに応じたlatentを推定します。trainingは全てsimulationで行い、Unitree A1へpolicyのfine-tuningなしで展開しています。
+[Rapid Motor Adaptation](https://arxiv.org/abs/2107.04034)（RMA）は、base policyとadaptation moduleを分け、直近の状態・行動履歴からfriction、payload、motor strengthなどに応じたlatentを推定します。学習は全てシミュレーションで行い、Unitree A1へポリシーの追加学習なしで展開しています。
 
-RMAを読むときは、実行時の適応とnetworkのonline学習を区別します。実機上では、学習済みadaptation moduleが10 Hzでlatentを更新し、base policyが100 Hzでjoint targetを出します。weightをその場で更新する方式ではありません。また四足robotの研究なので、二足のbalanceや全身運動へ同じ性能が自動的に移るわけではありません。
+RMAを読むときは、実行時の適応とネットワークのオンライン学習を区別します。実機上では、学習済みadaptation moduleが10 Hzでlatentを更新し、base policyが100 Hzでjoint targetを出します。weightをその場で更新する方式ではありません。また四足robotの研究なので、二足のbalanceや全身運動へ同じ性能が自動的に移るわけではありません。
 
 ### DWL：観測できない状態を内部で推定する
 
-[Advancing Humanoid Locomotion: Mastering Challenging Terrains with Denoising World Model Learning](https://arxiv.org/abs/2408.14472)は、Denoising World Model Learning（DWL）によってstate estimationとsystem identificationをRL frameworkへ組み込みます。proprioceptionからbase velocity、foot contact、terrainの大まかな高さを推定し、同じnetworkで階段、斜面、不整地などへ対応します。
+[Advancing Humanoid Locomotion: Mastering Challenging Terrains with Denoising World Model Learning](https://arxiv.org/abs/2408.14472)は、Denoising World Model Learning（DWL）によって状態 estimationとsystem identificationをRL frameworkへ組み込みます。proprioceptionからbase velocity、foot contact、terrainの大まかな高さを推定し、同じネットワークで階段、斜面、不整地などへ対応します。
 
-これはcameraなしで地形を完全復元する手法ではありません。論文自身もpreciseな形状推定は難しいと述べています。足が触れた結果や身体の応答から、制御に役立つlatent stateを得る研究として読みます。
+これはcameraなしで地形を完全復元する手法ではありません。論文自身もpreciseな形状推定は難しいと述べています。足が触れた結果や身体の応答から、制御に役立つlatent 状態を得る研究として読みます。
 
 ### OmniH2O：人間の運動をrobotへ移す
 
@@ -269,47 +270,47 @@ human motion
   → physics simulation内のtracking policyで実現可能な運動にする
 ```
 
-### ASAP：実機dataでsimulationとの差を学ぶ
+### ASAP：実機データでシミュレーションとの差を学ぶ
 
-[ASAP](https://arxiv.org/abs/2502.01143)は、Unitree G1でpretrained policyを動かして実機trajectoryを集め、simulationと実機のずれを補うdelta action modelを学びます。そのmodelをsimulationへ組み込み、元のtracking policyをfine-tuneした後、delta modelなしで実機へ戻します。
+[ASAP](https://arxiv.org/abs/2502.01143)は、Unitree G1でpretrained policyを動かして実機trajectoryを集め、シミュレーションと実機のずれを補うdelta 行動 modelを学びます。そのモデルをシミュレーションへ組み込み、元のtracking policyを追加学習した後、delta modelなしで実機へ戻します。
 
-重要なのは、domain randomizationを広げ続けるだけでなく、実際に現れた誤差をdataとして使う点です。ただし実機data収集には安全な初期policyが必要で、激しい失敗を含む探索を無制限に行えるわけではありません。
+domain randomizationを広げ続けるだけでなく、実際に現れた誤差をデータとして使うことが重要です。ただし実機データ収集には安全な初期ポリシーが必要で、激しい失敗を含む探索を無制限に行えるわけではありません。
 
-### BeyondMimic：追従からskillの合成へ進む
+### BeyondMimic：追従からスキルの合成へ進む
 
-[BeyondMimic](https://arxiv.org/abs/2508.08241)は、まずdynamicなmotion trackingを成立させ、そのmotion primitiveをguided diffusionでtaskに合わせて組み合わせます。waypoint navigation、joystick control、obstacle avoidanceなどを実機で示しています。
+[BeyondMimic](https://arxiv.org/abs/2508.08241)は、まずdynamicなmotion trackingを成立させ、そのmotion primitiveをguided diffusionでタスクに合わせて組み合わせます。waypoint navigation、joystick control、obstacle avoidanceなどを実機で示しています。
 
 読む順序は、Humanoid-Gymでvelocity-command locomotionを理解し、OmniH2O／ASAPでmotion trackingとsim-to-realを学び、最後にBeyondMimicでtask-conditionedなmotion synthesisを見るのが自然です。
 
 ## 4. センシング：身体状態と外界形状を分ける
 
-センシングは、sensor名ではなく「何を推定してcontrolへ渡すか」で分類します。
+センシングは、センサー名ではなく「何を推定して制御へ渡すか」で分類します。
 
 | 分類 | 主な入力 | 推定・認識するもの | 主な失敗 |
 | --- | --- | --- | --- |
-| Proprioception | joint encoder、IMU、motor電流・torque関連値 | 姿勢、速度、joint state、接触、slip | bias、impact、model誤差、接触仮定の破れ |
+| Proprioception | joint encoder、IMU、motor電流・torque関連値 | 姿勢、速度、joint 状態、接触、slip | バイアス、impact、モデル誤差、接触仮定の破れ |
 | Contact sensing | 足裏force／pressure、joint torque | 荷重、contact位置、support状態 | 衝撃、飽和、足裏の局所接触 |
-| Exteroception | RGB、depth camera、LiDAR | 段差、障害物、foothold、周囲との位置関係 | occlusion、画角、照明、反射、latency |
+| Exteroception | RGB、depth camera、LiDAR | 段差、障害物、foothold、周囲との位置関係 | occlusion、画角、照明、反射、遅延 |
 
 ### 状態推定の基礎：contact-aided InEKF
 
-[Contact-Aided Invariant Extended Kalman Filtering for Robot State Estimation](https://arxiv.org/abs/1904.09251)は、IMUでstateをpropagateし、forward kinematicsと接触情報でpose、velocity、contact pointをcorrectする枠組みです。Cassieでの実験で、通常のquaternion-based EKFと比較しています。
+[Contact-Aided Invariant Extended Kalman Filtering for Robot State Estimation](https://arxiv.org/abs/1904.09251)は、IMUで状態をpropagateし、forward kinematicsと接触情報でpose、velocity、contact pointをcorrectする枠組みです。Cassieでの実験で、通常のquaternion-based EKFと比較しています。
 
 この論文から学ぶべきなのはfilterの式だけではありません。
 
-- IMU単独ではbiasと積分誤差が蓄積する
+- IMU単独ではバイアスと積分誤差が蓄積する
 - 接地している足はworldに対して静止している、という仮定が観測を与える
-- 足がslipすると、その仮定が破れて推定も崩れる
-- yawやglobal positionなど、sensor構成だけでは観測しにくいstateがある
-- contactの追加・削除とIMU biasをstateにどう含めるか
+- 足がslipすると、その仮定が破れて推定も不正確になる
+- yawやglobal positionなど、センサー構成だけでは観測しにくい状態がある
+- contactの追加・削除とIMU biasを状態にどう含めるか
 
-つまりstate estimatorはcontrolの前処理ではなく、接触modelとsensorの信頼度を管理するcomponentです。
+つまり状態 estimatorは制御の前処理ではなく、接触モデルとセンサーの信頼度を管理する構成要素です。
 
 ### 外界表現の基礎：確率的elevation map
 
-[Probabilistic Terrain Mapping for Mobile Robots with Uncertain Localization](https://www.research-collection.ethz.ch/items/563227f2-bb05-434b-8aef-1b001a9fdebc)は、range sensorのnoiseだけでなく、robot自身のlocalization uncertaintyも含めてgrid-based elevation mapを作ります。
+[Probabilistic Terrain Mapping for Mobile Robots with Uncertain Localization](https://www.research-collection.ethz.ch/items/563227f2-bb05-434b-8aef-1b001a9fdebc)は、range sensorのノイズだけでなく、robot自身のlocalization uncertaintyも含めてgrid-based elevation mapを作ります。
 
-歩行policyへdepthやpoint cloudを入れる前に、次のdata flowを理解するのに適しています。
+歩行ポリシーへdepthやpoint cloudを入れる前に、次のdata flowを理解するのに適しています。
 
 ```text
 range measurement
@@ -321,11 +322,11 @@ range measurement
 
 一方、aggressive motionではodometry driftがmapへ入り、thin barrierのような垂直構造は2.5D elevation表現から失われやすいという制約があります。この弱点が、後述するpoint-level fusionの動機につながります。
 
-### Sensor配置を学ぶ：ARMOR
+### センサー配置を学ぶ：ARMOR
 
-[ARMOR](https://arxiv.org/abs/2412.00396)は、Fourier GR1の腕へ分散配置したToF sensorを使い、頭部cameraだけではocclusionする領域を補います。実機では28個のToF LiDARと15 Hzの更新loopを使い、主に上半身のcollision avoidanceとmotion planningを扱います。
+[ARMOR](https://arxiv.org/abs/2412.00396)は、Fourier GR1の腕へ分散配置したToF sensorを使い、頭部cameraだけではocclusionする領域を補います。実機では28個のToF LiDARと15 Hzの更新ループを使い、主に上半身のcollision avoidanceとmotion planningを扱います。
 
-したがって、ARMORは二足歩行controller全体の論文ではありません。ここから学ぶのは、sensor性能だけでなく、**どの身体部位に置けばtaskに必要な空間が見えるか**というco-designです。
+したがって、ARMORは二足歩行controller全体の論文ではありません。ここから学ぶのは、センサー性能だけでなく、どの身体部位に置けばタスクに必要な空間が見えるかというco-designです。
 
 ## 5. 2026年9月の視覚歩行・自己運動推定
 
@@ -334,26 +335,26 @@ range measurement
 | 研究 | 公開日・機体 | 入力と出力 | 解いている問題 |
 | --- | --- | --- | --- |
 | [FootQuery](https://arxiv.org/abs/2609.21447) | 9月18日／Unitree G1 | proprioception＋過去のdepth → joint target | 接近時には見えたが、着地時には画角外・自己遮蔽になる足場を記憶から取り出す |
-| [UniPoint](https://arxiv.org/abs/2609.23666) | 9月20日／Deep Robotics DR02 | 360° LiDAR＋前後depth camera＋proprioception → joint target | 複数sensorを固定数のpoint tokenへまとめ、広い視野、局所精度、sensor故障時の冗長性を両立する |
-| [PRIMO](https://arxiv.org/abs/2609.23610) | 9月20日／AgiBot A3 Ultra | IMU＋下肢・腰のjoint state → velocity・rotation | deployment policyが変わっても再利用しやすいproprioceptive odometryを学ぶ |
+| [UniPoint](https://arxiv.org/abs/2609.23666) | 9月20日／Deep Robotics DR02 | 360° LiDAR＋前後depth camera＋proprioception → joint target | 複数センサーを固定数のpoint tokenへまとめ、広い視野、局所精度、センサー故障時の冗長性を両立する |
+| [PRIMO](https://arxiv.org/abs/2609.23610) | 9月20日／AgiBot A3 Ultra | IMU＋下肢・腰のjoint 状態 → velocity・rotation | deployment policyが変わっても再利用しやすいproprioceptive odometryを学ぶ |
 
-### FootQuery：将来の着地点をqueryにする
+### FootQuery：将来の着地点をクエリにする
 
 FootQueryは、各足の次のtouchdown locationとuncertaintyをproprioceptionから予測し、その位置が写っていた過去のdepth frameを検索します。79,537件のstair sampleを使った論文内分析では、現在frameの対象領域が見える割合は7.82%に対し、保持した履歴のいずれかで見える割合は67.89%でした。
 
-ここでの新しさは、visual memoryを時間順に一様処理するのではなく、「次にどこへ触れるか」をqueryにする点です。ただし論文は、retrieval pathだけの効果をさらに切り分けるcontrol実験が必要だとも議論しています。
+ここでの新しさは、visual memoryを時間順に一様処理するのではなく、「次にどこへ触れるか」をクエリにする点です。ただし論文は、retrieval pathだけの効果をさらに切り分ける制御実験が必要だとも議論しています。
 
-### UniPoint：sensorごとの画像ではなく3D pointで統合する
+### UniPoint：センサーごとの画像ではなく3D pointで統合する
 
-UniPointは、head-mountedの360° LiDARとtorso前後のdepth cameraをbase frameのpoint setへearly fusionし、voxel化後に各frame 80点、5 frameで400 tokenへ固定します。proprioceptionをqueryとするcross-attentionで、歩行に必要な点を選びます。
+UniPointは、head-mountedの360° LiDARとtorso前後のdepth cameraをbase frameのpoint setへearly fusionし、voxel化後に各frame 80点、5 frameで400トークンへ固定します。proprioceptionをクエリとするcross-attentionで、歩行に必要な点を選びます。
 
-DR02での実機評価は、7種類・9設定を各20 trial実施し、70 cmのplatform、100 cmのgap、thin barrier、stepping stone、balance beamなどを対象にしています。actorは50 Hzで23 jointのposition targetを出し、onboard RK3588上のnetwork forwardは100回のONNX Runtime計測で平均1.5 msと報告されています。これらは同論文のhardware・前処理条件での値で、別機体へそのまま一般化できるbenchmarkではありません。
+DR02での実機評価は、7種類・9設定を各20 trial実施し、70 cmのプラットフォーム、100 cmのgap、thin barrier、stepping stone、balance beamなどを対象にしています。actorは50 Hzで23 jointのposition targetを出し、onboard RK3588上のnetwork forwardは100回のONNX Runtime計測で平均1.5 msと報告されています。これらは同論文のハードウェア・前処理条件での値で、別機体へそのまま一般化できるベンチマークではありません。
 
-### PRIMO：controllerと推定器のdata分布を切り離す
+### PRIMO：controllerと推定器のデータ分布を切り離す
 
-PRIMOは、特定のlocomotion policyのrolloutだけでodometry estimatorを学ぶと、policy更新後のmotionを覆えない問題を扱います。約64時間のretargeted human motionをtrackingするsimulation rolloutからtraining dataを作り、physics・左右対称性のpriorを入れたestimatorを学習します。
+PRIMOは、特定のlocomotion policyのrolloutだけでodometry estimatorを学ぶと、ポリシー更新後のmotionを覆えない問題を扱います。約64時間のretargeted human motionをtrackingするsimulation rolloutから学習データを作り、physics・左右対称性のpriorを入れたestimatorを学習します。
 
-実機は31 body DoFのAgiBot A3 Ultraで、入力には両脚12 jointと腰3 jointのposition／velocity、pelvis IMUを使います。cameraとLiDARを使わない自己運動推定の研究ですが、評価referenceにはLiDAR map localizationやmotion captureを用いています。つまり「推定時に外界sensorを使わない」ことと「ground truth作成にも使わない」ことは別です。
+実機は31 body DoFのAgiBot A3 Ultraで、入力には両脚12 jointと腰3 jointのposition／velocity、pelvis IMUを使います。cameraとLiDARを使わない自己運動推定の研究ですが、評価参照資料にはLiDAR map localizationやmotion captureを用いています。つまり「推定時に外界センサーを使わない」ことと「正解データ作成にも使わない」ことは別です。
 
 この3本は同じ方向を向いているようで、役割が異なります。
 
@@ -368,19 +369,19 @@ UniPoint
   └─ 現在と直近の複数range sensorを共通の3D表現へ融合
 ```
 
-最近の流れは、単に「cameraで地形を見る」ことではありません。**接触予定に必要な記憶を選ぶ、sensor数によらない共通表現を作る、controller更新に耐える自己状態推定を作る**という、controlとの接続部分へ焦点が移っています。
+最近の流れは、単に「cameraで地形を見る」ことではありません。接触予定に必要な記憶を選ぶ、センサー数によらない共通表現を作る、controller更新に耐える自己状態推定を作るという、制御との接続部分へ焦点が移っています。
 
 ## 6. 実際に手を動かす順序
 
 ### Stage 1：X1の片脚を図解する
 
-X1の最新公開directoryを使い、hipからfootまでのlink、joint axis、actuator、bearing、cable routeを1枚にまとめます。次に、CADで見える部品とURDFで見えるparameterを2列で対応づけます。
+X1の最新公開directoryを使い、hipからfootまでのlink、joint axis、actuator、bearing、cable routeを1枚にまとめます。次に、CADで見える部品とURDFで見えるパラメータを2列で対応づけます。
 
-完了条件は、「このmotorを回すと、どのlinkを介してどのjointが動くか」「simulationでは何が省略されているか」を説明できることです。
+完了条件は、「このmotorを回すと、どのlinkを介してどのjointが動くか」「シミュレーションでは何が省略されているか」を説明できることです。
 
 ### Stage 2：OpenLoongの1歩をtraceする
 
-公式READMEが示す環境はUbuntu 22.04.4、g++ 11.4.0です。まずparameterを変えず、`walk_wbc`と`walk_mpc_wbc`の違いを観察します。
+公式READMEが示す環境はUbuntu 22.04.4、g++ 11.4.0です。まずパラメータを変えず、`walk_wbc`と`walk_mpc_wbc`の違いを観察します。
 
 ```bash
 git clone https://github.com/loongOpen/OpenLoong-Dyn-Control.git
@@ -391,11 +392,11 @@ make
 ./walk_mpc_wbc
 ```
 
-logへbase pose、desired foot pose、support leg、MPCのcontact force、WBCのjoint acceleration、final torqueを出し、1歩の時系列を並べます。値を調整する前に、単位とcoordinate frameを記録します。
+ログへbase pose、desired foot pose、support leg、MPCのcontact force、WBCのjoint acceleration、final torqueを出し、1歩の時系列を並べます。値を調整する前に、単位とcoordinate frameを記録します。
 
-### Stage 3：Humanoid-Gymの観測・action・rewardを対応づける
+### Stage 3：Humanoid-Gymの観測・行動・報酬を対応づける
 
-Humanoid-GymのREADMEが固定しているPython 3.8、PyTorch 1.13.1、CUDA 11.7、Isaac Gym Preview 4は、論文実装を再現するための古いstackです。新規projectの一般的な推奨versionではありません。
+Humanoid-GymのREADMEが固定しているPython 3.8、PyTorch 1.13.1、CUDA 11.7、Isaac Gym Preview 4は、論文実装を再現するための古いstackです。新規projectの一般的な推奨バージョンではありません。
 
 ```bash
 python humanoid/scripts/train.py --task=humanoid_ppo \
@@ -406,22 +407,22 @@ python humanoid/scripts/sim2sim.py \
   --load_model /path/to/exported/policies/policy.pt
 ```
 
-最初の実験ではrewardを増やさず、次を記録します。
+最初の実験では報酬を増やさず、次を記録します。
 
 - commandに対するbase velocity error
-- left／right footのcontact timing
-- action、joint target、実joint positionの差
+- left／right footのcontact タイミング
+- 行動、joint target、実joint positionの差
 - torque／energy cost
 - Isaac GymとMuJoCoでのtrajectory差
 - randomizationを1項ずつ外したときの変化
 
-G1／H1で現在の公式toolchainを使いたい場合は、Isaac Gym系の[unitree_rl_gym](https://github.com/unitreerobotics/unitree_rl_gym)と、Isaac Sim 5.1.0・Isaac Lab 2.3.0を対象とする[unitree_rl_lab](https://github.com/unitreerobotics/unitree_rl_lab)を別々に確認します。どちらも`Train → Play → Sim2Sim → Sim2Real`の順を明示しています。実機展開はsimulationの延長ではなく、emergency stop、吊り治具、可動範囲、通信断時の挙動を含む別の安全工程です。
+G1／H1で現在の公式toolchainを使いたい場合は、Isaac Gym系の[unitree_rl_gym](https://github.com/unitreerobotics/unitree_rl_gym)と、Isaac Sim 5.1.0・Isaac Lab 2.3.0を対象とする[unitree_rl_lab](https://github.com/unitreerobotics/unitree_rl_lab)を別々に確認します。どちらも`Train → Play → Sim2Sim → Sim2Real`の順を明示しています。実機展開はシミュレーションの延長ではなく、emergency stop、吊り治具、可動範囲、通信断時の挙動を含む別の安全工程です。
 
-### Stage 4：同じlogをmodel-based estimatorとlearned estimatorで見る
+### Stage 4：同じログをmodel-based estimatorとlearned estimatorで見る
 
 IMU、joint position／velocity、contact判定を保存し、まずInEKF系の予測・更新を可視化します。その後、DWLやPRIMOのようなlearned estimatorが何を追加で推定するかを比較します。
 
-比較では平均誤差だけでなく、足滑り、着地impact、急旋回、controller変更後に誤差がどう増えるかを分けます。PRIMOの数値を再現するには、同論文のtraining corpus、real-robot protocol、ground truth条件まで揃える必要があります。
+比較では平均誤差だけでなく、足滑り、着地impact、急旋回、controller変更後に誤差がどう増えるかを分けます。PRIMOの数値を再現するには、同論文のtraining 事例集、real-robot protocol、正解データ条件まで揃える必要があります。
 
 ### Stage 5：terrain表現を比較する
 
@@ -431,39 +432,40 @@ IMU、joint position／velocity、contact判定を保存し、まずInEKF系の�
 2. uncertainty付きelevation map
 3. voxel化したpoint token
 
-stairs、gap、thin vertical barrier、自己遮蔽した足場で、何が失われるかを比較します。最初からpolicyの成功率だけを見ると、perceptionの失敗とcontrolの失敗を区別できません。
+stairs、gap、thin vertical barrier、自己遮蔽した足場で、何が失われるかを比較します。最初からポリシーの成功率だけを見ると、perceptionの失敗と制御の失敗を区別できません。
 
 ### Stage 6：最新研究はablationから読む
 
-FootQuery、UniPoint、PRIMOは、demo動画の見た目ではなく、次の比較を確認します。
+FootQuery、UniPoint、PRIMOは、デモ動画の見た目ではなく、次の比較を確認します。
 
-- memoryを外すと何が落ちるか
-- sensorを1種類遮蔽するとどうdegradeするか
-- trainingに使ったpolicyとdeployment policyが変わるとどうなるか
-- simulationで使えるprivileged informationが実機policyへ漏れていないか
-- 実機trial数、terrain数、ground truth、失敗の定義は何か
+メモリを外すと何が落ちるか。センサーを1種類遮蔽するとどうdegradeするか。
+
+学習に使ったポリシーとdeployment policyが変わるとどうなるか。シミュレーションで使えるprivileged informationが実機ポリシーへ漏れていないか。
+
+実機trial数、terrain数、正解データ、失敗の定義は何か。
 
 この読み方をすると、「歩けた」という結果を、構造、推定、知覚、方策、低level controlのどこが支えたのか分解できます。
 
 ## 限界と注意点
 
-- MIT Cheetah、ANYmal、Unitree A1の研究は、actuator、Sim-to-Real、並列学習、適応の基盤を理解する資料です。四足での成功が二足humanoidの性能を直接保証するわけではありません。
-- 本稿は技術資料から進歩の条件を整理したもので、中国に固有の供給網、製造cost、投資、政策の寄与を比較・実証した産業分析ではありません。
-- X1のCADが公開されていても、材料特性、公差、製造条件、firmware、低level制御の全情報が揃うわけではありません。
-- G1の製品仕様と、G1を使うASAPやFootQueryの研究実装を混同してはいけません。
-- OpenLoongは学習しやすい一体的なcodebaseですが、公開されているsimulationと実機controllerの全条件が同一とは限りません。
-- Humanoid-Gymのzero-shot transferはXBot-S／XBot-Lでの研究結果です。任意のURDFを追加すれば同じ結果になるわけではありません。
-- InEKFは接触・運動学の仮定が明確な一方、slipや衝撃で仮定が破れます。learned estimatorもtraining分布とsim-to-real gapから自由ではありません。
-- ARMORは主に上半身のcollision avoidance、FootQueryとUniPointはterrain locomotion、PRIMOはodometryを扱います。目的の違う数値を横並びの性能rankingにはできません。
-- 2026年9月の3論文はarXiv v1です。公開直後のため、査読、code公開、第三者再現、長期耐久の状況を継続して確認する必要があります。
+MIT Cheetah、ANYmal、Unitree A1の研究は、actuator、Sim-to-Real、並列学習、適応の基盤を理解する資料です。四足での成功が二足humanoidの性能を直接保証するわけではありません。本稿は技術資料から進歩の条件を整理したもので、中国に固有の供給網、製造コスト、投資、政策の寄与を比較・実証した産業分析ではありません。
+
+X1のCADが公開されていても、材料特性、公差、製造条件、firmware、低level制御の全情報が揃うわけではありません。G1の製品仕様と、G1を使うASAPやFootQueryの研究実装を混同してはいけません。
+
+OpenLoongは学習しやすい一体的なコードベースですが、公開されているシミュレーションと実機controllerの全条件が同一とは限りません。Humanoid-Gymのzero-shot transferはXBot-S／XBot-Lでの研究結果です。任意のURDFを追加すれば同じ結果になるわけではありません。
+
+InEKFは接触・運動学の仮定が明確な一方、slipや衝撃で仮定が破れます。learned estimatorも学習分布とsim-to-real gapから自由ではありません。ARMORは主に上半身のcollision avoidance、FootQueryとUniPointはterrain locomotion、PRIMOはodometryを扱います。目的の違う数値を横並びの性能ランキングにはできません。
+
+2026年9月の3論文はarXiv v1です。公開直後のため、査読、コード公開、第三者再現、長期耐久の状況を継続して確認する必要があります。
+
 
 ## まとめ
 
-二足歩行ロボットは、mechanism、controller、estimator、perceptionを別々に読むだけではつながりません。X1のCADでmotorからcontactまでの物理経路を見て、OpenLoongで明示的な力学計算を追い、Humanoid-Gymで同じ問題を観測・action・rewardへ写像すると、両者の共通部分と違いが見えます。
+二足歩行ロボットは、mechanism、controller、estimator、perceptionを別々に読むだけではつながりません。X1のCADでmotorからcontactまでの物理経路を見て、OpenLoongで明示的な力学計算を追い、Humanoid-Gymで同じ問題を観測・行動・報酬へ写像すると、両者の共通部分と違いが見えます。
 
-近年の急速な進歩は、RLだけの成果でも、motorだけの成果でもありません。接触に適したactuator、実機の応答を含むsimulation、大量並列学習、環境適応、そして学習しやすい機体設計が積み重なり、実機へ移すまでのiterationが短くなりました。中国系projectの公開model、toolchain、実機研究は、その技術stackが具体的なplatform上で結びついたものとして理解できます。
+近年の急速な進歩は、RLだけの成果でも、motorだけの成果でもありません。接触に適したactuator、実機の応答を含むシミュレーション、大量並列学習、環境適応、そして学習しやすい機体設計が積み重なり、実機へ移すまでの反復が短くなりました。中国系projectの公開モデル、toolchain、実機研究は、その技術stackが具体的なプラットフォーム上で結びついたものとして理解できます。
 
-その上でInEKFからDWL／PRIMOへ進み、elevation mapからFootQuery／UniPointへ進むと、最近の研究が「もっと大きなnetwork」ではなく、**接触に必要なstateと外界情報を、いつ、どのsensorから、どの表現でcontrolへ渡すか**を改善していることが分かります。
+その上でInEKFからDWL／PRIMOへ進み、elevation mapからFootQuery／UniPointへ進むと、最近の研究が「もっと大きなネットワーク」ではなく、接触に必要な状態と外界情報を、いつ、どのセンサーから、どの表現で制御へ渡すかを改善していることが分かります。
 
 ## 参照
 
