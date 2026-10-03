@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 600" role="img" aria-labelledby="title desc">
+  <title id="title">LLM予測の説明を二つの手順で調べる</title>
+  <desc id="desc">貸付情報から完済確率と自己説明を生成し、置換した入力を使うSHAP分析と照合する。</desc>
+  <style>text{font-family:system-ui,sans-serif;fill:#172536}.head{font-size:19px;font-weight:700}.body{font-size:16px}.small{font-size:14px}.line{stroke:#34465b;stroke-width:2;fill:none}</style>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#34465b"/></marker></defs>
+  <rect width="360" height="600" rx="12" fill="#f4f7fb"/>
+  <text x="20" y="34" class="head">説明と出力を別々に調べる</text>
+  <rect x="20" y="54" width="320" height="70" rx="8" fill="#e1eaf4"/>
+  <text x="36" y="82" class="head">貸付情報</text><text x="36" y="108" class="body">21特徴量・同じLLMを使用</text>
+  <path d="M100 124V155M260 124V155" class="line" marker-end="url(#arrow)"/>
+  <rect x="20" y="165" width="150" height="134" rx="8" fill="#fff" stroke="#526b84"/>
+  <text x="32" y="194" class="head">通常の入力</text><text x="32" y="224" class="body">完済確率</text><text x="32" y="250" class="body">＋短い説明</text><text x="32" y="279" class="small">特徴別の質問も使用</text>
+  <rect x="190" y="165" width="150" height="134" rx="8" fill="#fff" stroke="#526b84"/>
+  <text x="202" y="194" class="head">置換した入力</text><text x="202" y="224" class="body">背景データで</text><text x="202" y="250" class="body">特徴量を置換</text><text x="202" y="279" class="small">予測関数を再評価</text>
+  <path d="M100 299V328M260 299V328" class="line" marker-end="url(#arrow)"/>
+  <rect x="20" y="338" width="150" height="98" rx="8" fill="#e1eaf4"/>
+  <text x="32" y="367" class="head">自己説明</text><text x="32" y="395" class="body">影響の方向や</text><text x="32" y="420" class="body">理由を生成</text>
+  <rect x="190" y="338" width="150" height="98" rx="8" fill="#e1eaf4"/>
+  <text x="202" y="367" class="head">SHAP分析</text><text x="202" y="395" class="body">出力に対する</text><text x="202" y="420" class="body">寄与を推定</text>
+  <path d="M100 436V461H180M260 436V461H180" class="line"/>
+  <path d="M180 461V491" class="line" marker-end="url(#arrow)"/>
+  <rect x="20" y="501" width="320" height="78" rx="8" fill="#fff" stroke="#526b84"/>
+  <text x="36" y="532" class="head">説明の方向と寄与を照合</text><text x="36" y="559" class="body">一致するかを外部から検証する</text>
+</svg>
