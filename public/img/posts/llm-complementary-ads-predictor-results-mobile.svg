@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 780" role="img" aria-labelledby="title desc">
+  <title id="title">V1データでの広告主予測Recall</title>
+  <desc id="desc">5つの学習方法についてRecall at 1、5、20の数値を比較するモバイル向け図。</desc>
+  <style>
+    text { font-family: system-ui, sans-serif; fill: #17352f; }
+    .title { font-size: 19px; font-weight: 700; }
+    .method { font-size: 15px; font-weight: 700; }
+    .metric { font-size: 13px; fill: #4e655f; }
+    .value { font-size: 13px; font-weight: 700; }
+    .grid { stroke: #cbd8d4; stroke-width: 1; }
+    .r1 { fill: #9ab8b0; }
+    .r5 { fill: #4f8b7e; }
+    .r20 { fill: #d0a64a; }
+  </style>
+  <rect width="390" height="780" fill="#f7faf8"/>
+  <text x="18" y="32" class="title">V1 offline advertiser prediction</text>
+  <rect x="18" y="50" width="13" height="13" class="r1"/><text x="38" y="61" class="metric">R@1</text>
+  <rect x="94" y="50" width="13" height="13" class="r5"/><text x="114" y="61" class="metric">R@5</text>
+  <rect x="170" y="50" width="13" height="13" class="r20"/><text x="190" y="61" class="metric">R@20</text>
+
+  <text x="18" y="96" class="method">Zero-shot</text>
+  <text x="18" y="124" class="metric">R@1</text><rect x="60" y="110" width="41" height="17" class="r1"/><text x="108" y="124" class="value">.117</text>
+  <text x="18" y="150" class="metric">R@5</text><rect x="60" y="136" width="105" height="17" class="r5"/><text x="172" y="150" class="value">.301</text>
+  <text x="18" y="176" class="metric">R@20</text><rect x="60" y="162" width="148" height="17" class="r20"/><text x="215" y="176" class="value">.422</text>
+  <line x1="18" y1="194" x2="372" y2="194" class="grid"/>
+
+  <text x="18" y="224" class="method">20件prompt SFT</text>
+  <text x="18" y="252" class="metric">R@1</text><rect x="60" y="238" width="55" height="17" class="r1"/><text x="122" y="252" class="value">.156</text>
+  <text x="18" y="278" class="metric">R@5</text><rect x="60" y="264" width="110" height="17" class="r5"/><text x="177" y="278" class="value">.314</text>
+  <text x="18" y="304" class="metric">R@20</text><rect x="60" y="290" width="160" height="17" class="r20"/><text x="227" y="304" class="value">.456</text>
+  <line x1="18" y1="322" x2="372" y2="322" class="grid"/>
+
+  <text x="18" y="352" class="method">1件prompt SFT</text>
+  <text x="18" y="380" class="metric">R@1</text><rect x="60" y="366" width="75" height="17" class="r1"/><text x="142" y="380" class="value">.214</text>
+  <text x="18" y="406" class="metric">R@5</text><rect x="60" y="392" width="145" height="17" class="r5"/><text x="212" y="406" class="value">.413</text>
+  <text x="18" y="432" class="metric">R@20</text><rect x="60" y="418" width="175" height="17" class="r20"/><text x="242" y="432" class="value">.501</text>
+  <line x1="18" y1="450" x2="372" y2="450" class="grid"/>
+
+  <text x="18" y="480" class="method">1件SFT + GRPO</text>
+  <text x="18" y="508" class="metric">R@1</text><rect x="60" y="494" width="78" height="17" class="r1"/><text x="145" y="508" class="value">.223</text>
+  <text x="18" y="534" class="metric">R@5</text><rect x="60" y="520" width="161" height="17" class="r5"/><text x="228" y="534" class="value">.461</text>
+  <text x="18" y="560" class="metric">R@20</text><rect x="60" y="546" width="239" height="17" class="r20"/><text x="306" y="560" class="value">.683</text>
+  <line x1="18" y1="578" x2="372" y2="578" class="grid"/>
+
+  <text x="18" y="608" class="method">SID対応SFT + GRPO</text>
+  <text x="18" y="636" class="metric">R@1</text><rect x="60" y="622" width="87" height="17" class="r1"/><text x="154" y="636" class="value">.248</text>
+  <text x="18" y="662" class="metric">R@5</text><rect x="60" y="648" width="180" height="17" class="r5"/><text x="247" y="662" class="value">.515</text>
+  <text x="18" y="688" class="metric">R@20</text><rect x="60" y="674" width="264" height="17" class="r20"/><text x="331" y="688" class="value">.755</text>
+
+  <text x="18" y="730" class="metric">原論文Table 3。SIDの差はoffline評価。</text>
+  <text x="18" y="754" class="metric">棒の最大値は0.8。</text>
+</svg>

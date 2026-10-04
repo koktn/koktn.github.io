@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 520" role="img" aria-labelledby="title desc">
+  <title id="title">LLMを補助予測器として既存の広告推薦へ組み込む流れ</title>
+  <desc id="desc">対象ユーザーを選び、profileと行動をpromptへまとめ、LLMが広告主と興味を予測する。予測はretrievalの広告主filterとrankingの特徴量へ渡される。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#365c54"/>
+    </marker>
+    <style>
+      text { font-family: system-ui, sans-serif; fill: #17352f; }
+      .title { font-size: 24px; font-weight: 700; }
+      .label { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .note { font-size: 14px; fill: #4e655f; }
+      .box { fill: #ffffff; stroke: #72968d; stroke-width: 2; }
+      .accent { fill: #e6f3ef; stroke: #397568; stroke-width: 2.5; }
+      .output { fill: #f6f0df; stroke: #9a7a27; stroke-width: 2; }
+      .line { fill: none; stroke: #365c54; stroke-width: 2.5; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="920" height="520" fill="#f7faf8"/>
+  <text x="40" y="45" class="title">LLMはrankerではなく、広告主を予測する補助モデル</text>
+
+  <rect x="40" y="95" width="190" height="150" rx="16" class="box"/>
+  <text x="60" y="128" class="label">1. 対象ユーザー</text>
+  <text x="60" y="162" class="body">米国のactive user</text>
+  <text x="60" y="188" class="body">過去90日にconversion</text>
+  <text x="60" y="220" class="note">対象を絞り推論量を抑制</text>
+
+  <rect x="280" y="95" width="230" height="150" rx="16" class="box"/>
+  <text x="300" y="128" class="label">2. 特徴量を編集</text>
+  <text x="300" y="160" class="body">profile・検索・URL</text>
+  <text x="300" y="186" class="body">conversion・brand</text>
+  <text x="300" y="212" class="body">active advertiser・SID</text>
+
+  <rect x="560" y="95" width="320" height="150" rx="16" class="accent"/>
+  <text x="580" y="128" class="label">3. Fine-tuned LLM</text>
+  <text x="580" y="162" class="body">広告主20件を順位付きで予測</text>
+  <text x="580" y="188" class="body">interestを最大5件予測</text>
+  <text x="580" y="220" class="note">日次batch推論、XML出力</text>
+
+  <path d="M 230 170 L 280 170" class="line"/>
+  <path d="M 510 170 L 560 170" class="line"/>
+
+  <path d="M 720 245 L 720 295 L 260 295 L 260 330" class="line"/>
+  <path d="M 720 245 L 720 330" class="line"/>
+
+  <rect x="80" y="330" width="360" height="135" rx="16" class="output"/>
+  <text x="105" y="365" class="label">Retrievalへ追加</text>
+  <text x="105" y="398" class="body">予測広告主をtargeting filterにする</text>
+  <text x="105" y="425" class="body">two-towerで広告候補を取得</text>
+  <text x="105" y="450" class="note">既存candidate generatorを補完</text>
+
+  <rect x="520" y="330" width="360" height="135" rx="16" class="output"/>
+  <text x="545" y="365" class="label">Rankingへ追加</text>
+  <text x="545" y="398" class="body">広告主とinterestを特徴量化</text>
+  <text x="545" y="425" class="body">ctcvr・vtcvrへ入力</text>
+  <text x="545" y="450" class="note">従来のconversion modelを維持</text>
+</svg>

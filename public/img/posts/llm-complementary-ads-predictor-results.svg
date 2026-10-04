@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 580" role="img" aria-labelledby="title desc">
+  <title id="title">V1データでの広告主予測Recall</title>
+  <desc id="desc">Zero-shot、20件SFT、1件SFT、1件SFTとGRPO、SID対応SFTとGRPOについてRecall at 1、5、20を比較する横棒グラフ。</desc>
+  <style>
+    text { font-family: system-ui, sans-serif; fill: #17352f; }
+    .title { font-size: 24px; font-weight: 700; }
+    .axis { font-size: 14px; fill: #4e655f; }
+    .method { font-size: 15px; }
+    .value { font-size: 14px; font-weight: 700; }
+    .grid { stroke: #cbd8d4; stroke-width: 1; }
+    .r1 { fill: #9ab8b0; }
+    .r5 { fill: #4f8b7e; }
+    .r20 { fill: #d0a64a; }
+  </style>
+  <rect width="920" height="580" fill="#f7faf8"/>
+  <text x="36" y="42" class="title">V1 offline advertiser prediction</text>
+  <text x="690" y="40" class="axis">Recall（高いほど良い）</text>
+
+  <rect x="36" y="66" width="16" height="16" class="r1"/><text x="60" y="79" class="axis">Recall@1</text>
+  <rect x="150" y="66" width="16" height="16" class="r5"/><text x="174" y="79" class="axis">Recall@5</text>
+  <rect x="264" y="66" width="16" height="16" class="r20"/><text x="288" y="79" class="axis">Recall@20</text>
+
+  <line x1="300" y1="100" x2="300" y2="530" class="grid"/>
+  <line x1="435" y1="100" x2="435" y2="530" class="grid"/>
+  <line x1="570" y1="100" x2="570" y2="530" class="grid"/>
+  <line x1="705" y1="100" x2="705" y2="530" class="grid"/>
+  <line x1="840" y1="100" x2="840" y2="530" class="grid"/>
+  <text x="296" y="552" class="axis">0</text><text x="424" y="552" class="axis">0.2</text><text x="559" y="552" class="axis">0.4</text><text x="694" y="552" class="axis">0.6</text><text x="829" y="552" class="axis">0.8</text>
+
+  <text x="36" y="132" class="method">Zero-shot</text>
+  <rect x="300" y="110" width="79" height="18" class="r1"/><text x="386" y="124" class="value">.117</text>
+  <rect x="300" y="132" width="203" height="18" class="r5"/><text x="510" y="146" class="value">.301</text>
+  <rect x="300" y="154" width="285" height="18" class="r20"/><text x="592" y="168" class="value">.422</text>
+
+  <text x="36" y="221" class="method">20件prompt SFT</text>
+  <rect x="300" y="199" width="105" height="18" class="r1"/><text x="412" y="213" class="value">.156</text>
+  <rect x="300" y="221" width="212" height="18" class="r5"/><text x="519" y="235" class="value">.314</text>
+  <rect x="300" y="243" width="308" height="18" class="r20"/><text x="615" y="257" class="value">.456</text>
+
+  <text x="36" y="310" class="method">1件prompt SFT</text>
+  <rect x="300" y="288" width="144" height="18" class="r1"/><text x="451" y="302" class="value">.214</text>
+  <rect x="300" y="310" width="279" height="18" class="r5"/><text x="586" y="324" class="value">.413</text>
+  <rect x="300" y="332" width="338" height="18" class="r20"/><text x="645" y="346" class="value">.501</text>
+
+  <text x="36" y="399" class="method">1件SFT + GRPO</text>
+  <rect x="300" y="377" width="151" height="18" class="r1"/><text x="458" y="391" class="value">.223</text>
+  <rect x="300" y="399" width="311" height="18" class="r5"/><text x="618" y="413" class="value">.461</text>
+  <rect x="300" y="421" width="461" height="18" class="r20"/><text x="768" y="435" class="value">.683</text>
+
+  <text x="36" y="488" class="method">SID対応SFT + GRPO</text>
+  <rect x="300" y="466" width="167" height="18" class="r1"/><text x="474" y="480" class="value">.248</text>
+  <rect x="300" y="488" width="348" height="18" class="r5"/><text x="655" y="502" class="value">.515</text>
+  <rect x="300" y="510" width="510" height="18" class="r20"/><text x="817" y="524" class="value">.755</text>
+</svg>
