@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">RAREと主要baselineのオフライン評価</title>
+  <desc id="desc">5,000 queryと150,000広告におけるHR@500、MAP、広告coverageを主要手法で比較した棒グラフ</desc>
+  <style>
+    text { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #172033; }
+    .title { font-size: 29px; font-weight: 700; }
+    .panel { font-size: 21px; font-weight: 700; }
+    .label { font-size: 15px; }
+    .value { font-size: 14px; font-weight: 650; }
+    .note { font-size: 15px; fill: #475569; }
+    .grid { stroke: #cbd5e1; stroke-width: 1; }
+    .base { fill: #94a3b8; }
+    .rare { fill: #2563eb; }
+  </style>
+  <rect width="1200" height="640" fill="#f8fafc" rx="24"/>
+  <text x="600" y="48" text-anchor="middle" class="title">RAREのオフライン評価</text>
+  <text x="600" y="76" text-anchor="middle" class="note">5,000 query・150,000広告・各query最大1,000候補</text>
+
+  <text x="210" y="120" text-anchor="middle" class="panel">HR@500</text>
+  <line x1="95" y1="410" x2="370" y2="410" class="grid"/>
+  <line x1="95" y1="265" x2="370" y2="265" class="grid"/>
+  <line x1="95" y1="120" x2="370" y2="120" class="grid"/>
+  <text x="86" y="415" text-anchor="end" class="note">0</text><text x="86" y="270" text-anchor="end" class="note">0.3</text><text x="86" y="125" text-anchor="end" class="note">0.6</text>
+  <rect x="115" y="226" width="42" height="184" class="base"/><text x="136" y="216" text-anchor="middle" class="value">.381</text>
+  <rect x="175" y="202" width="42" height="208" class="base"/><text x="196" y="192" text-anchor="middle" class="value">.431</text>
+  <rect x="235" y="182" width="42" height="228" class="base"/><text x="256" y="172" text-anchor="middle" class="value">.471</text>
+  <rect x="295" y="162" width="42" height="248" class="rare"/><text x="316" y="152" text-anchor="middle" class="value">.513</text>
+  <text x="136" y="438" text-anchor="middle" class="label">BM25</text><text x="196" y="438" text-anchor="middle" class="label">BERT-s</text><text x="256" y="438" text-anchor="middle" class="label">BERT-b</text><text x="316" y="438" text-anchor="middle" class="label">RARE</text>
+
+  <text x="595" y="120" text-anchor="middle" class="panel">MAP</text>
+  <line x1="465" y1="410" x2="740" y2="410" class="grid"/><line x1="465" y1="265" x2="740" y2="265" class="grid"/><line x1="465" y1="120" x2="740" y2="120" class="grid"/>
+  <text x="456" y="415" text-anchor="end" class="note">0</text><text x="456" y="270" text-anchor="end" class="note">0.1</text><text x="456" y="125" text-anchor="end" class="note">0.2</text>
+  <rect x="485" y="231" width="42" height="179" class="base"/><text x="506" y="221" text-anchor="middle" class="value">.123</text>
+  <rect x="545" y="161" width="42" height="249" class="base"/><text x="566" y="151" text-anchor="middle" class="value">.172</text>
+  <rect x="605" y="149" width="42" height="261" class="base"/><text x="626" y="139" text-anchor="middle" class="value">.180</text>
+  <rect x="665" y="142" width="42" height="268" class="rare"/><text x="686" y="132" text-anchor="middle" class="value">.185</text>
+  <text x="506" y="438" text-anchor="middle" class="label">BM25</text><text x="566" y="438" text-anchor="middle" class="label">BERT-s</text><text x="626" y="438" text-anchor="middle" class="label">SimBERT</text><text x="686" y="438" text-anchor="middle" class="label">RARE</text>
+
+  <text x="970" y="120" text-anchor="middle" class="panel">ACR（広告coverage）</text>
+  <line x1="835" y1="410" x2="1120" y2="410" class="grid"/><line x1="835" y1="265" x2="1120" y2="265" class="grid"/><line x1="835" y1="120" x2="1120" y2="120" class="grid"/>
+  <text x="826" y="415" text-anchor="end" class="note">0%</text><text x="826" y="270" text-anchor="end" class="note">50%</text><text x="826" y="125" text-anchor="end" class="note">100%</text>
+  <rect x="855" y="190" width="42" height="220" class="base"/><text x="876" y="180" text-anchor="middle" class="value">76.0</text>
+  <rect x="915" y="176" width="42" height="234" class="base"/><text x="936" y="166" text-anchor="middle" class="value">80.5</text>
+  <rect x="975" y="131" width="42" height="279" class="base"/><text x="996" y="121" text-anchor="middle" class="value">96.1</text>
+  <rect x="1035" y="134" width="42" height="276" class="rare"/><text x="1056" y="124" text-anchor="middle" class="value">95.1</text>
+  <text x="876" y="438" text-anchor="middle" class="label">BM25</text><text x="936" y="438" text-anchor="middle" class="label">BERT-b</text><text x="996" y="438" text-anchor="middle" class="label">Qwen</text><text x="1056" y="438" text-anchor="middle" class="label">RARE</text>
+
+  <rect x="90" y="490" width="1020" height="92" fill="#fff" stroke="#cbd5e1" stroke-width="2" rx="14"/>
+  <rect x="125" y="520" width="26" height="26" class="rare"/><text x="165" y="540" class="label">RARE-1B</text>
+  <rect x="310" y="520" width="26" height="26" class="base"/><text x="350" y="540" class="label">主要baseline</text>
+  <text x="565" y="532" class="note">HR@500・MAPでは首位。ACRはQwenなどがわずかに上回る。</text>
+  <text x="565" y="556" class="note">HR@50ではBERT-base（0.1038）がRARE（0.0985）を上回る。</text>
+  <text x="600" y="616" text-anchor="middle" class="note">出典：Liu et al., EMNLP 2025, Table 1。誤差・信頼区間の報告なし。</text>
+</svg>

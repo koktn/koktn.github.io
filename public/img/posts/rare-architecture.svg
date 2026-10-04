@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">RAREの広告indexingとquery retrieval</title>
+  <desc id="desc">広告側でCI集合と転置インデックスを構築し、query側ではcacheまたは1Bモデルが生成したCIから広告を検索する流れ</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #172033; }
+      .title { font-size: 30px; font-weight: 700; }
+      .section { font-size: 22px; font-weight: 700; }
+      .label { font-size: 18px; font-weight: 650; }
+      .small { font-size: 15px; fill: #475569; }
+      .box { fill: #ffffff; stroke: #94a3b8; stroke-width: 2; rx: 16; }
+      .offline { fill: #eff6ff; stroke: #2563eb; }
+      .online { fill: #ecfdf5; stroke: #059669; }
+      .index { fill: #fff7ed; stroke: #ea580c; }
+      .line { stroke: #475569; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .dash { stroke-dasharray: 8 8; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" fill="#f8fafc" rx="24"/>
+  <text x="600" y="52" text-anchor="middle" class="title">CIを境界に、LLMと転置indexを分担する</text>
+
+  <rect x="40" y="86" width="1120" height="250" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2" rx="20"/>
+  <text x="70" y="122" class="section">オフライン：広告側のindexing</text>
+  <rect x="70" y="158" width="180" height="112" class="box"/>
+  <text x="160" y="200" text-anchor="middle" class="label">広告素材</text>
+  <text x="160" y="229" text-anchor="middle" class="small">title・landing page</text>
+  <rect x="315" y="148" width="210" height="132" class="box offline"/>
+  <text x="420" y="192" text-anchor="middle" class="label">13B LLM</text>
+  <text x="420" y="221" text-anchor="middle" class="small">Knowledge Injection</text>
+  <text x="420" y="245" text-anchor="middle" class="small">Format Fine-Tuning</text>
+  <rect x="595" y="148" width="230" height="132" class="box offline"/>
+  <text x="710" y="188" text-anchor="middle" class="label">約200万種類のCI</text>
+  <text x="710" y="217" text-anchor="middle" class="small">clustering＋専門家評価</text>
+  <text x="710" y="241" text-anchor="middle" class="small">prefix trieを構築</text>
+  <rect x="900" y="148" width="220" height="132" class="box index"/>
+  <text x="1010" y="188" text-anchor="middle" class="label">CI → 広告index</text>
+  <text x="1010" y="217" text-anchor="middle" class="small">各広告を平均約30 CIへ</text>
+  <text x="1010" y="241" text-anchor="middle" class="small">indexは1時間ごとに更新</text>
+  <path d="M250 214 H305" class="line"/>
+  <path d="M525 214 H585" class="line"/>
+  <path d="M825 214 H890" class="line"/>
+
+  <rect x="40" y="370" width="1120" height="292" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2" rx="20"/>
+  <text x="70" y="406" class="section">オンライン：queryから広告候補を取得</text>
+  <rect x="70" y="466" width="150" height="100" class="box"/>
+  <text x="145" y="507" text-anchor="middle" class="label">query</text>
+  <text x="145" y="536" text-anchor="middle" class="small">利用者の検索語</text>
+  <rect x="282" y="442" width="185" height="94" class="box online"/>
+  <text x="375" y="480" text-anchor="middle" class="label">cache hit</text>
+  <text x="375" y="509" text-anchor="middle" class="small">事前生成したCI</text>
+  <rect x="282" y="558" width="185" height="80" class="box online"/>
+  <text x="375" y="590" text-anchor="middle" class="label">cache miss</text>
+  <text x="375" y="617" text-anchor="middle" class="small">1B LLM</text>
+  <rect x="545" y="480" width="205" height="112" class="box online"/>
+  <text x="648" y="520" text-anchor="middle" class="label">制約付き生成</text>
+  <text x="648" y="549" text-anchor="middle" class="small">既存CIだけを生成</text>
+  <text x="648" y="573" text-anchor="middle" class="small">平均3 token</text>
+  <rect x="825" y="480" width="150" height="112" class="box index"/>
+  <text x="900" y="521" text-anchor="middle" class="label">転置index</text>
+  <text x="900" y="550" text-anchor="middle" class="small">CIでlookup</text>
+  <rect x="1030" y="480" width="100" height="112" class="box"/>
+  <text x="1080" y="522" text-anchor="middle" class="label">広告</text>
+  <text x="1080" y="551" text-anchor="middle" class="small">候補</text>
+  <path d="M220 516 H270" class="line"/>
+  <path d="M220 516 C250 516 250 598 272 598" class="line dash"/>
+  <path d="M467 489 H535" class="line"/>
+  <path d="M467 598 H535" class="line"/>
+  <path d="M750 536 H815" class="line"/>
+  <path d="M975 536 H1020" class="line"/>
+  <text x="600" y="690" text-anchor="middle" class="small">矢印はdata flow。rankerはこの後段に位置する。</text>
+</svg>
