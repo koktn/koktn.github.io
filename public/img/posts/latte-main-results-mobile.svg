@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 760" role="img" aria-labelledby="title desc">
+  <title id="title">LATTEと各taskのbest baselineの比較</title>
+  <desc id="desc">Churn、Age Group、Genderの順に、best baselineは0.845、0.659、0.882、LATTEは0.872、0.665、0.900。</desc>
+  <style>
+    text { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #172033; }
+    .title { font-size: 17px; font-weight: 700; }
+    .label { font-size: 15px; font-weight: 650; }
+    .tick { font-size: 11px; fill: #475569; }
+    .value { font-size: 13px; font-weight: 700; }
+    .inverse { fill: #ffffff; }
+    .grid { stroke: #cbd5e1; stroke-width: 1; }
+  </style>
+  <rect width="390" height="760" fill="#f8fafc" rx="18"/>
+  <text x="20" y="35" class="title">best baselineとLATTEの比較</text>
+  <rect x="20" y="55" width="15" height="15" fill="#64748b"/>
+  <text x="43" y="67" class="tick">best baseline</text>
+  <rect x="160" y="55" width="15" height="15" fill="#2563eb"/>
+  <text x="183" y="67" class="tick">best LATTE</text>
+
+  <text x="20" y="115" class="label">Churn ROC-AUC</text>
+  <rect x="20" y="136" width="304" height="32" rx="5" fill="#64748b"/>
+  <rect x="20" y="180" width="328" height="32" rx="5" fill="#2563eb"/>
+  <text x="332" y="157" class="value">0.845</text>
+  <text x="350" y="201" class="value">0.872</text>
+  <text x="20" y="232" class="tick">絶対差 +0.027</text>
+
+  <text x="20" y="291" class="label">Age Group Accuracy</text>
+  <rect x="20" y="312" width="140" height="32" rx="5" fill="#64748b"/>
+  <rect x="20" y="356" width="145" height="32" rx="5" fill="#2563eb"/>
+  <text x="168" y="333" class="value">0.659</text>
+  <text x="173" y="377" class="value">0.665</text>
+  <text x="20" y="408" class="tick">絶対差 +0.006</text>
+
+  <text x="20" y="467" class="label">Gender ROC-AUC</text>
+  <rect x="20" y="488" width="337" height="32" rx="5" fill="#64748b"/>
+  <rect x="20" y="532" width="353" height="32" rx="5" fill="#2563eb"/>
+  <text x="318" y="509" text-anchor="end" class="value inverse">0.882</text>
+  <text x="334" y="553" text-anchor="end" class="value inverse">0.900</text>
+  <text x="20" y="584" class="tick">絶対差 +0.018</text>
+
+  <line x1="20" y1="635" x2="370" y2="635" class="grid"/>
+  <text x="20" y="662" class="tick">棒の軸は0.50から開始。</text>
+  <text x="20" y="684" class="tick">Churn・GenderはROC-AUC、</text>
+  <text x="20" y="706" class="tick">Age GroupはAccuracy。</text>
+  <text x="20" y="728" class="tick">task内の比較だけを読む。</text>
+</svg>

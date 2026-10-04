@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 560" role="img" aria-labelledby="title desc">
+  <title id="title">LATTEと各taskのbest baselineの比較</title>
+  <desc id="desc">Churn、Age Group、Genderの順に、best baselineは0.845、0.659、0.882、LATTEは0.872、0.665、0.900。</desc>
+  <style>
+    text { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #172033; }
+    .title { font-size: 23px; font-weight: 700; }
+    .label { font-size: 17px; font-weight: 650; }
+    .tick { font-size: 13px; fill: #475569; }
+    .value { font-size: 16px; font-weight: 700; }
+    .grid { stroke: #cbd5e1; stroke-width: 1; }
+  </style>
+  <rect width="1040" height="560" fill="#f8fafc" rx="20"/>
+  <text x="50" y="46" class="title">各taskの最良値とbest non-LATTE baseline</text>
+  <rect x="650" y="28" width="18" height="18" fill="#64748b"/>
+  <text x="678" y="43" class="tick">best baseline</text>
+  <rect x="820" y="28" width="18" height="18" fill="#2563eb"/>
+  <text x="848" y="43" class="tick">best LATTE</text>
+
+  <line x1="170" y1="90" x2="170" y2="480" class="grid"/>
+  <line x1="370" y1="90" x2="370" y2="480" class="grid"/>
+  <line x1="570" y1="90" x2="570" y2="480" class="grid"/>
+  <line x1="770" y1="90" x2="770" y2="480" class="grid"/>
+  <line x1="970" y1="90" x2="970" y2="480" class="grid"/>
+  <text x="170" y="510" text-anchor="middle" class="tick">0.50</text>
+  <text x="370" y="510" text-anchor="middle" class="tick">0.60</text>
+  <text x="570" y="510" text-anchor="middle" class="tick">0.70</text>
+  <text x="770" y="510" text-anchor="middle" class="tick">0.80</text>
+  <text x="970" y="510" text-anchor="middle" class="tick">0.90</text>
+
+  <text x="145" y="151" text-anchor="end" class="label">Churn</text>
+  <text x="145" y="177" text-anchor="end" class="tick">ROC-AUC</text>
+  <rect x="170" y="120" width="690" height="34" rx="6" fill="#64748b"/>
+  <rect x="170" y="165" width="744" height="34" rx="6" fill="#2563eb"/>
+  <text x="870" y="143" class="value">0.845</text>
+  <text x="924" y="188" class="value">0.872</text>
+
+  <text x="145" y="284" text-anchor="end" class="label">Age Group</text>
+  <text x="145" y="310" text-anchor="end" class="tick">Accuracy</text>
+  <rect x="170" y="253" width="318" height="34" rx="6" fill="#64748b"/>
+  <rect x="170" y="298" width="330" height="34" rx="6" fill="#2563eb"/>
+  <text x="498" y="276" class="value">0.659</text>
+  <text x="510" y="321" class="value">0.665</text>
+
+  <text x="145" y="417" text-anchor="end" class="label">Gender</text>
+  <text x="145" y="443" text-anchor="end" class="tick">ROC-AUC</text>
+  <rect x="170" y="386" width="764" height="34" rx="6" fill="#64748b"/>
+  <rect x="170" y="431" width="800" height="34" rx="6" fill="#2563eb"/>
+  <text x="944" y="409" class="value">0.882</text>
+  <text x="980" y="454" class="value">0.900</text>
+  <text x="520" y="544" text-anchor="middle" class="tick">軸は0.50から開始。task間で指標が異なるため、task内の比較だけを読む。</text>
+</svg>
