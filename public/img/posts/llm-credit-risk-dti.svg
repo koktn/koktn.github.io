@@ -5,7 +5,7 @@
   <rect width="360" height="414" rx="12" fill="#f4f7fb"/>
   <text x="20" y="34" class="head">Gemma-2-9BのDTI</text>
   <rect x="20" y="54" width="320" height="128" rx="8" fill="#fff" stroke="#526b84"/>
-  <text x="36" y="84" class="head">自己説明の回答</text><text x="36" y="117" class="body">完済予測への影響はnegative</text><text x="36" y="145" class="body">「債務負担が重いと</text><text x="36" y="169" class="body">返済しにくい」という方向</text>
+  <text x="36" y="84" class="head">特徴量だけを問う別プロンプト</text><text x="36" y="117" class="body">完済予測への影響はnegative</text><text x="36" y="145" class="body">特定の申込者に対する</text><text x="36" y="169" class="body">予測理由ではない</text>
   <text x="180" y="218" text-anchor="middle" class="head">説明と寄与が不一致</text>
   <rect x="20" y="240" width="320" height="105" rx="8" fill="#fff" stroke="#526b84"/>
   <text x="36" y="271" class="head">SHAP分析での観測</text><text x="36" y="302" class="body">高いDTIの領域で</text><text x="36" y="329" class="body">完済予測に正の寄与が見られる</text>
