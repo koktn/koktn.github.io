@@ -12,9 +12,13 @@ tags:
 draft: false
 ---
 
+> AI利用の明示
+>
+> 本記事の構成と本文は、OpenAIのコーディングエージェント「Codex」が作成しました。数値や主張は原論文を確認して記載していますが、利用時は原文も確認してください。
+
 LLMに信用リスクを予測させるとき、予測の精度と、生成した説明が予測の振る舞いに合っているかは、別々に検証する必要があります。この論文では、同じ貸付データを使った比較から、LLMの説明と特徴量の寄与が食い違う例を示しています。
 
-この記事の構成と本文はAIが作成しました。対象はSaeed AlMarriらの[Interpreting LLMs as Credit Risk Classifiers: Do Their Feature Explanations Align with Classical ML?](https://arxiv.org/abs/2510.25701)です。2025年10月29日公開のarXiv v1を読みます。arXivの書誌情報ではCIKM 2025のFinFAIワークショップ論文とされています。原文の参照先は[全文HTML](https://arxiv.org/html/2510.25701v1)と[PDF](https://arxiv.org/pdf/2510.25701v1)です。
+対象はSaeed AlMarriらの[Interpreting LLMs as Credit Risk Classifiers: Do Their Feature Explanations Align with Classical ML?](https://arxiv.org/abs/2510.25701)です。2025年10月29日公開のarXiv v1を読みます。arXivの書誌情報ではCIKM 2025のFinFAIワークショップ論文とされています。原文の参照先は[全文HTML](https://arxiv.org/html/2510.25701v1)と[PDF](https://arxiv.org/pdf/2510.25701v1)です。
 
 ## 予測理由を文章で読めても、説明の検証は必要
 
