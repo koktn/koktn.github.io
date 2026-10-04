@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 620" role="img" aria-labelledby="title desc">
+  <title id="title">LATTEの学習と二つの推論方式</title>
+  <desc id="desc">取引履歴を統計要約と生系列へ分け、文章と系列のembeddingを対照学習でそろえる。推論では完全版LATTEが両方を使い、LATTE-Sは系列encoderだけを使う。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #172033; }
+      .label { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #475569; }
+      .box { stroke: #64748b; stroke-width: 2; rx: 14; }
+      .line { stroke: #475569; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #64748b; stroke-width: 2; stroke-dasharray: 7 6; fill: none; }
+    </style>
+  </defs>
+  <rect width="1120" height="620" fill="#f8fafc" rx="20"/>
+  <text x="38" y="42" class="label">学習時</text>
+  <rect x="35" y="70" width="150" height="86" class="box" fill="#e2e8f0"/>
+  <text x="110" y="105" text-anchor="middle" class="label">取引履歴</text>
+  <text x="110" y="132" text-anchor="middle" class="body">時刻・金額・MCC</text>
+
+  <path d="M185 98 H245" class="line"/>
+  <path d="M185 132 C215 132 215 250 245 250" class="line"/>
+
+  <rect x="250" y="62" width="180" height="104" class="box" fill="#dcfce7"/>
+  <text x="340" y="96" text-anchor="middle" class="label">統計要約</text>
+  <text x="340" y="123" text-anchor="middle" class="body">頻度・期間・収支</text>
+  <text x="340" y="146" text-anchor="middle" class="body">主要category</text>
+
+  <rect x="250" y="208" width="180" height="84" class="box" fill="#dbeafe"/>
+  <text x="340" y="242" text-anchor="middle" class="label">生の取引系列</text>
+  <text x="340" y="269" text-anchor="middle" class="body">順序と属性を保持</text>
+
+  <path d="M430 114 H490" class="line"/>
+  <rect x="495" y="62" width="180" height="104" class="box" fill="#fef3c7"/>
+  <text x="585" y="96" text-anchor="middle" class="label">固定LLM</text>
+  <text x="585" y="123" text-anchor="middle" class="body">行動説明文を生成</text>
+  <text x="585" y="146" text-anchor="middle" class="small">学習用の弱い教師信号</text>
+
+  <path d="M675 114 H735" class="line"/>
+  <rect x="740" y="62" width="170" height="104" class="box" fill="#ffedd5"/>
+  <text x="825" y="96" text-anchor="middle" class="label">固定text encoder</text>
+  <text x="825" y="126" text-anchor="middle" class="body">z_text</text>
+
+  <path d="M430 250 H735" class="line"/>
+  <rect x="740" y="208" width="170" height="84" class="box" fill="#dbeafe"/>
+  <text x="825" y="241" text-anchor="middle" class="label">GRU encoder</text>
+  <text x="825" y="268" text-anchor="middle" class="body">z_seq</text>
+
+  <path d="M910 250 H968" class="line"/>
+  <rect x="970" y="170" width="120" height="160" class="box" fill="#ede9fe"/>
+  <text x="1030" y="215" text-anchor="middle" class="label">対照学習</text>
+  <text x="1030" y="247" text-anchor="middle" class="body">同じ顧客を</text>
+  <text x="1030" y="270" text-anchor="middle" class="body">近づける</text>
+  <text x="1030" y="303" text-anchor="middle" class="small">系列側を更新</text>
+  <path d="M910 114 C950 114 950 195 970 195" class="line"/>
+
+  <line x1="35" y1="368" x2="1090" y2="368" class="dash"/>
+  <text x="38" y="407" class="label">推論時</text>
+
+  <rect x="70" y="440" width="210" height="118" class="box" fill="#ede9fe"/>
+  <text x="175" y="478" text-anchor="middle" class="label">LATTE</text>
+  <text x="175" y="507" text-anchor="middle" class="body">系列 + 文章 + 統計</text>
+  <text x="175" y="535" text-anchor="middle" class="small">高精度、生成経路が必要</text>
+
+  <rect x="370" y="440" width="210" height="118" class="box" fill="#dbeafe"/>
+  <text x="475" y="478" text-anchor="middle" class="label">LATTE-S</text>
+  <text x="475" y="507" text-anchor="middle" class="body">整列済み系列encoderのみ</text>
+  <text x="475" y="535" text-anchor="middle" class="small">数百万parameter</text>
+
+  <path d="M580 499 H665" class="line"/>
+  <rect x="670" y="440" width="380" height="118" class="box" fill="#dcfce7"/>
+  <text x="860" y="478" text-anchor="middle" class="label">下流task</text>
+  <text x="860" y="507" text-anchor="middle" class="body">Churn・Age Group・Gender</text>
+  <text x="860" y="535" text-anchor="middle" class="small">embeddingをLightGBMで評価</text>
+  <path d="M280 499 C330 580 620 580 670 525" class="line"/>
+</svg>
