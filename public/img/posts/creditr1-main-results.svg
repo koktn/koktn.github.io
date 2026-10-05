@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 690" role="img" aria-labelledby="title desc">
+  <title id="title">CreditR1とXGBoost系モデルのAUCとECE</title>
+  <desc id="desc">2023年test setで4モデルを比較する棒グラフ。AUCはXGBoost系がわずかに高く、ECEはCreditR1が最も低い。</desc>
+  <style>
+    text { font-family: system-ui, -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif; fill: #18231f; }
+    .title { font-size: 25px; font-weight: 750; }
+    .axis { font-size: 15px; fill: #41534c; }
+    .value { font-size: 17px; font-weight: 700; }
+    .label { font-size: 16px; }
+    .grid { stroke: #cad6d0; stroke-width: 1; }
+  </style>
+  <rect width="1200" height="690" rx="24" fill="#f7faf8"/>
+  <text x="600" y="42" text-anchor="middle" class="title">2023年test set：順位性能と確率校正</text>
+  <text x="300" y="84" text-anchor="middle" class="title">AUC ↑</text>
+  <text x="900" y="84" text-anchor="middle" class="title">ECE ↓</text>
+
+  <line x1="110" y1="140" x2="520" y2="140" class="grid"/>
+  <line x1="110" y1="247" x2="520" y2="247" class="grid"/>
+  <line x1="110" y1="354" x2="520" y2="354" class="grid"/>
+  <line x1="110" y1="461" x2="520" y2="461" class="grid"/>
+  <line x1="110" y1="568" x2="520" y2="568" class="grid"/>
+  <text x="100" y="146" text-anchor="end" class="axis">0.90</text>
+  <text x="100" y="253" text-anchor="end" class="axis">0.80</text>
+  <text x="100" y="360" text-anchor="end" class="axis">0.70</text>
+  <text x="100" y="467" text-anchor="end" class="axis">0.60</text>
+  <text x="100" y="574" text-anchor="end" class="axis">0.50</text>
+
+  <rect x="130" y="150" width="72" height="418" rx="6" fill="#667a70"/>
+  <rect x="230" y="150" width="72" height="418" rx="6" fill="#8a9a92"/>
+  <rect x="330" y="144" width="72" height="424" rx="6" fill="#b28a3b"/>
+  <rect x="430" y="159" width="72" height="409" rx="6" fill="#19745c"/>
+  <text x="166" y="138" text-anchor="middle" class="value">0.891</text>
+  <text x="266" y="138" text-anchor="middle" class="value">0.891</text>
+  <text x="366" y="132" text-anchor="middle" class="value">0.897</text>
+  <text x="466" y="147" text-anchor="middle" class="value">0.883</text>
+  <text x="166" y="595" text-anchor="middle" class="label">XGBoost</text>
+  <text x="266" y="592" text-anchor="middle" class="label"><tspan x="266">XGBoost</tspan><tspan x="266" dy="20">＋isotonic</tspan></text>
+  <text x="366" y="592" text-anchor="middle" class="label"><tspan x="366">XGBoost</tspan><tspan x="366" dy="20">＋text</tspan></text>
+  <text x="466" y="595" text-anchor="middle" class="label">CreditR1</text>
+
+  <line x1="700" y1="140" x2="1110" y2="140" class="grid"/>
+  <line x1="700" y1="247" x2="1110" y2="247" class="grid"/>
+  <line x1="700" y1="354" x2="1110" y2="354" class="grid"/>
+  <line x1="700" y1="461" x2="1110" y2="461" class="grid"/>
+  <line x1="700" y1="568" x2="1110" y2="568" class="grid"/>
+  <text x="690" y="146" text-anchor="end" class="axis">0.10</text>
+  <text x="690" y="253" text-anchor="end" class="axis">0.075</text>
+  <text x="690" y="360" text-anchor="end" class="axis">0.050</text>
+  <text x="690" y="467" text-anchor="end" class="axis">0.025</text>
+  <text x="690" y="574" text-anchor="end" class="axis">0</text>
+  <rect x="720" y="187" width="72" height="381" rx="6" fill="#667a70"/>
+  <rect x="820" y="303" width="72" height="265" rx="6" fill="#8a9a92"/>
+  <rect x="920" y="213" width="72" height="355" rx="6" fill="#b28a3b"/>
+  <rect x="1020" y="367" width="72" height="201" rx="6" fill="#19745c"/>
+  <text x="756" y="175" text-anchor="middle" class="value">0.089</text>
+  <text x="856" y="291" text-anchor="middle" class="value">0.062</text>
+  <text x="956" y="201" text-anchor="middle" class="value">0.083</text>
+  <text x="1056" y="355" text-anchor="middle" class="value">0.047</text>
+  <text x="756" y="595" text-anchor="middle" class="label">XGBoost</text>
+  <text x="856" y="592" text-anchor="middle" class="label"><tspan x="856">XGBoost</tspan><tspan x="856" dy="20">＋isotonic</tspan></text>
+  <text x="956" y="592" text-anchor="middle" class="label"><tspan x="956">XGBoost</tspan><tspan x="956" dy="20">＋text</tspan></text>
+  <text x="1056" y="595" text-anchor="middle" class="label">CreditR1</text>
+  <text x="600" y="665" text-anchor="middle" class="axis">2,341 firm-years、デフォルト119件。CreditR1は3 seed平均。</text>
+</svg>
