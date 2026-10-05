@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1280" role="img" aria-labelledby="title desc">
+  <title id="title">CreditR1とXGBoost系モデルのAUCとECE</title>
+  <desc id="desc">2023年test setの横棒グラフ。AUCはXGBoost系がわずかに高く、ECEはCreditR1が最も低い。</desc>
+  <style>
+    text { font-family: system-ui, -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif; fill: #18231f; }
+    .title { font-size: 29px; font-weight: 750; }
+    .axis { font-size: 18px; fill: #41534c; }
+    .value { font-size: 21px; font-weight: 700; }
+    .label { font-size: 20px; }
+    .grid { stroke: #cad6d0; stroke-width: 1; }
+  </style>
+  <rect width="720" height="1280" rx="24" fill="#f7faf8"/>
+  <text x="360" y="48" text-anchor="middle" class="title">2023年test setの結果</text>
+  <text x="60" y="104" class="title">AUC ↑</text>
+  <line x1="250" y1="135" x2="650" y2="135" class="grid"/>
+  <line x1="250" y1="450" x2="650" y2="450" class="grid"/>
+  <text x="250" y="475" text-anchor="middle" class="axis">0.50</text>
+  <text x="450" y="475" text-anchor="middle" class="axis">0.70</text>
+  <text x="650" y="475" text-anchor="middle" class="axis">0.90</text>
+  <text x="55" y="184" class="label">XGBoost</text><rect x="250" y="156" width="391" height="42" rx="6" fill="#667a70"/><text x="646" y="185" text-anchor="end" class="value">0.891</text>
+  <text x="55" y="259" class="label">＋isotonic</text><rect x="250" y="231" width="391" height="42" rx="6" fill="#8a9a92"/><text x="646" y="260" text-anchor="end" class="value">0.891</text>
+  <text x="55" y="334" class="label">＋text</text><rect x="250" y="306" width="397" height="42" rx="6" fill="#b28a3b"/><text x="652" y="335" text-anchor="end" class="value">0.897</text>
+  <text x="55" y="409" class="label">CreditR1</text><rect x="250" y="381" width="383" height="42" rx="6" fill="#19745c"/><text x="638" y="410" text-anchor="end" class="value">0.883</text>
+
+  <text x="60" y="560" class="title">ECE ↓</text>
+  <line x1="250" y1="590" x2="650" y2="590" class="grid"/>
+  <line x1="250" y1="905" x2="650" y2="905" class="grid"/>
+  <text x="250" y="930" text-anchor="middle" class="axis">0</text>
+  <text x="450" y="930" text-anchor="middle" class="axis">0.05</text>
+  <text x="650" y="930" text-anchor="middle" class="axis">0.10</text>
+  <text x="55" y="639" class="label">XGBoost</text><rect x="250" y="611" width="356" height="42" rx="6" fill="#667a70"/><text x="614" y="640" class="value">0.089</text>
+  <text x="55" y="714" class="label">＋isotonic</text><rect x="250" y="686" width="248" height="42" rx="6" fill="#8a9a92"/><text x="506" y="715" class="value">0.062</text>
+  <text x="55" y="789" class="label">＋text</text><rect x="250" y="761" width="332" height="42" rx="6" fill="#b28a3b"/><text x="590" y="790" class="value">0.083</text>
+  <text x="55" y="864" class="label">CreditR1</text><rect x="250" y="836" width="188" height="42" rx="6" fill="#19745c"/><text x="446" y="865" class="value">0.047</text>
+
+  <rect x="55" y="990" width="610" height="190" rx="18" fill="#fff" stroke="#cad6d0" stroke-width="2"/>
+  <text x="85" y="1035" class="value">読み方</text>
+  <text x="85" y="1074" class="label">AUCはXGBoostと有意差なし</text>
+  <text x="85" y="1110" class="label">ECEはCreditR1が最小</text>
+  <text x="85" y="1150" class="axis">2,341 firm-years、デフォルト119件</text>
+  <text x="360" y="1240" text-anchor="middle" class="axis">CreditR1は3 seed平均</text>
+</svg>
