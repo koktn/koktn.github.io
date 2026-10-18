@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 690" role="img" aria-labelledby="title desc">
+  <title id="title">検索結果で検索語の商用意図を補う二つの経路</title>
+  <desc id="desc">検索語を検索エンジンへ送る。FSRP方式は結果一覧の特徴量を専用SVMで分類する。TLP方式は上位ページを一般ページ分類器で判定し、順位順の判定を別のSVMで統合する。</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#475569"/></marker></defs>
+  <rect width="360" height="690" rx="14" fill="#f1f5f9"/>
+  <g font-family="system-ui, sans-serif" text-anchor="middle" fill="#0f172a">
+    <text x="180" y="30" font-size="18" font-weight="700">検索語の文脈をどう補うか</text>
+    <rect x="60" y="48" width="240" height="44" rx="8" fill="#fff" stroke="#64748b"/>
+    <text x="180" y="76" font-size="17">短い検索語</text>
+    <path d="M180 93v26" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="60" y="123" width="240" height="44" rx="8" fill="#fff" stroke="#64748b"/>
+    <text x="180" y="151" font-size="17">検索エンジン</text>
+    <path d="M180 168v24h-90v29 M180 192h90v29" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="12" y="225" width="164" height="382" rx="9" fill="#eff6ff" stroke="#2563eb"/>
+    <rect x="184" y="225" width="164" height="382" rx="9" fill="#f0fdfa" stroke="#0f766e"/>
+    <text x="94" y="253" font-size="18" font-weight="700">FSRP</text>
+    <text x="266" y="253" font-size="18" font-weight="700">TLP</text>
+    <text x="94" y="287" font-size="16">検索結果の一覧</text>
+    <text x="94" y="311" font-size="14">タイトル・説明文等</text>
+    <text x="266" y="287" font-size="16">上位Nページ</text>
+    <text x="266" y="311" font-size="14">リンク先のHTML</text>
+    <path d="M94 327v30 M266 327v30" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="94" y="384" font-size="16">一覧の特徴量</text>
+    <text x="266" y="384" font-size="16">各ページを分類</text>
+    <text x="266" y="409" font-size="14">一般ページ用SVM</text>
+    <path d="M94 408v40 M266 421v27" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="94" y="477" font-size="16">一覧専用SVM</text>
+    <text x="266" y="477" font-size="16">順位順のN判定</text>
+    <path d="M94 491v51 M266 491v23" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="266" y="542" font-size="16">統合用SVM</text>
+    <path d="M266 553v19" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="94" y="582" font-size="17" font-weight="700">検索語のOCI</text>
+    <text x="266" y="597" font-size="17" font-weight="700">検索語のOCI</text>
+    <text x="180" y="642" font-size="16">出力は商用／非商用の分類</text>
+    <text x="180" y="669" font-size="14">個人の購入確率やCAPは評価対象外</text>
+  </g>
+</svg>
