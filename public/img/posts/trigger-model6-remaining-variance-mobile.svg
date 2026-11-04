@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 760" role="img" aria-labelledby="title desc">
+  <title id="title">Model 6の調整後に残る分散</title>
+  <desc id="desc">ExpA、ExpB、ExpCの全体分析の分散を100パーセントとし、User-triggerとSession-trigger由来の共変量で調整した後の残存分散を比較する。すべての実験でSession-triggerの方が低い。</desc>
+  <defs>
+    <style>
+      text { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #172033; }
+      .heading { font-size: 18px; font-weight: 700; }
+      .label { font-size: 15px; font-weight: 700; }
+      .body { font-size: 13px; }
+      .small { font-size: 11px; fill: #475569; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+      .axis { stroke: #475569; stroke-width: 2; }
+    </style>
+  </defs>
+  <rect width="390" height="760" rx="18" fill="#f8fafc"/>
+  <text x="20" y="32" class="heading">Model (6)の残存分散</text>
+  <text x="20" y="54" class="small">all-up分析 = 100%、低いほど推定が精密</text>
+  <line x1="58" y1="610" x2="370" y2="610" class="axis"/>
+  <line x1="58" y1="90" x2="58" y2="610" class="axis"/>
+  <g>
+    <line x1="58" y1="610" x2="370" y2="610" class="grid"/><text x="50" y="614" text-anchor="end" class="small">0</text>
+    <line x1="58" y1="506" x2="370" y2="506" class="grid"/><text x="50" y="510" text-anchor="end" class="small">20</text>
+    <line x1="58" y1="402" x2="370" y2="402" class="grid"/><text x="50" y="406" text-anchor="end" class="small">40</text>
+    <line x1="58" y1="298" x2="370" y2="298" class="grid"/><text x="50" y="302" text-anchor="end" class="small">60</text>
+    <line x1="58" y1="194" x2="370" y2="194" class="grid"/><text x="50" y="198" text-anchor="end" class="small">80</text>
+    <line x1="58" y1="90" x2="370" y2="90" class="grid"/><text x="50" y="94" text-anchor="end" class="small">100%</text>
+  </g>
+  <rect x="88" y="587.12" width="38" height="22.88" fill="#2563eb"/>
+  <rect x="128" y="600.9" width="38" height="9.1" fill="#f97316"/>
+  <text x="107" y="570" text-anchor="middle" class="small">4.40</text>
+  <text x="147" y="587" text-anchor="middle" class="small">1.75</text>
+  <text x="127" y="638" text-anchor="middle" class="label">ExpA</text>
+
+  <rect x="190" y="498.56" width="38" height="111.44" fill="#2563eb"/>
+  <rect x="230" y="537.15" width="38" height="72.85" fill="#f97316"/>
+  <text x="209" y="482" text-anchor="middle" class="small">21.43</text>
+  <text x="249" y="522" text-anchor="middle" class="small">14.01</text>
+  <text x="229" y="638" text-anchor="middle" class="label">ExpB</text>
+
+  <rect x="292" y="277.36" width="38" height="332.64" fill="#2563eb"/>
+  <rect x="332" y="370.64" width="38" height="239.36" fill="#f97316"/>
+  <text x="311" y="260" text-anchor="middle" class="small">63.97</text>
+  <text x="351" y="354" text-anchor="middle" class="small">46.03</text>
+  <text x="331" y="638" text-anchor="middle" class="label">ExpC</text>
+
+  <rect x="55" y="682" width="18" height="18" fill="#2563eb"/><text x="82" y="696" class="body">User-trigger</text>
+  <rect x="205" y="682" width="18" height="18" fill="#f97316"/><text x="232" y="696" class="body">Session-trigger</text>
+  <text x="55" y="730" class="small">出典：原論文Table 5</text>
+</svg>
