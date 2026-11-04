@@ -223,7 +223,8 @@
 
   .prose { font-size: 1.04rem; }
   .prose > * + * { margin-top: 1.4em; }
-  .prose h2, .prose h3 { scroll-margin-top: 100px; line-height: 1.35; letter-spacing: -.025em; }
+  .prose h2, .prose h3 { overflow-wrap: anywhere; scroll-margin-top: 100px; line-height: 1.35; letter-spacing: -.025em; }
+  .prose h2 code, .prose h3 code { white-space: normal; overflow-wrap: anywhere; word-break: break-all; }
   .prose h2 { margin-top: 2.6em; padding-bottom: .35em; border-bottom: 1px solid var(--line); font-size: 1.75rem; }
   .prose h3 { margin-top: 2.1em; font-size: 1.3rem; }
   .prose ul, .prose ol { padding-left: 1.5em; }
@@ -281,6 +282,7 @@
     .tag-inspector { grid-template-columns: 1fr; gap: 24px; padding: 24px; }
     .tag-inspector-group { padding: 22px 0 0; border-top: 1px solid var(--line); border-left: 0; }
     .article-shell { width: min(100% - 28px, 760px); }
+    .prose h2 { font-size: 1.5rem; }
     .post-navigation { grid-template-columns: 1fr; }
     .post-navigation .next { text-align: left; }
   }
