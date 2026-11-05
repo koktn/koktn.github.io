@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 560" role="img" aria-labelledby="title desc">
+  <title id="title">Slice Finderが問題のあるデータスライスを絞り込む流れ</title>
+  <desc id="desc">検証データと各行の損失から候補スライスを生成し、効果量、統計的有意性、多重比較補正を通して、解釈可能な上位スライスを返す。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #172033; }
+      .heading { font-size: 25px; font-weight: 750; }
+      .step { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #475569; }
+      .box { stroke: #64748b; stroke-width: 2; rx: 16; }
+      .arrow { stroke: #475569; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1120" height="560" rx="22" fill="#f8fafc"/>
+  <text x="42" y="48" class="heading">平均値から「どの条件で失敗するか」へ</text>
+
+  <rect x="42" y="94" width="225" height="160" class="box" fill="#ffffff"/>
+  <text x="64" y="126" class="step">1. 検証データ</text>
+  <text x="64" y="158" class="body">特徴量・正解ラベル</text>
+  <text x="64" y="184" class="body">モデル予測</text>
+  <text x="64" y="210" class="body">行ごとの損失</text>
+  <text x="64" y="238" class="small">数値特徴は区間へ離散化</text>
+
+  <path d="M267 174 H320" class="arrow"/>
+  <rect x="326" y="94" width="225" height="160" class="box" fill="#e0f2fe"/>
+  <text x="348" y="126" class="step">2. 候補を探索</text>
+  <text x="348" y="158" class="body">Decision Tree</text>
+  <text x="348" y="184" class="body">または Lattice Search</text>
+  <text x="348" y="214" class="small">例：sex = Male</text>
+  <text x="348" y="238" class="small">education = Bachelors ∧ …</text>
+
+  <path d="M551 174 H604" class="arrow"/>
+  <rect x="610" y="94" width="225" height="160" class="box" fill="#fef3c7"/>
+  <text x="632" y="126" class="step">3. 問題性を検査</text>
+  <text x="632" y="158" class="body">効果量 φ ≥ T</text>
+  <text x="632" y="184" class="body">Welchのt検定</text>
+  <text x="632" y="210" class="body">α-investing</text>
+  <text x="632" y="238" class="small">偶然の候補を抑える</text>
+
+  <path d="M835 174 H888" class="arrow"/>
+  <rect x="894" y="94" width="184" height="160" class="box" fill="#dcfce7"/>
+  <text x="916" y="126" class="step">4. 上位k件</text>
+  <text x="916" y="158" class="body">条件が短い</text>
+  <text x="916" y="184" class="body">対象が大きい</text>
+  <text x="916" y="210" class="body">効果量が大きい</text>
+  <text x="916" y="238" class="small">重複スライスも可</text>
+
+  <rect x="78" y="318" width="964" height="172" rx="18" fill="#eef2ff" stroke="#6366f1" stroke-width="2"/>
+  <text x="104" y="354" class="step">各候補 S は、残りのデータ S′ = D − S と比較する</text>
+  <line x1="104" y1="374" x2="1016" y2="374" stroke="#a5b4fc" stroke-width="2"/>
+  <text x="104" y="408" class="body">統計的有意性：S の平均損失が S′ より高いという差が、標本のばらつきだけで説明しにくいか</text>
+  <text x="104" y="441" class="body">効果量：その差が実務上無視できない大きさか。論文では φ = 0.2 / 0.5 / 0.8 を小 / 中 / 大の目安とする</text>
+  <text x="104" y="474" class="small">有意差だけでも、損失差だけでも不十分なため、両方を満たす候補を残す。</text>
+  <text x="42" y="535" class="small">原論文 Figure 1・§2〜3を基に、本記事用に処理の意味を再構成</text>
+</svg>

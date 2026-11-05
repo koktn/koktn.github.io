@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1030" role="img" aria-labelledby="title desc">
+  <title id="title">Slice Finderが問題のあるデータスライスを絞り込む流れ</title>
+  <desc id="desc">検証データと損失から候補を作り、効果量、統計的有意性、多重比較補正を順に適用して上位スライスを返す。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#475569"/>
+    </marker>
+    <style>
+      text { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #172033; }
+      .heading { font-size: 28px; font-weight: 750; }
+      .step { font-size: 23px; font-weight: 700; }
+      .body { font-size: 19px; }
+      .small { font-size: 16px; fill: #475569; }
+      .box { stroke: #64748b; stroke-width: 2; rx: 16; }
+      .arrow { stroke: #475569; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="720" height="1030" rx="22" fill="#f8fafc"/>
+  <text x="34" y="48" class="heading">平均値から失敗条件へ</text>
+  <rect x="56" y="82" width="608" height="130" class="box" fill="#ffffff"/>
+  <text x="80" y="117" class="step">1. 検証データ</text>
+  <text x="80" y="151" class="body">特徴量・正解・予測・行ごとの損失</text>
+  <text x="80" y="183" class="small">数値特徴は区間へ離散化</text>
+  <path d="M360 212 V250" class="arrow"/>
+  <rect x="56" y="256" width="608" height="140" class="box" fill="#e0f2fe"/>
+  <text x="80" y="291" class="step">2. 候補を探索</text>
+  <text x="80" y="327" class="body">Decision Tree または Lattice Search</text>
+  <text x="80" y="363" class="small">sex = Male ∧ education = Bachelors など</text>
+  <path d="M360 396 V434" class="arrow"/>
+  <rect x="56" y="440" width="608" height="152" class="box" fill="#fef3c7"/>
+  <text x="80" y="475" class="step">3. 問題性を検査</text>
+  <text x="80" y="511" class="body">効果量 φ ≥ T ＋ Welchのt検定</text>
+  <text x="80" y="547" class="body">α-investingで多重比較を制御</text>
+  <text x="80" y="575" class="small">偶然「悪く見えた」候補を抑える</text>
+  <path d="M360 592 V630" class="arrow"/>
+  <rect x="56" y="636" width="608" height="132" class="box" fill="#dcfce7"/>
+  <text x="80" y="671" class="step">4. 解釈可能な上位k件</text>
+  <text x="80" y="707" class="body">条件が短く、対象が大きく、効果量が大きい</text>
+  <text x="80" y="739" class="small">重複するスライスも返せる</text>
+  <rect x="34" y="806" width="652" height="158" rx="16" fill="#eef2ff" stroke="#6366f1" stroke-width="2"/>
+  <text x="58" y="842" class="step">候補 S と残り S′ を比較</text>
+  <text x="58" y="880" class="body">有意性：差が偶然ではなさそうか</text>
+  <text x="58" y="916" class="body">効果量：差が十分に大きいか</text>
+  <text x="58" y="946" class="small">両方を満たす候補だけを残す</text>
+  <text x="34" y="1001" class="small">原論文 Figure 1・§2〜3を基に本記事用に再構成</text>
+</svg>
